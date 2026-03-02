@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
+import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import Link from 'next/link';
 import { config } from '@/config';
 import { ActiveNav } from '@/components/ActiveNav';
 import { Icon, type IconName } from '@/components/Icon';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { CursorLight } from '@/components/CursorLight';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
@@ -14,6 +17,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(config.siteUrl),
   title: { default: `${config.name} | Software engineer`, template: `%s | ${config.name}` },
   description: config.description,
+  icons: { icon: '/favicon.svg' },
   alternates: { canonical: './' },
   openGraph: { type: 'website', siteName: config.name },
   twitter: { card: 'summary_large_image' },
@@ -26,6 +30,9 @@ const links: { name: IconName; label: string; href: string }[] = [
   { name: 'email', label: 'Email', href: `mailto:${config.email}` },
 ];
 
+const hasResume = existsSync(join(process.cwd(), 'public', 'resume.pdf'));
+// Pending URLs stay in the markup for the strict placeholder guard, without becoming broken links.
+
 // Applies the saved theme before first paint to avoid a flash.
 const themeScript = "try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}";
 
@@ -36,11 +43,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <CursorLight />
         <a href="#content" className="absolute left-4 -top-16 z-10 bg-accent px-4 py-2 text-accent-fg focus:top-4">
           Skip to content
         </a>
-        <div className="mx-auto max-w-7xl px-6 py-12 md:px-12 md:py-16 lg:flex lg:justify-between lg:gap-4 lg:py-0">
-          <header className="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-[46%] lg:flex-col lg:justify-between lg:py-24">
+        <div className="site-shell mx-auto max-w-7xl px-6 py-12 md:px-12 md:py-16 lg:flex lg:justify-between lg:gap-4 lg:py-0">
+          <header className="identity-panel lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[46%] lg:shrink-0 lg:self-start lg:flex-col lg:justify-between lg:py-24">
             <div>
               <h1 className="text-4xl font-bold tracking-tight text-head sm:text-5xl">
                 <Link href="/">{config.name}</Link>
@@ -50,7 +58,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
             <div className="mt-8 flex items-center gap-5 lg:mt-0">
               <ul className="flex items-center gap-1">
-                {links.map((l) => (
+                {links.map((l) => l.href.includes('{{') || (l.name === 'resume' && !hasResume) ? (
+                  <li key={l.name}>
+                    <span
+                      role="link"
+                      aria-label={`${l.label} (not yet available)`}
+                      aria-disabled="true"
+                      title={`${l.label} (not yet available)`}
+                      data-pending-url={l.href.includes('{{') ? l.href : undefined}
+                      className="flex h-11 w-11 items-center justify-center text-fg opacity-50"
+                    >
+                      <Icon name={l.name} />
+                    </span>
+                  </li>
+                ) : (
                   <li key={l.name}>
                     <a
                       href={l.href}
@@ -66,7 +87,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <ThemeToggle />
             </div>
           </header>
-          <main id="content" className="pt-16 lg:w-[54%] lg:py-24">
+          <main id="content" tabIndex={-1} className="min-w-0 pt-12 lg:w-[54%] lg:py-24">
             {children}
           </main>
         </div>
