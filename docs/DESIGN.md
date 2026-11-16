@@ -10,8 +10,8 @@ Without JavaScript the scene is still complete, because the polygon for the defa
 
 - Flat cut-shape vector art in inline SVG. Hard edges, flat fills. No gradients, blur, glow, filters or drop shadows on art.
 - Everything sits on an 8-unit grid. Arches are stepped semicircles on that grid; other diagonals are 45 degrees (obelisk tips, the banner tail, capitals).
-- Depth comes from stacked flat layers, back to front: sky, far skyline, mid-plane objects (pedestals, an obelisk, a crystal on a plinth, one banner), the iron rod, and the near frame (wall, voussoir rings, pillars).
-- **Lit and unlit palettes.** Every shape has two fills, a cool night colour and a warm lantern colour, chosen by hand so each surface keeps its own hue (indigo sky becomes mauve dusk, slate skyline becomes clay, masonry becomes sandstone, plum cloth becomes rose, teal curb stays teal-green). The scene is drawn twice. The lit copy is shown only inside two nested clip paths: the visibility polygon, and a stepped disc (the light's reach). A second, wider disc shows a half-lit copy (the two palettes mixed 50/50), so the light falls off in one big deliberate step instead of a ramp. The edge between lit and shadow is the polygon edge, crisp and exact.
+- Depth comes from stacked flat layers, back to front: sky, far skyline, a low garden wall that catches shadows, mid-plane objects (pedestals, an obelisk, a crystal on a plinth, one banner), the iron rod, and the near frame (wall, voussoir rings, pillars). The picture has a strip of night sky above the cornice.
+- **Lit and unlit palettes.** Every near shape has two fills, a cool night colour and a warm lantern colour, chosen by hand so each surface keeps its own hue (masonry becomes sandstone, plum cloth becomes rose, the teal curb stays teal-green). The scene is drawn twice. The lit copy is shown only inside two nested clip paths: the visibility polygon, and a stepped disc on the 8-unit grid (the light's reach, 224 units on the wide scene). A second, smaller disc shows full strength and the ring between them shows a half-lit copy (the two palettes mixed 50/50), so the light falls off in one deliberate step. The polygon's bounding rectangle lies outside the disc, so its edges never show. The sky and the far skyline are never lit: a lantern cannot light them, so through every bay you see cool night beyond warm stone. The edge between lit and shadow is the polygon edge, crisp and exact.
 - Crystal appears in two places only: the prism cluster on its plinth and the facet mark (favicon and the small logo). Each facet is one flat fill from the five facet colours; in shadow the same facet is mixed 55% toward night plum.
 - Embroidery (small hollow diamonds joined by thin lines) is the only ornament: section rules, corner brackets on screenshots, and the one banner in the scene. One stroke weight.
 - Amber means "lit" or "you can act on this": the lantern glass, link underlines and focus rings.
@@ -23,8 +23,8 @@ Illustration colours (`TONES` in `src/scene/geometry.ts`), unlit and lit:
 
 | Surface | Unlit | Lit |
 |---|---|---|
-| Sky | `#2a2440` | `#7a5578` |
-| Far skyline | `#3d4a5c` | `#a98270` |
+| Sky (never lit) | `#2a2440` | none |
+| Far skyline (never lit) | `#3d4a5c` | none |
 | Wall | `#2a2f45` | `#b88e69` |
 | Stone (voussoirs, abacus) | `#3c445f` | `#d7b185` |
 | Pillar shaft, mid / lit strip | `#323953` / `#444d68` | `#c79d72` / `#e6c394` |
@@ -56,7 +56,7 @@ Newsreader (serif) for the name and headings, Source Sans 3 for body and interfa
 
 ## Layout
 
-- Home: the scene, then the name, a two-sentence introduction, one line about the scene, the four icon links (icon plus word), and from 1100 px a quiet column of facts (studying, working, based). All of it fits in the first screen at 1366x768. Then Selected work, More work, Experience, About and a Contact footer.
+- Home: the scene, then the name, a two-sentence introduction, one line about the scene, the four icon links (icon plus word), and from 1100 px a quiet column of facts (studying, working, based). All of it fits in the first screen at 1366x768. On a phone the links follow the introduction directly, then the line about the scene, then the caption; all four links are visible at 390x844. Then Selected work, More work, Experience, About and a Contact footer.
 - Selected work alternates image and text. Each image is about 36 rem wide on desktop and full width on a phone. Each project has one tab stop, its title; the image is a mouse-only link.
 - Case studies open with a lead image and a two-sentence standfirst (side by side for some projects, stacked for others), then sections titled by what they say, then one closing sentence about the stack.
 - The scene has two arrangements: a wide one (seven unequal bays, one wider central bay) and a two-bay one for screens under 700 px, built from the same data and the same visibility function.

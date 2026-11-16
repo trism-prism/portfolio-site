@@ -4,7 +4,8 @@ import { occluders, sceneBounds, scenes, type Scene, type SceneId } from './geom
 /** The lit polygon for a lantern at `light`, limited to the lantern's reach so far walls are not scanned. */
 export function litPolygon(scene: Scene, light: Point): Point[] {
   const full = sceneBounds(scene);
-  const reach = scene.reach.outer;
+  // The bounding rectangle lies outside the stepped disc, so its edges are never visible.
+  const reach = scene.reach.outer + 16;
   const x = Math.max(full.x, light.x - reach);
   const y = Math.max(full.y, light.y - reach);
   const x2 = Math.min(full.x + full.w, light.x + reach);

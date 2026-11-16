@@ -13,8 +13,8 @@ export default function OpenGraphImage() {
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', background: '#1c1626', color: '#e6dccb' }}>
-        {SceneMarkup({ scene: wideScene, width: 1200, height: 372 })}
-        <div style={{ display: 'flex', flexDirection: 'column', padding: '28px 64px 0', gap: 8 }}>
+        {SceneMarkup({ scene: wideScene, width: 1200, height: 315 })}
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '48px 64px 0', gap: 8 }}>
           <div style={{ fontSize: 84, lineHeight: 1.05, display: 'flex' }}>{site.name}</div>
           <div style={{ fontSize: 32, color: '#b5abc2', display: 'flex' }}>Software engineering student</div>
         </div>

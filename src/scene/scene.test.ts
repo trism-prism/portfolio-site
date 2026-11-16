@@ -38,7 +38,8 @@ describe.each(Object.keys(scenes) as SceneId[])('%s scene', (id) => {
   it('casts a shadow: a point just behind a pedestal is outside the polygon', () => {
     const light = scene.lantern;
     const poly = litPolygon(scene, light);
-    const pedestal = scene.shapes.find((s) => s.occlude && s.id.startsWith('pedestal'));
+    const dist = (s: (typeof scene.shapes)[number]) => Math.hypot(s.rings[0][0].x - light.x, s.rings[0][0].y - light.y);
+    const pedestal = scene.shapes.filter((s) => s.occlude && s.id.startsWith('pedestal')).sort((a, b) => dist(a) - dist(b))[0];
     expect(pedestal).toBeDefined();
     const pts = pedestal!.rings[0];
     const cx = pts.reduce((a, p) => a + p.x, 0) / pts.length;

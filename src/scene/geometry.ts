@@ -67,6 +67,8 @@ export type Shape = {
   evenodd?: boolean;
   /** Blocks the lantern's light. */
   occlude?: boolean;
+  /** Never lit: the sky and the far skyline are out of the lantern's reach. */
+  unlitOnly?: boolean;
 };
 
 export type SceneId = 'wide' | 'narrow';
@@ -75,6 +77,8 @@ export type Scene = {
   id: SceneId;
   w: number;
   h: number;
+  /** Negative: how far the picture extends above y=0, so there is night sky above the cornice. */
+  top: number;
   shapes: Shape[];
   /** The light's outer ring (half strength) and core (full strength), as radii in scene units. */
   reach: { outer: number; inner: number };
@@ -161,6 +165,7 @@ type Spec = {
   id: SceneId;
   w: number;
   h: number;
+  top: number;
   floorY: number;
   springY: number;
   firstPillar: number;
@@ -196,11 +201,15 @@ function build(s: Spec): Scene {
   pillars.push(x);
 
   const shapes: Shape[] = [
-    { id: 'sky', tone: TONES.sky, rings: [rect(0, 0, w, h)] },
-    { id: 'skyline', tone: TONES.far, rings: [skyline(w, floorY, s.skyTop[0], s.skyTop[1], s.skySeed)] },
+    { id: 'sky', tone: TONES.sky, unlitOnly: true, rings: [rect(0, s.top, w, h - s.top)] },
+    { id: 'skyline', tone: TONES.far, unlitOnly: true, rings: [skyline(w, floorY, s.skyTop[0], s.skyTop[1], s.skySeed)] },
     { id: 'floor', tone: TONES.floor, rings: [rect(0, floorY, w, h - floorY)] },
-    { id: 'floor-joint', tone: TONES.floorAlt, rings: [rect(0, floorY + 40, w, 8), rect(0, floorY + 72, w, 8)] },
+    { id: 'floor-joint', tone: TONES.floorAlt, rings: [rect(0, floorY + 16, w, 8)] },
     { id: 'curb', tone: TONES.curb, rings: [rect(0, floorY, w, 8)] },
+    // A low garden wall behind the arcade: the surface that catches the pedestals' shadows.
+    { id: 'garden-wall', tone: TONES.wall, rings: [rect(0, floorY - 72, w, 72)] },
+    { id: 'garden-courses', tone: TONES.wallLight, rings: [rect(0, floorY - 56, w, 16), rect(0, floorY - 24, w, 16)] },
+    { id: 'garden-coping', tone: TONES.stone, rings: [rect(0, floorY - 80, w, 8)] },
   ];
 
   // Mid plane, behind the pillars: pedestals with urns, an obelisk and a crystal on a plinth. They cast the shadows.
@@ -321,6 +330,7 @@ function build(s: Spec): Scene {
     id: s.id,
     w,
     h,
+    top: s.top,
     shapes,
     reach: s.reach,
     lantern: { x: lb.cx + s.lanternDx, y: s.lanternY, minX: 48, maxX: w - 48, minY: s.lanternRange[0], maxY: s.lanternRange[1], rodY },
@@ -330,51 +340,53 @@ function build(s: Spec): Scene {
 export const wideScene = build({
   id: 'wide',
   w: 1280,
-  h: 384,
-  floorY: 312,
+  h: 312,
+  top: -24,
+  floorY: 280,
   springY: 168,
   firstPillar: 24,
   bayWidths: [112, 144, 128, 208, 128, 144, 112],
   pedestals: [
-    { kind: 'urn', bay: 1, dx: 24, height: 88 },
-    { kind: 'plinth', bay: 2, dx: 0, height: 64 },
-    { kind: 'obelisk', bay: 4, dx: -8, height: 104 },
-    { kind: 'urn', bay: 6, dx: 8, height: 72 },
+    { kind: 'urn', bay: 1, dx: 24, height: 72 },
+    { kind: 'plinth', bay: 2, dx: 0, height: 48 },
+    { kind: 'obelisk', bay: 4, dx: -8, height: 88 },
+    { kind: 'urn', bay: 6, dx: 8, height: 64 },
   ],
-  banner: { bay: 5, dx: 16, length: 96 },
+  banner: { bay: 5, dx: 16, length: 80 },
   weathered: 2,
   skySeed: 7,
-  skyTop: [184, 256],
+  skyTop: [128, 176],
   lanternBay: 3,
   lanternDx: 24,
-  lanternY: 216,
-  lanternRange: [208, 256],
+  lanternY: 208,
+  lanternRange: [196, 240],
   cornice: true,
-  reach: { outer: 512, inner: 288 },
+  reach: { outer: 224, inner: 120 },
 });
 
 export const narrowScene = build({
   id: 'narrow',
   w: 368,
-  h: 416,
-  floorY: 344,
-  springY: 200,
+  h: 328,
+  top: -24,
+  floorY: 296,
+  springY: 184,
   firstPillar: 8,
   bayWidths: [112, 144],
   pedestals: [
-    { kind: 'plinth', bay: 0, dx: 16, height: 72 },
-    { kind: 'obelisk', bay: 1, dx: 40, height: 112 },
+    { kind: 'plinth', bay: 0, dx: 16, height: 48 },
+    { kind: 'obelisk', bay: 1, dx: 40, height: 80 },
   ],
-  banner: { bay: 0, dx: -32, length: 80 },
+  banner: { bay: 0, dx: -32, length: 64 },
   weathered: 0,
   skySeed: 21,
-  skyTop: [216, 280],
+  skyTop: [152, 208],
   lanternBay: 1,
   lanternDx: -8,
-  lanternY: 248,
-  lanternRange: [240, 288],
+  lanternY: 224,
+  lanternRange: [212, 252],
   cornice: true,
-  reach: { outer: 352, inner: 192 },
+  reach: { outer: 112, inner: 64 },
 });
 
 export const scenes = { wide: wideScene, narrow: narrowScene } as const;
@@ -412,11 +424,11 @@ export function occluders(scene: Scene, light: Point): Segment[] {
 }
 
 export function sceneBounds(scene: Scene): Rect {
-  return { x: 0, y: 0, w: scene.w, h: scene.h };
+  return { x: 0, y: scene.top, w: scene.w, h: scene.h - scene.top };
 }
 
 /** How far the light reaches, as a stepped disc with big deliberate steps. */
-export const LIGHT_STEP = 32;
+export const LIGHT_STEP = 8;
 
 /** Stepped disc around the origin. Rows and half-widths are multiples of `step`. */
 export function steppedDisc(r: number, step: number): Point[] {

@@ -1,5 +1,6 @@
 .figure {
-  margin: 0;
+  /* the scene and its caption become flex items of the hero, so small screens can reorder them */
+  display: contents;
 }
 
 .scene {
@@ -8,6 +9,7 @@
   touch-action: pan-y;
   background: var(--surface);
   cursor: crosshair;
+  order: 0;
 }
 
 .scene:focus-visible {
@@ -21,12 +23,12 @@
 }
 
 .wide {
-  height: min(30vw, 46svh);
+  height: min(26.25vw, 46svh);
 }
 
 .narrow {
   display: none;
-  height: min(113vw, 46svh);
+  height: min(95.7vw, 44svh);
 }
 
 @media (max-width: 699.98px) {
@@ -39,10 +41,20 @@
 }
 
 .caption {
+  order: 1;
+  width: 100%;
   max-width: var(--page);
   margin: var(--space-3) auto 0;
   padding: 0 var(--gutter);
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--text-muted);
+}
+
+@media (max-width: 699.98px) {
+  /* on a phone the caption follows the introduction and the links */
+  .caption {
+    order: 3;
+    margin-top: var(--space-2);
+  }
 }

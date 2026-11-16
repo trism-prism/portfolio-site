@@ -63,17 +63,17 @@ export const projects: Project[] = [
     lead: 0,
     sections: [
       {
-        title: 'A room that was too bright',
+        title: 'A corner the light should have reached',
         body: [
-          'My first version sorted points by angle with atan2 and compared them with a rounded cross product. In a unit-square test scene it reported a lit area of 0.765 when the correct answer is 0.465, so the light reached places it could not see.',
+          'My first version sorted points by angle with atan2 and compared them with a rounded cross product. In a unit-square test scene with one wall, two targets got the same angle and collapsed into one ray, and a corner the light could see was dropped. The lit area came out as 0.465 when the correct answer is 0.765.',
           'I replaced both with a single orientation predicate that falls back to exact arithmetic when the result is too close to call, and wrote the failing case down in the decision log.',
         ],
       },
       {
-        title: 'Rays that do not need nudging',
+        title: 'One ray per target, not three',
         body: [
-          'The first version also nudged extra rays a tiny angle either side of every wall endpoint. That gets fragile once a user can draw walls that cross, so the engine now casts one ray per target and applies exact one-sided limits to what each ray hits.',
-          'The lantern on my home page is a small TypeScript version of the same idea, and it does use the nudged-ray recipe, which is fine for walls I placed myself.',
+          'The common approach is three rays per wall end, at a tiny angle below, at and above it. I chose one ray per target instead, with the exact limit of the nearest hit from each side, because offsets leak light through shared corners and miss gaps narrower than the offset.',
+          'The lantern on my home page is a small TypeScript version of the same idea, and it does use the simpler three-ray recipe, which is fine for walls I placed by hand.',
         ],
       },
       {

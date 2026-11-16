@@ -1,5 +1,12 @@
 .hero {
+  display: flex;
+  flex-direction: column;
   padding-bottom: var(--space-4);
+}
+
+.hero > :global(.wrap) {
+  order: 2;
+  width: 100%;
 }
 
 .heroGrid {
@@ -32,6 +39,18 @@
   line-height: 1.5;
   max-width: 36rem;
   margin-bottom: var(--space-1);
+}
+
+.links {
+  justify-self: stretch;
+}
+
+@media (max-width: 699.98px) {
+  /* on a phone the links come straight after the introduction and the note follows them */
+  .note {
+    order: 2;
+    margin: var(--space-1) 0 0;
+  }
 }
 
 .facts dl {

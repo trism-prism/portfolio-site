@@ -25,7 +25,9 @@ export default function Home() {
                 The light above is worked out the way the C++ visibility engine I wrote does it, so you can move the lantern
                 and the shadows follow.
               </p>
-              <ContactLinks label="Links" />
+              <div className={styles.links}>
+                <ContactLinks label="Links" />
+              </div>
             </div>
             <div className={styles.facts}>
               <span className="rule" aria-hidden="true" />

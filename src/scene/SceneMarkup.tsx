@@ -19,6 +19,7 @@ function paint(shape: Shape, i: 0 | 1 | 2) {
 export function SceneMarkup({ scene, className, width, height }: { scene: Scene; className?: string; width?: number; height?: number }) {
   const id = scene.id;
   const { x, y, rodY } = scene.lantern;
+  const lit = scene.shapes.filter((s) => !s.unlitOnly);
   const outer = toPoints(steppedDisc(scene.reach.outer, LIGHT_STEP));
   const inner = toPoints(steppedDisc(scene.reach.inner, LIGHT_STEP));
   return (
@@ -26,8 +27,8 @@ export function SceneMarkup({ scene, className, width, height }: { scene: Scene;
       className={className}
       width={width}
       height={height}
-      viewBox={`0 0 ${scene.w} ${scene.h}`}
-      preserveAspectRatio="xMidYMid slice"
+      viewBox={`0 ${scene.top} ${scene.w} ${scene.h - scene.top}`}
+      preserveAspectRatio="xMidYMax slice"
       aria-hidden="true"
       focusable="false"
       data-scene={id}
@@ -54,12 +55,12 @@ export function SceneMarkup({ scene, className, width, height }: { scene: Scene;
       </g>
       <g clipPath={`url(#${id}-poly)`}>
         <g clipPath={`url(#${id}-outer)`}>
-          {scene.shapes.map((s) => (
+          {lit.map((s) => (
             <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 2)} />
           ))}
         </g>
         <g clipPath={`url(#${id}-inner)`}>
-          {scene.shapes.map((s) => (
+          {lit.map((s) => (
             <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 1)} />
           ))}
         </g>
