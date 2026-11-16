@@ -21,7 +21,7 @@ export const profile = {
   /** Set to a { src, alt } to replace the initials card with a photo (put the file in public/). */
   photo: undefined as { src: string; alt: string } | undefined,
   initials: 'TM',
-  location: site.location,
+  location: `${site.location} (willing to relocate)`,
   email: site.email,
   resume: site.links.resume,
 };

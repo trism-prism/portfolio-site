@@ -2,7 +2,7 @@
 export type Skill = { name: string; icon?: string };
 export type SkillCategory = { id: string; label: string; skills: Skill[] };
 
-// From the resume's Technical Skills section.
+// Only what the Skills section of public/resume.pdf lists. Add an item here only after it is on the resume.
 export const skillCategories: SkillCategory[] = [
   {
     id: 'languages',
@@ -13,11 +13,8 @@ export const skillCategories: SkillCategory[] = [
       { name: 'Python', icon: 'python' },
       { name: 'C', icon: 'c' },
       { name: 'C++', icon: 'cplusplus' },
-      { name: 'x86 Assembly' },
-      { name: 'Bash', icon: 'gnubash' },
       { name: 'C#' },
       { name: 'Java', icon: 'openjdk' },
-      { name: 'GDScript', icon: 'godot' },
       { name: 'HTML', icon: 'html5' },
       { name: 'CSS', icon: 'css' },
     ],
@@ -54,18 +51,12 @@ export const skillCategories: SkillCategory[] = [
       { name: 'scikit-learn', icon: 'scikitlearn' },
       { name: 'Matplotlib' },
       { name: 'statsmodels' },
-      { name: 'XGBoost' },
     ],
   },
   {
     id: 'tools',
     label: 'Developer Tools',
     skills: [
-      { name: 'Linux', icon: 'linux' },
-      { name: 'KVM' },
-      { name: 'QEMU', icon: 'qemu' },
-      { name: 'GCC', icon: 'gnu' },
-      { name: 'Make' },
       { name: 'Git', icon: 'git' },
       { name: 'GitHub Actions', icon: 'githubactions' },
       { name: 'Docker', icon: 'docker' },

@@ -6,7 +6,7 @@ export const site = {
   // The one place the production URL lives: metadata, sitemap, robots and the share image read it from here.
   url: 'https://portfolio-site-trism2.vercel.app',
   email: 'tristanjmorton@gmail.com',
-  location: 'Harrisonburg, VA',
+  location: 'Leesburg, VA',
   links: {
     github: 'https://github.com/trism-prism',
     linkedin: 'https://www.linkedin.com/in/tristan-morton',

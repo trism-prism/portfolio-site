@@ -82,7 +82,7 @@ export const projects: Project[] = [
       'Auth with ASP.NET Core Identity, JWT and Google OAuth, with rotating hashed refresh tokens that end the session on reuse, email verification, lockout and breached-password checks.',
       'Token refresh serialized across browser tabs with Web Locks, so concurrent tabs do not trigger the reuse check.',
       'AniList GraphQL import with Retry-After backoff, upserts and a Postgres advisory lock so only one import runs at a time.',
-      '322 xUnit tests run on every pull request against a real PostgreSQL service.',
+      'Backend tests run on every pull request in GitHub Actions against a real PostgreSQL service, including the database constraints and locks.',
     ],
     tech: ['React', 'ASP.NET Core', 'PostgreSQL', 'GraphQL', 'GitHub Actions', 'Vercel'],
     links: { repo: 'https://github.com/trism-prism/anime-rating-platform', live: 'https://www.gengarate.com' },
@@ -95,7 +95,7 @@ export const projects: Project[] = [
       'A small virtual machine monitor in C on top of Linux KVM. It loads a flat 16-bit binary, handles port I/O, memory-mapped I/O and halts, and its output is compared against QEMU.',
     features: [
       'Boots 16-bit guest programs and services their port I/O, MMIO, halt and shutdown exits from a KVM_RUN loop, dumping registers on a triple fault.',
-      'Output verified against QEMU/KVM on four guests, with 16 tests that also pass under AddressSanitizer and UBSan.',
+      'Output verified against QEMU/KVM on four guests, with the test run also passing under AddressSanitizer and UBSan.',
       'Measured a VM exit at about 5.3 µs under nested KVM against 0.1 µs for a syscall; that was on a laptop under WSL2, so it says little about bare metal.',
     ],
     tech: ['C', 'KVM', 'x86 Assembly', 'QEMU', 'Make'],
@@ -106,7 +106,7 @@ export const projects: Project[] = [
     title: 'Lucid Blocks Co-op Mod',
     dates: 'Nov 2026',
     description:
-      'An update to a dormant open-source co-op multiplayer mod for a Steam game, written in GDScript in a public fork. It restores 5.2 build compatibility and adds 7 modules.',
+      'An update to a dormant open-source co-op multiplayer mod for a Steam game, written in GDScript in a public fork. It restores 5.2 build compatibility and adds new modules.',
     features: [
       'Five-message ownership handoff with write-behind commits and stale-epoch rejection, reaching a 95th-percentile switch latency under 600 ms on a simulated link with 60 ms latency and 1% loss.',
       'Replaced a full resync on every block break with a diff-based rescan, which eliminated guest reconnects at 150 ms latency.',
@@ -124,7 +124,6 @@ export const projects: Project[] = [
     features: [
       'Tool-calling loop on the Anthropic Messages API: the model fetches a full posting only when needed and records a 0-100 score with reasons.',
       'Hardened against untrusted posting text: postings are named only by database ID, fetches accept only public https hosts with per-redirect checks, and output is HTML-escaped.',
-      'Scored 1,074 postings across 3 runs.',
     ],
     tech: ['FastAPI', 'PostgreSQL', 'Anthropic API', 'GitHub Actions', 'Vercel'],
     links: {
