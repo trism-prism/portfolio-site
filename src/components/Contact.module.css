@@ -12,6 +12,7 @@ a.v:hover { color: var(--accent-text); }
 .resume { width: 100%; margin-top: 8px; }
 .form { padding: 28px; display: grid; gap: 20px; }
 .field { display: grid; gap: 8px; }
+.field label { display: grid; gap: 8px; }
 .field span { font-size: 14px; font-weight: 500; }
 .field input, .field textarea {
   width: 100%; font: inherit; color: var(--text); background: var(--bg);
@@ -22,7 +23,10 @@ a.v:hover { color: var(--accent-text); }
 .field input:focus, .field textarea:focus { outline: 2px solid var(--accent); outline-offset: 0; border-color: var(--accent); }
 .field [aria-invalid='true'] { border-color: var(--hard); }
 .field em { font-style: normal; font-size: 13px; color: var(--hard); }
-.note { font-size: 13px; color: var(--muted); text-align: center; }
+.note { font-size: 13px; color: var(--muted); text-align: center; display: grid; gap: 8px; justify-items: center; }
+.note a { color: var(--accent-text); text-decoration: underline; }
+.copy { background: none; border: 1px solid var(--border); border-radius: 999px; padding: 4px 14px; font-size: 13px; color: var(--accent-text); }
+.copy:hover { border-color: var(--accent); }
 
 @media (max-width: 900px) {
   .grid { grid-template-columns: 1fr; gap: 40px; }

@@ -23,6 +23,11 @@ describe('buildHeatmap', () => {
     expect(by['2026-11-17']).toBe(0);
   });
 
+  it('totals only the days inside the window', () => {
+    const h = buildHeatmap({ '2026-11-16': 2, '2026-06-01': 3, '2020-01-01': 50, '2026-11-17': 9 }, end);
+    expect(h.total).toBe(5); // the 2020 day is before the window, the 17th is after the end date
+  });
+
   it('labels the months in order, ending on the end month', () => {
     const labels = buildHeatmap({}, end).months.map((m) => m.label);
     expect(labels.at(-1)).toBe('Nov');

@@ -1,32 +1,28 @@
 'use client';
 
-import { useSyncExternalStore } from 'react';
 import { MoonIcon, SunIcon } from './Icons';
 import styles from './Header.module.css';
 
-// The <html> class is the source of truth: the head script sets it before paint and the button flips it.
-const subscribe = (cb: () => void) => {
-  const mo = new MutationObserver(cb);
-  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-  return () => mo.disconnect();
-};
-
+// The <html> class is the source of truth. The head script sets it before paint and CSS picks the icon,
+// so the server HTML and a light-theme load never disagree. The label does not depend on the theme.
 export function ThemeToggle() {
-  const light = useSyncExternalStore(subscribe, () => document.documentElement.classList.contains('light'), () => false);
-
   function toggle() {
-    const next = !light;
-    document.documentElement.classList.toggle('light', next);
+    const light = document.documentElement.classList.toggle('light');
     try {
-      localStorage.setItem('theme', next ? 'light' : 'dark');
+      localStorage.setItem('theme', light ? 'light' : 'dark');
     } catch {
       // Storage can be blocked; the theme still switches for this visit.
     }
   }
 
   return (
-    <button type="button" className={styles.iconBtn} onClick={toggle} aria-label={light ? 'Switch to dark theme' : 'Switch to light theme'}>
-      {light ? <MoonIcon /> : <SunIcon />}
+    <button type="button" className={`${styles.iconBtn} ${styles.theme}`} onClick={toggle} aria-label="Toggle light and dark theme">
+      <span className={styles.sun}>
+        <SunIcon />
+      </span>
+      <span className={styles.moon}>
+        <MoonIcon />
+      </span>
     </button>
   );
 }

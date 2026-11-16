@@ -43,8 +43,10 @@ function Paper({ pub }: { pub: Publication }) {
           ))}
         </dl>
         <p className="subLabel">Abstract</p>
-        <p className={`${styles.abstract} ${full ? '' : styles.clamp}`}>{pub.abstract}</p>
-        <button type="button" className={styles.more} aria-expanded={full} onClick={() => setFull(!full)}>
+        <p id={`abs-${pub.id}`} className={`${styles.abstract} ${full ? '' : styles.clamp}`}>
+          {pub.abstract}
+        </p>
+        <button type="button" className={styles.more} aria-expanded={full} aria-controls={`abs-${pub.id}`} onClick={() => setFull(!full)}>
           {full ? 'Show Less' : 'Read Full Abstract'}
         </button>
       </div>

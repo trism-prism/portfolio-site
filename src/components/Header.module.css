@@ -17,6 +17,10 @@
 .divider { width: 1px; height: 24px; background: var(--border); }
 .iconBtn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: 0; border-radius: 8px; color: var(--text); }
 .iconBtn:hover { color: var(--accent-text); }
+.sun, .moon { display: inline-flex; }
+.moon { display: none; }
+:global(html.light) .sun { display: none; }
+:global(html.light) .moon { display: inline-flex; }
 .talk { padding: 6px 16px; font-size: 13px; letter-spacing: 0; }
 .talkMobile, .burger { display: none; }
 

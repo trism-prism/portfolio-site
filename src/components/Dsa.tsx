@@ -60,7 +60,7 @@ export function Dsa() {
   ];
   // Built at deploy time, so the grid ends on the week of the last build.
   const heat = buildHeatmap(lc.submissions, new Date());
-  const total = Object.values(lc.submissions).reduce((a, b) => a + b, 0);
+  const total = heat.total; // only days inside the 52-week window
 
   return (
     <Section id="dsa" eyebrow="Problem Solving" title="Data Structures & Algorithms" icon={<CodeIcon size={16} />}>

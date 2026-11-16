@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
-import { initialTypeState, typewriterStep } from '../lib/typewriter';
+import { initialTypeState, typewriterStep, type TypeState } from '../lib/typewriter';
 
 const query = '(prefers-reduced-motion: reduce)';
 const subscribe = (cb: () => void) => {
@@ -12,24 +12,25 @@ const subscribe = (cb: () => void) => {
 
 /** Types and deletes each role in a loop. With reduced motion, or before hydration, it shows the first role. */
 export function Typewriter({ roles }: { roles: string[] }) {
-  const [state, setState] = useState(initialTypeState);
+  // Start from the full first role (what the server HTML shows), hold, then delete: the text never blanks on hydration.
+  const [state, setState] = useState<TypeState>({ ...initialTypeState, len: roles[0].length });
   const still = useSyncExternalStore(subscribe, () => window.matchMedia(query).matches, () => true);
 
   useEffect(() => {
     if (still) return;
     let timer: number;
-    let s = initialTypeState;
+    let s: TypeState = { ...initialTypeState, len: roles[0].length };
     const tick = () => {
       const next = typewriterStep(s, roles);
       s = next.state;
       setState(s);
       timer = window.setTimeout(tick, next.delay);
     };
-    timer = window.setTimeout(tick, 600);
+    timer = window.setTimeout(tick, 1600);
     return () => window.clearTimeout(timer);
   }, [roles, still]);
 
-  const text = still ? roles[0] : roles[state.role].slice(0, state.len);
+  const text = roles[state.role].slice(0, state.len);
   return (
     <>
       <span aria-hidden="true">{text}</span>

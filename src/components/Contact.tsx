@@ -12,8 +12,9 @@ type Errors = Partial<Record<'name' | 'email' | 'message', string>>;
 export function Contact() {
   const [errors, setErrors] = useState<Errors>({});
   const [sent, setSent] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-  // No backend in a static export: the form opens the visitor's mail app with everything filled in.
+  // No backend in a static export: the form tries to open the visitor's mail app with everything filled in.
   function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -34,6 +35,16 @@ export function Contact() {
     const body = `${message}\n\n${name}\n${email}`;
     window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSent(true);
+    setCopied(false);
+  }
+
+  async function copyEmail() {
+    try {
+      await navigator.clipboard.writeText(profile.email);
+      setCopied(true);
+    } catch {
+      setCopied(false); // Clipboard blocked: the address is on screen to copy by hand.
+    }
   }
 
   return (
@@ -75,40 +86,57 @@ export function Contact() {
         </div>
 
         <form className={`card ${styles.form}`} onSubmit={onSubmit} noValidate data-reveal>
-          <label className={styles.field}>
-            <span>Your Name</span>
-            <input name="name" type="text" autoComplete="name" required placeholder="Your name" aria-invalid={!!errors.name} aria-describedby={errors.name ? 'err-name' : undefined} />
+          <div className={styles.field}>
+            <label>
+              <span>Your Name</span>
+              <input name="name" type="text" autoComplete="name" required placeholder="Your name" aria-invalid={!!errors.name} aria-describedby={errors.name ? 'err-name' : undefined} />
+            </label>
             {errors.name && (
               <em id="err-name" role="alert">
                 {errors.name}
               </em>
             )}
-          </label>
-          <label className={styles.field}>
-            <span>Your Email</span>
-            <input name="email" type="email" autoComplete="email" required placeholder="you@example.com" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'err-email' : undefined} />
+          </div>
+          <div className={styles.field}>
+            <label>
+              <span>Your Email</span>
+              <input name="email" type="email" autoComplete="email" required placeholder="you@example.com" aria-invalid={!!errors.email} aria-describedby={errors.email ? 'err-email' : undefined} />
+            </label>
             {errors.email && (
               <em id="err-email" role="alert">
                 {errors.email}
               </em>
             )}
-          </label>
-          <label className={styles.field}>
-            <span>Your Message</span>
-            <textarea name="message" rows={6} required placeholder="What would you like to talk about?" aria-invalid={!!errors.message} aria-describedby={errors.message ? 'err-message' : undefined} />
+          </div>
+          <div className={styles.field}>
+            <label>
+              <span>Your Message</span>
+              <textarea name="message" rows={6} required placeholder="What would you like to talk about?" aria-invalid={!!errors.message} aria-describedby={errors.message ? 'err-message' : undefined} />
+            </label>
             {errors.message && (
               <em id="err-message" role="alert">
                 {errors.message}
               </em>
             )}
-          </label>
+          </div>
           <button type="submit" className="btn btnSolid">
             <SendIcon size={16} />
             Send Message
           </button>
-          <p className={styles.note} aria-live="polite">
-            {sent ? 'Opening your email app with the message filled in.' : 'Sending opens your email app with the message filled in.'}
-          </p>
+          <div className={styles.note} aria-live="polite">
+            {sent ? (
+              <>
+                <p>
+                  If nothing opened, email <a href={`mailto:${profile.email}`}>{profile.email}</a> directly.
+                </p>
+                <button type="button" className={styles.copy} onClick={copyEmail}>
+                  {copied ? 'Copied' : 'Copy email address'}
+                </button>
+              </>
+            ) : (
+              <p>Sending tries to open your email app with the message filled in.</p>
+            )}
+          </div>
         </form>
       </div>
     </Section>
