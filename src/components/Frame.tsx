@@ -1,8 +1,18 @@
 import { imageSrc, imageSrcSet, type ProjectImage } from '../content/projects';
 import styles from './Frame.module.css';
 
-/** A screenshot in a plain frame with embroidery corner brackets and a caption. */
-export function Frame({ img, priority = false, sizes }: { img: ProjectImage; priority?: boolean; sizes: string }) {
+/** A screenshot in a plain frame with embroidery corner brackets and, optionally, a caption. */
+export function Frame({
+  img,
+  priority = false,
+  sizes,
+  caption = true,
+}: {
+  img: ProjectImage;
+  priority?: boolean;
+  sizes: string;
+  caption?: boolean;
+}) {
   const largest = img.widths[0];
   return (
     <figure className={styles.figure} style={{ flexGrow: img.width }}>
@@ -23,7 +33,7 @@ export function Frame({ img, priority = false, sizes }: { img: ProjectImage; pri
         <span className={`${styles.corner} ${styles.bl}`} aria-hidden="true" />
         <span className={`${styles.corner} ${styles.br}`} aria-hidden="true" />
       </div>
-      <figcaption>{img.caption}</figcaption>
+      {caption && <figcaption>{img.caption}</figcaption>}
     </figure>
   );
 }

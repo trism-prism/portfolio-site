@@ -1,15 +1,14 @@
 import { toPoints, visibilityPolygon, type Point } from '../lib/visibility';
-import { LIGHT_BANDS, occluders, sceneBounds, scenes, type Scene, type SceneId } from './geometry';
+import { occluders, sceneBounds, scenes, type Scene, type SceneId } from './geometry';
 
-const REACH = LIGHT_BANDS[0].r;
-
-/** The lit polygon for a lantern at `light`, limited to the lantern's reach. */
+/** The lit polygon for a lantern at `light`, limited to the lantern's reach so far walls are not scanned. */
 export function litPolygon(scene: Scene, light: Point): Point[] {
   const full = sceneBounds(scene);
-  const x = Math.max(full.x, light.x - REACH);
-  const y = Math.max(full.y, light.y - REACH);
-  const x2 = Math.min(full.x + full.w, light.x + REACH);
-  const y2 = Math.min(full.y + full.h, light.y + REACH);
+  const reach = scene.reach.outer;
+  const x = Math.max(full.x, light.x - reach);
+  const y = Math.max(full.y, light.y - reach);
+  const x2 = Math.min(full.x + full.w, light.x + reach);
+  const y2 = Math.min(full.y + full.h, light.y + reach);
   return visibilityPolygon(light, { x, y, w: x2 - x, h: y2 - y }, occluders(scene, light));
 }
 

@@ -4,6 +4,7 @@ export type Rect = { x: number; y: number; w: number; h: number };
 
 const NUDGE = 1e-4; // radians; a ray this far either side of an endpoint slips past or into a corner
 const EPS = 1e-9;
+const TOUCH = 1e-3; // a wall this close to the light would swallow every ray, so it is ignored
 
 function cross(ax: number, ay: number, bx: number, by: number) {
   return ax * by - ay * bx;
@@ -35,6 +36,15 @@ export function clipSegment(s: Segment, r: Rect): Segment | null {
     a: { x: s.a.x + t0 * dx, y: s.a.y + t0 * dy },
     b: { x: s.a.x + t1 * dx, y: s.a.y + t1 * dy },
   };
+}
+
+/** Distance from a point to a segment. */
+export function distanceToSegment(p: Point, s: Segment): number {
+  const dx = s.b.x - s.a.x;
+  const dy = s.b.y - s.a.y;
+  const len2 = dx * dx + dy * dy;
+  const t = len2 === 0 ? 0 : Math.max(0, Math.min(1, ((p.x - s.a.x) * dx + (p.y - s.a.y) * dy) / len2));
+  return Math.hypot(p.x - (s.a.x + t * dx), p.y - (s.a.y + t * dy));
 }
 
 /** Even-odd point-in-polygon test. */
@@ -74,7 +84,7 @@ export function visibilityPolygon(light: Point, bounds: Rect, walls: readonly Se
   const segs: Segment[] = corners.map((c, i) => ({ a: c, b: corners[(i + 1) % 4] }));
   for (const wall of walls) {
     const clipped = clipSegment(wall, bounds);
-    if (clipped) segs.push(clipped);
+    if (clipped && distanceToSegment(light, clipped) > TOUCH) segs.push(clipped);
   }
 
   // One ray direction per distinct angle.

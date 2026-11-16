@@ -11,6 +11,12 @@ describe('projects', () => {
     expect(new Set(projects.map((p) => p.slug)).size).toBe(projects.length);
     for (const p of projects) {
       expect(p.images.length).toBeGreaterThan(0);
+      expect(p.sections.length).toBeGreaterThanOrEqual(3);
+      for (const sec of p.sections) {
+        expect(sec.body.length).toBeGreaterThan(0);
+        for (const para of sec.body) expect(para.toLowerCase().startsWith(sec.title.toLowerCase())).toBe(false);
+        for (const i of sec.figures ?? []) expect(p.images[i]).toBeDefined();
+      }
       expect(p.lead).toBeLessThan(p.images.length);
       for (const img of p.images) {
         expect(img.alt.length).toBeGreaterThan(20);
@@ -63,5 +69,17 @@ describe('resume', () => {
     const bytes = readFileSync(file);
     expect(bytes.subarray(0, 5).toString('latin1')).toBe('%PDF-');
     expect(bytes.length).toBeGreaterThan(20 * 1024);
+  });
+});
+
+describe('redirects', () => {
+  it('cover both slash forms of every old URL', () => {
+    const { redirects } = JSON.parse(readFileSync(join(root, 'vercel.json'), 'utf8')) as { redirects: { source: string; destination: string }[] };
+    const sources = redirects.map((r) => r.source);
+    for (const base of ['/projects', '/projects/heart-disease']) {
+      expect(sources).toContain(base);
+      expect(sources).toContain(base + '/');
+    }
+    expect(redirects.find((r) => r.source === '/projects/')?.destination).toBe('/#work');
   });
 });

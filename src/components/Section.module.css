@@ -12,8 +12,13 @@
   gap: var(--space-3);
 }
 
-.head h2 {
-  font-size: clamp(1.75rem, 3vw, 2.25rem);
+.head h2,
+.head h3 {
+  font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+}
+
+.stacked .head h2 {
+  margin-bottom: var(--space-2);
 }
 
 .body {
@@ -29,8 +34,17 @@
     padding-block: var(--space-6);
   }
 
-  .grid {
+  .side .grid {
     grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
     gap: var(--space-8);
+  }
+
+  .wideSide .grid {
+    grid-template-columns: minmax(0, 19rem) minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+
+  .stacked .grid {
+    gap: var(--space-4);
   }
 }

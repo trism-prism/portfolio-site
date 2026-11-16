@@ -2,6 +2,7 @@
   "redirects": [
     { "source": "/projects/heart-disease/", "destination": "/#more-work", "permanent": true },
     { "source": "/projects/heart-disease", "destination": "/#more-work", "permanent": true },
+    { "source": "/projects/", "destination": "/#work", "permanent": true },
     { "source": "/projects", "destination": "/#work", "permanent": true }
   ]
 }

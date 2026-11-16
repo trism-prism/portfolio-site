@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, Newsreader } from 'next/font/google';
+import { Newsreader, Source_Sans_3 } from 'next/font/google';
 import { site } from '../site';
 import '../styles/globals.css';
 
 const display = Newsreader({ subsets: ['latin'], variable: '--font-newsreader', display: 'swap' });
-const text = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
+const text = Source_Sans_3({ subsets: ['latin'], variable: '--font-source', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),

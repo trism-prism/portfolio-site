@@ -1,6 +1,6 @@
 /**
  * All project copy lives here. To add a featured project: add an entry to `projects`, put its images in
- * `public/work/<slug>/` (a 1280 px and a 640 px WebP each), and it gets a page, a home-page entry and a
+ * `public/work/<slug>/` (a full-size and a 640 px WebP each), and it gets a page, a home-page entry and a
  * sitemap line automatically. Small projects go in `moreWork`.
  */
 
@@ -16,19 +16,20 @@ export type ProjectImage = {
   caption: string;
 };
 
-export type Decision = { title: string; body: string; figures?: number[] };
+export type Section = { title: string; body: string[]; figures?: number[] };
 
 export type Project = {
   slug: string;
   title: string;
+  /** One line for the home page. */
   summary: string;
-  does: string;
-  matters: string;
-  built: string;
-  /** Numbers, with what they were measured on. */
-  measured?: Decision;
-  decisions: Decision[];
-  stack: string;
+  /** Two sentences under the title on the project page. */
+  standfirst: string;
+  /** Where the lead image sits on the project page. */
+  layout: 'wide' | 'split';
+  sections: Section[];
+  /** One closing sentence about what it is built with. */
+  closing: string;
   links: { repo?: string; live?: string };
   images: ProjectImage[];
   /** Index of the image shown on the home page and at the top of the project page. */
@@ -55,42 +56,46 @@ export const projects: Project[] = [
   {
     slug: 'visibility-engine',
     title: '2D Visibility & Lighting Engine',
-    summary: 'A C++ engine that works out exactly what one point light can see among walls, which gives hard-edged shadows.',
-    does:
-      'Give it a light and a set of line-segment walls and it returns the region the light reaches. It has two interchangeable methods: test every wall for every ray, or walk a uniform grid so each ray only tests the walls near it. The desktop demo lets you drag the light, draw walls and watch a work meter count the wall tests.',
-    matters:
-      'Shadows in a 2D game come down to one question: what can this point see? It is easy to get nearly right and hard to get exactly right, so I wanted a version I could trust, with the failures written down.',
-    built:
-      'I wrote all of it: the geometry core, both methods, the demo app, the benchmark harness and the decision log.',
-    measured: {
-      title: 'What the grid buys',
-      body:
-        'On one laptop, single-threaded, the grid is about 1.5x faster than testing every wall on scenes of 250 clustered walls, and over 100x faster on 4,000-wall mazes (120x to 141x across three random seeds). The baseline is every ray testing every wall. The gap varies because clustered walls share grid cells, so a ray still meets many of them, while in a maze each ray passes only a few. These numbers come from the committed benchmark run; I sped up the sort afterwards and have not regenerated the file.',
-      figures: [1, 2],
-    },
-    decisions: [
+    summary: 'A C++ engine that works out exactly what one point light can see among walls, which is what gives a 2D game sharp shadows.',
+    standfirst:
+      'A C++ engine that works out exactly what one point light can see among line-segment walls. I wrote the geometry, both search methods, the demo app and the benchmark harness myself.',
+    layout: 'wide',
+    lead: 0,
+    sections: [
       {
-        title: 'A rounded cross product gave the wrong shadow',
-        body:
-          'An angle sort combined with a rounded cross product reported a lit area of 0.765 in a unit-square scene where the correct area is 0.465. I replaced both with one orientation predicate that falls back to exact arithmetic when the result is too close to call, and wrote the failing case into the decision log.',
+        title: 'A room that was too bright',
+        body: [
+          'My first version sorted points by angle with atan2 and compared them with a rounded cross product. In a unit-square test scene it reported a lit area of 0.765 when the correct answer is 0.465, so the light reached places it could not see.',
+          'I replaced both with a single orientation predicate that falls back to exact arithmetic when the result is too close to call, and wrote the failing case down in the decision log.',
+        ],
       },
       {
-        title: 'One ray per target, with exact limits',
-        body:
-          'Many visibility routines cast three rays per wall endpoint, each nudged by a tiny angle. That breaks down when a user draws walls that cross. The engine casts one ray per target and applies exact one-sided limits to what it hits instead.',
+        title: 'Rays that do not need nudging',
+        body: [
+          'The first version also nudged extra rays a tiny angle either side of every wall endpoint. That gets fragile once a user can draw walls that cross, so the engine now casts one ray per target and applies exact one-sided limits to what each ray hits.',
+          'The lantern on my home page is a small TypeScript version of the same idea, and it does use the nudged-ray recipe, which is fine for walls I placed myself.',
+        ],
+      },
+      {
+        title: 'Why the grid wins by so much on mazes',
+        body: [
+          'The engine has two interchangeable methods: test every wall for every ray, or walk a uniform grid so each ray only tests the walls in the cells it crosses. The demo app lets you drag the light, draw walls and watch a work meter count the tests.',
+          'On a laptop, single-threaded, the grid is about 1.5x faster than testing every wall on scenes of 250 clustered walls, and over 100x faster on 4,000-wall mazes (120x to 141x across three random seeds). Clustered walls share cells, so a ray still meets many of them; in a maze a ray crosses a few cells with few walls in each.',
+          'These numbers come from the committed benchmark run. I sped up the sort afterwards and have not regenerated the file.',
+        ],
+        figures: [1, 2],
       },
     ],
-    stack: 'C++20 with CMake; GLFW and Dear ImGui for the demo, doctest for tests. It builds with MSVC on Windows.',
+    closing: 'Built with C++20 and CMake, with GLFW and Dear ImGui for the demo and doctest for tests; it builds with MSVC on Windows.',
     links: { repo: 'https://github.com/trism-prism/2d-visibility-engine' },
-    lead: 0,
     images: [
       image(
         'visibility-engine',
-        'demo',
-        1280,
-        800,
-        [1280, 640],
-        'The demo app: a room of line-segment walls with one light, its lit area drawn in warm tones and a hard shadow behind each wall.',
+        'room',
+        888,
+        552,
+        [888, 640],
+        'The demo app’s room: line-segment walls and one light, with its lit area in warm tones and a hard shadow behind each wall.',
         'The demo app. Drag the light and the lit region is recomputed.',
       ),
       image(
@@ -117,97 +122,96 @@ export const projects: Project[] = [
     slug: 'kiln',
     title: 'Kiln',
     summary: 'An installable study planner that turns a syllabus or calendar into a daily to-do list, and keeps working offline.',
-    does:
-      'You import a plan (an AI-written Markdown and JSON plan, a CSV or spreadsheet, quick-add text, or an LMS calendar file) and a scheduler spreads the tasks across your weekly minute budgets. It adds reminders, a calendar, a streak heatmap and optional spaced-repetition review.',
-    matters:
-      'Planning is the part of studying people skip. Kiln takes the schedule you already have and decides what to do today, and it works without an account.',
-    built:
-      'I built the app, the scheduler, the encrypted sync and the small server behind it, on my own.',
-    decisions: [
+    standfirst:
+      'Kiln turns a syllabus, spreadsheet or LMS calendar into a daily to-do list, and it keeps working with no connection. It is live at kilnstudy.com, and I built the app, the scheduler, the sync and the small server behind it.',
+    layout: 'split',
+    lead: 0,
+    sections: [
       {
-        title: 'Deferring tasks without trying every combination',
-        body:
-          'When a deadline is at risk the scheduler defers lower-priority tasks. Rather than trying combinations, it binary-searches how many to defer. That is only correct if deferring more never makes things worse, so I wrote that assumption down in the code next to the search.',
-        figures: [1, 2],
+        title: 'From a pile of deadlines to today’s list',
+        body: [
+          'You bring a plan in whichever form you already have it: an AI-written Markdown and JSON plan, a CSV or spreadsheet, quick-add text, or an LMS calendar file. A scheduler then spreads the tasks across the weekly minute budgets you set, and adds reminders, a calendar, a streak heatmap and optional spaced-repetition review.',
+        ],
+        figures: [1],
+      },
+      {
+        title: 'Deferring work without trying every combination',
+        body: [
+          'When a deadline is at risk, the scheduler pushes back lower-priority tasks. Trying every combination would be slow, so it binary-searches how many to defer. That is only valid if deferring more never makes things worse, so the assumption is written down in the code next to the search.',
+        ],
+        figures: [2],
       },
       {
         title: 'Sync with no accounts',
-        body:
-          'Each record is encrypted on the device with AES-GCM before it leaves, so the server stores only ciphertext. To pair a second device I used CPace, a password-authenticated key exchange. The pairing code is 6 digits, but only the last 4 are secret; the first 2 pick a slot on the server. A code retires after 3 wrong attempts.',
+        body: [
+          'Every record is encrypted on the device with AES-GCM before it leaves, so the server only ever stores ciphertext. Pairing a second device uses CPace, a password-authenticated key exchange. The pairing code is 6 digits, but only the last 4 are secret; the first 2 pick a slot on the server. A code stops working after 3 wrong attempts.',
+        ],
       },
     ],
-    stack: 'React 19, TypeScript and Vite, with Dexie (IndexedDB) for local data and Cloudflare Workers and D1 for the sync server.',
+    closing: 'Built with React 19, TypeScript and Vite, Dexie for local data, and Cloudflare Workers with D1 for the sync server.',
     links: { repo: 'https://github.com/trism-prism/kiln', live: 'https://kilnstudy.com' },
-    lead: 0,
     images: [
       image(
         'kiln',
-        'dashboard',
+        'todo-dark',
         1280,
-        800,
+        640,
         [1280, 640],
-        'Kiln dashboard in light mode: two study plans, each with progress bars for essential tasks and mastery and an expected finish date.',
-        'Dashboard. Each plan shows what is left today and when it should finish.',
+        'Kiln’s to-do list in the dark theme: overdue tasks first, then today’s tasks, each with its plan, type and minutes.',
+        'The to-do list the scheduler produces.',
       ),
       image(
         'kiln',
-        'todo',
+        'dashboard-dark',
         1280,
-        800,
+        480,
         [1280, 640],
-        'Kiln to-do list in dark mode: overdue tasks first, then today’s tasks, each with its plan, type and minutes.',
-        'The to-do list the scheduler produces, in the dark theme.',
+        'Kiln’s dashboard in the dark theme: study plans with progress bars and an expected finish date.',
+        'The dashboard: what is left today and when each plan should finish.',
       ),
-      image(
-        'kiln',
-        'todo-phone',
-        390,
-        844,
-        [390],
-        'The same to-do list on a phone, with a bottom tab bar.',
-        'The same list on a 390 px phone screen.',
-      ),
+      image('kiln', 'todo-phone', 390, 844, [390], 'The same to-do list on a phone, with a bottom tab bar.', 'The same list on a 390 px phone screen.'),
     ],
   },
   {
     slug: 'docs-qa',
     title: 'Docs Q&A Copilot',
     summary: 'Answers questions about two public benefits PDFs with page-level citations, and shows its own failures on an evaluation page.',
-    does:
-      'It reads the FEHB brochure and Medicare & You 2027 (296 pages, split into 1,182 chunks), finds the passages that match a question, and has a model answer with a citation to the page. A separate page lists every question it got wrong. Visitors paste their own Anthropic API key, so the demo has no model bill.',
-    matters:
-      'An answer about insurance is only useful if you can check it. Each answer points to a page, and the evaluation page shows where the system fails.',
-    built: 'I built the PDF ingestion, the vector search, the web app and the evaluation harness.',
-    measured: {
-      title: 'How well it works, and how much to trust that',
-      body:
-        'On 50 fixed questions it answered 46 correctly (92%), and 28 of the 30 held-out questions. The set is small: one question is worth 2 points, so read these as a rough measure and not a ranking. The scoring is by rule, and the evaluation page shows every answer.',
-      figures: [1],
-    },
-    decisions: [
+    standfirst:
+      'Docs Q&A Copilot answers questions about two public benefits documents, the FEHB brochure and Medicare & You 2027, and points to the page behind each claim. I built the PDF ingestion, the search, the web app and the evaluation harness.',
+    layout: 'wide',
+    lead: 0,
+    sections: [
       {
-        title: 'Hold questions out until the end',
-        body:
-          'Of the 50 questions, 20 were for tuning and 30 were held out until the settings were frozen. I ran the held-out set once, after that, so the number I report is not one I tuned against.',
+        title: 'Answers you can check',
+        body: [
+          'The two documents run to 296 pages, split into 1,182 chunks. A question finds the closest chunks, a model writes the answer, and each claim links to the page it came from.',
+          'Visitors paste their own Anthropic API key, so running the demo costs me nothing.',
+        ],
       },
       {
-        title: 'Keep plain vector search',
-        body:
-          'I tried adding full-text search to the vector search. On my questions it scored worse, so I kept the simpler version.',
+        title: 'Holding questions back',
+        body: [
+          'I wrote 50 questions: 20 for tuning and 30 held out until the settings were frozen, then run once. The final run got 46 of 50 right, and 28 of the 30 held-out ones.',
+          'The set is small, so a single question moves the overall score by 2 points; treat the figure as a rough guide. The evaluation page lists every answer, including the failures.',
+        ],
+        figures: [1],
+      },
+      {
+        title: 'Keeping the simpler search',
+        body: ['I tried adding full-text search alongside vector search. On my questions it scored worse, so I kept plain vector search.'],
       },
     ],
-    stack: 'TypeScript, Next.js and PostgreSQL with pgvector. Embeddings run locally with bge-small; answers come from the Anthropic API.',
+    closing: 'Built with TypeScript, Next.js and PostgreSQL with pgvector; embeddings run locally with bge-small and answers come from the Anthropic API.',
     links: { repo: 'https://github.com/trism-prism/docs-qa-copilot', live: 'https://docs-qa-copilot.vercel.app' },
-    lead: 0,
     images: [
       image(
         'docs-qa',
-        'ask',
-        1280,
-        800,
-        [1280, 640],
-        'The ask page: a field for your own Anthropic API key, a question box and a list of the two documents to search.',
-        'The ask page. You paste your own key, so I do not pay for your questions.',
+        'answer',
+        960,
+        600,
+        [960, 640],
+        'Docs Q&A answering a question about hospital days under Original Medicare, with numbered citations in the answer and a sources panel that links to page 30.',
+        'An answer with its sources: each numbered claim opens the page it came from.',
       ),
       image(
         'docs-qa',
@@ -224,28 +228,41 @@ export const projects: Project[] = [
     slug: 'gengarate',
     title: 'GengaRate',
     summary: 'A live site for rating anime and manga, with more than 1,600 titles imported from AniList.',
-    does:
-      'You can rate titles in four categories, rate whole series and volumes, write reviews and replies, keep watch lists and custom lists, and follow friends. Titles come from AniList, grouped into series.',
-    matters:
-      'A site with accounts has to get the unglamorous parts right: staying signed in safely, imports that must not collide, and a database that behaves the way the code assumes.',
-    built:
-      'I built the React front end, the ASP.NET Core API and the PostgreSQL schema, and set up hosting on Vercel and Railway.',
-    decisions: [
+    standfirst:
+      'GengaRate is a live site for rating anime and manga, with more than 1,600 titles imported from AniList and grouped into series. I built the React front end, the ASP.NET Core API and the PostgreSQL schema, and set up hosting on Vercel and Railway.',
+    layout: 'split',
+    lead: 0,
+    sections: [
       {
-        title: 'Refresh tokens that can be used once',
-        body:
-          'Each refresh token rotates when it is used, and if an old one shows up again the session ends, because it may have been stolen. Two browser tabs refreshing at the same moment look exactly like reuse, so the front end uses the Web Locks API to make tabs take turns.',
+        title: 'What you can do there',
+        body: ['You can rate titles in four categories, rate whole series and volumes, write reviews and replies, keep watch lists and custom lists, and follow friends.'],
+        figures: [1],
       },
       {
-        title: 'One import at a time',
-        body:
-          'A Postgres advisory lock stops two AniList imports from running together, and the importer backs off when AniList asks it to wait with a Retry-After header. The tests that cover this and the database constraints run against a real PostgreSQL, not a stand-in.',
+        title: 'A refresh token that works once',
+        body: [
+          'Every refresh token rotates when it is used, and if an old one turns up again the session ends, because it may have been stolen. Two browser tabs refreshing at the same instant look exactly like reuse, so the front end uses the Web Locks API to make the tabs take turns.',
+        ],
+      },
+      {
+        title: 'Imports that cannot collide',
+        body: [
+          'A Postgres advisory lock allows one AniList import at a time, and the importer backs off when AniList asks it to wait with a Retry-After header. The tests for this, and for the database constraints around it, run against a real PostgreSQL rather than a stand-in.',
+        ],
       },
     ],
-    stack: 'React 19 and TypeScript with Vite on the front end, ASP.NET Core 8 with EF Core on the back end, PostgreSQL, hosted on Vercel and Railway.',
+    closing: 'Built with React 19 and TypeScript on Vite, ASP.NET Core 8 with EF Core, and PostgreSQL, hosted on Vercel and Railway.',
     links: { repo: 'https://github.com/trism-prism/anime-rating-platform', live: 'https://www.gengarate.com' },
-    lead: 0,
     images: [
+      image(
+        'gengarate',
+        'title',
+        1280,
+        640,
+        [1280, 640],
+        'A title page on GengaRate for One Piece: Defeat the Pirate Ganzack, with genres, a synopsis and the other entries in its series.',
+        'A title page: genres, a synopsis and the other entries in the series.',
+      ),
       image(
         'gengarate',
         'home',
@@ -253,16 +270,7 @@ export const projects: Project[] = [
         600,
         [1280, 640],
         'GengaRate’s browse page, logged out: a search box, type and genre filters, and a row of trending anime.',
-        'The home page, logged out.',
-      ),
-      image(
-        'gengarate',
-        'series',
-        1280,
-        800,
-        [1280, 640],
-        'A title page for One Piece: Defeat the Pirate Ganzack, with genres, a synopsis and the other entries in its series.',
-        'A title page: genres, a synopsis and the other entries in the series.',
+        'The browse page, logged out.',
       ),
     ],
   },
@@ -271,7 +279,7 @@ export const projects: Project[] = [
 export const moreWork: MoreWork[] = [
   {
     name: 'Predicting College Football Upsets',
-    text: 'Tests whether anything public beats the betting market’s closing spread at predicting college football games. It does not: the spread alone scored a Brier score (the average squared error of predicted probabilities; lower is better) of 0.177 against 0.244 for a naive baseline on the 2023 and 2024 seasons, and five added features gave no out-of-sample gain. The repository is private.',
+    text: 'Tests whether anything public beats the betting market’s closing spread at predicting college football games. It does not: on the 2023 and 2024 seasons the spread alone scored a Brier score (the average squared error of predicted probabilities; lower is better) of 0.177 against 0.244 for a naive baseline, and five added features gave no out-of-sample gain. The repository is private.',
     links: [],
   },
   {
@@ -281,7 +289,7 @@ export const moreWork: MoreWork[] = [
   },
   {
     name: 'Internship Scout Agent',
-    text: 'A weekly job pulls internship postings from a public GitHub feed, has Claude score each one against my résumé, and emails a digest of the matches scoring 70 or more. The README makes no accuracy claim, and neither do I.',
+    text: 'A weekly job pulls internship postings from a public GitHub feed, has Claude score each one against my résumé, and emails a digest of the matches scoring 70 or more. It has a small public page, and no accuracy figure for the scoring.',
     links: [
       { label: 'Repository', href: 'https://github.com/trism-prism/internship-scout-agent' },
       { label: 'Live page', href: 'https://internship-scout-agent.vercel.app' },

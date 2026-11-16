@@ -11,7 +11,7 @@ export function SiteFooter() {
           Contact
         </h2>
         <p>
-          I am looking for a software engineering internship. Email is the quickest way to reach me:{' '}
+          I&rsquo;m looking for a software engineering internship. Email is the quickest way to reach me:{' '}
           <a href={site.links.email}>{site.email}</a>.
         </p>
         <div className={styles.links}>

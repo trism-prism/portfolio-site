@@ -5,5 +5,5 @@ out
 .env*
 next-env.d.ts
 *.tsbuildinfo
-work/
+/work/
 .impeccable/

@@ -17,8 +17,9 @@ html {
 body {
   margin: 0;
   font-family: var(--font-text);
-  font-size: 1.0625rem; /* 17px */
-  line-height: 1.65;
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.6;
+  hyphens: manual;
   min-height: 100vh;
   text-rendering: optimizeLegibility;
 }

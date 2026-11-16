@@ -14,19 +14,42 @@ export default function Home() {
       <header className={styles.hero}>
         <LanternScene />
         <div className="wrap">
-          <div className={styles.intro}>
-            <h1>{site.name}</h1>
-            <p className={styles.lede}>
-              I am a student at James Madison University looking for a software engineering internship, and I build things
-              that run end to end, from a C++ lighting engine to a study planner that works offline.
-            </p>
-            <ContactLinks label="Links" />
+          <div className={styles.heroGrid}>
+            <div className={styles.intro}>
+              <h1>{site.name}</h1>
+              <p className={styles.lede}>
+                I study Computer Information Systems at James Madison University and work as a software engineering intern at
+                Formwork. I&rsquo;m looking for a software engineering internship.
+              </p>
+              <p className={styles.note}>
+                The light above is worked out the way the C++ visibility engine I wrote does it, so you can move the lantern
+                and the shadows follow.
+              </p>
+              <ContactLinks label="Links" />
+            </div>
+            <div className={styles.facts}>
+              <span className="rule" aria-hidden="true" />
+              <dl>
+                <div>
+                  <dt>Studying</dt>
+                  <dd>Computer Information Systems, James Madison University (B.B.A., expected December 2027)</dd>
+                </div>
+                <div>
+                  <dt>Working</dt>
+                  <dd>Software Engineering &amp; AI Systems Intern, Formwork (since September 2026)</dd>
+                </div>
+                <div>
+                  <dt>Based</dt>
+                  <dd>Leesburg, Virginia</dd>
+                </div>
+              </dl>
+            </div>
           </div>
         </div>
       </header>
 
       <main id="main">
-        <Section id="work" title="Selected work">
+        <Section id="work" title="Selected work" layout="stacked">
           <ol className={styles.projects}>
             {projects.map((p) => (
               <li key={p.slug} className={styles.project}>
@@ -35,31 +58,10 @@ export default function Home() {
                     <Link href={`/work/${p.slug}/`}>{p.title}</Link>
                   </h3>
                   <p>{p.summary}</p>
-                  <ul className={styles.inline}>
-                    <li>
-                      <Link href={`/work/${p.slug}/`}>
-                        Read the case study<span className="visually-hidden">: {p.title}</span>
-                      </Link>
-                    </li>
-                    {p.links.live && (
-                      <li>
-                        <a href={p.links.live}>
-                          Live site<span className="visually-hidden"> for {p.title} (external)</span>
-                        </a>
-                      </li>
-                    )}
-                    {p.links.repo && (
-                      <li>
-                        <a href={p.links.repo}>
-                          Code<span className="visually-hidden"> for {p.title} on GitHub (external)</span>
-                        </a>
-                      </li>
-                    )}
-                  </ul>
                 </div>
-                <div className={styles.projectImage}>
-                  <Frame img={p.images[p.lead]} sizes="(min-width: 64rem) 36rem, 90vw" />
-                </div>
+                <Link href={`/work/${p.slug}/`} tabIndex={-1} aria-hidden="true" className={styles.projectImage}>
+                  <Frame img={p.images[p.lead]} sizes="(min-width: 64rem) 36rem, 90vw" caption={false} />
+                </Link>
               </li>
             ))}
           </ol>
@@ -77,7 +79,7 @@ export default function Home() {
                       <li key={l.href}>
                         <a href={l.href}>
                           {l.label}
-                          <span className="visually-hidden"> for {m.name} (external)</span>
+                          <span className="visually-hidden"> for {m.name} (external site)</span>
                         </a>
                       </li>
                     ))}
@@ -94,10 +96,10 @@ export default function Home() {
               <h3>Software Engineering &amp; AI Systems Intern, Formwork</h3>
               <p className={styles.meta}>Remote. September 2026 to present.</p>
               <p>
-                I work on a multi-tenant project management platform. I connected a custom AI agent to it over MCP, ran a
-                500+ case QA pass that turned up an authentication bug in the Next.js gateway, and built search filtering
-                across the React and Spring Boot modules that shipped to production. I work with a team of 7 engineers on its
-                GitHub Actions pipeline.
+                I work on Formwork&rsquo;s multi-tenant project management platform. I connected an AI agent to it over MCP, and
+                before a release I ran a QA pass that turned up an authentication caching bug in the Next.js gateway. I also
+                built a search filtering feature across the React front end and the Spring Boot back end, which shipped to
+                production.
               </p>
             </div>
             <div>
@@ -113,13 +115,13 @@ export default function Home() {
         <Section id="about" title="About">
           <div className={styles.about}>
             <p>
-              I am a Computer Information Systems student at James Madison University, based in Leesburg, Virginia, and I am
-              looking for a software engineering internship.
+              I&rsquo;m based in Leesburg, Virginia, and I&rsquo;m looking for a software engineering internship. I&rsquo;m
+              willing to relocate.
             </p>
             <p>
-              I like work where the result can be checked, so my projects come with benchmarks, held-out test sets or written
-              notes on what went wrong. I use TypeScript, Python, C++ and C# most, and I have taken projects from a low-level
-              C++ engine to deployed web apps with their own databases.
+              I like work whose result can be checked, so most of the projects above come with a benchmark, a held-out test set
+              or a written note on what went wrong. They are written in C++, TypeScript, Python, C# and C, and they run from a
+              low-level engine to deployed web apps with their own databases.
             </p>
           </div>
         </Section>

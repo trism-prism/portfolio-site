@@ -9,7 +9,7 @@
   --line: #4a3f63;
 
   --font-display: var(--font-newsreader), Georgia, 'Times New Roman', serif;
-  --font-text: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-text: var(--font-source), system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   /* 8-unit spacing scale */
   --space-1: 0.5rem;
@@ -20,7 +20,7 @@
   --space-8: 4rem;
   --space-12: 6rem;
 
-  --page: 72rem;
-  --measure: 40rem;
+  --page: 76rem;
+  --measure: 34rem;
   --gutter: clamp(1.25rem, 5vw, 3rem);
 }
