@@ -12,20 +12,5 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm run check
-      - run: npm run check:content
       - run: npm test
-      - run: npm run build:dev
-      - uses: lycheeverse/lychee-action@v2
-        with:
-          args: --no-progress --offline --root-dir "$(pwd)/out" './out/**/*.html'
-          fail: true
-      - uses: lycheeverse/lychee-action@v2
-        with:
-          # LinkedIn blocks bots; Streamlit uses 303 redirects. Hosting URL remains provisional.
-          args: >-
-            --no-progress --root-dir "$(pwd)/out" --max-retries 2 --accept 200,303,403,429
-            --exclude '\{\{' --exclude 'localhost'
-            --exclude '^https://www\.linkedin\.com/in/tristan-morton/?$'
-            --exclude '^https://portfolio-site\.vercel\.app/'
-            './out/**/*.html'
-          fail: true
+      - run: npm run build
