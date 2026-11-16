@@ -72,7 +72,7 @@ export const projects: Project[] = [
       {
         title: 'One ray per target, not three',
         body: [
-          'The common approach is three rays per wall end, at a tiny angle below, at and above it. I chose one ray per target instead, with the exact limit of the nearest hit from each side, because offsets leak light through shared corners and miss gaps narrower than the offset.',
+          'One approach is three rays per wall end, at a tiny angle below, at and above it. I chose one ray per target instead, with the exact limit of the nearest hit from each side, because offsets leak light through shared corners and miss gaps narrower than the offset.',
           'The lantern on my home page is a small TypeScript version of the same idea, and it does use the simpler three-ray recipe, which is fine for walls I placed by hand.',
         ],
       },
@@ -185,7 +185,7 @@ export const projects: Project[] = [
         title: 'Answers you can check',
         body: [
           'The two documents run to 296 pages, split into 1,182 chunks. A question finds the closest chunks, a model writes the answer, and each claim links to the page it came from.',
-          'Visitors paste their own Anthropic API key, so running the demo costs me nothing.',
+          'Visitors paste their own Anthropic API key, so the demo has no model bill for me to pay.',
         ],
       },
       {
@@ -198,7 +198,7 @@ export const projects: Project[] = [
       },
       {
         title: 'Keeping the simpler search',
-        body: ['I tried adding full-text search alongside vector search. On my questions it scored worse, so I kept plain vector search.'],
+        body: ['I tried adding full-text search alongside vector search. It did not improve retrieval on my 20 tuning questions (one variant was worse), so I kept plain vector search.'],
       },
     ],
     closing: 'Built with TypeScript, Next.js and PostgreSQL with pgvector; embeddings run locally with bge-small and answers come from the Anthropic API.',
@@ -279,7 +279,7 @@ export const projects: Project[] = [
 export const moreWork: MoreWork[] = [
   {
     name: 'Predicting College Football Upsets',
-    text: 'Tests whether anything public beats the betting market’s closing spread at predicting college football games. It does not: on the 2023 and 2024 seasons the spread alone scored a Brier score (the average squared error of predicted probabilities; lower is better) of 0.177 against 0.244 for a naive baseline, and five added features gave no out-of-sample gain. The repository is private.',
+    text: 'Tests whether five public features add anything to the betting market’s closing spread when predicting college football games. Out of sample they did not: on the 2023 and 2024 seasons the spread alone scored a Brier score (the average squared error of predicted probabilities; lower is better) of 0.177 against 0.244 for a naive baseline, and the added features gave no gain. The repository is private.',
     links: [],
   },
   {

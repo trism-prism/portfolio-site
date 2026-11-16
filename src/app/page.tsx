@@ -22,8 +22,8 @@ export default function Home() {
                 Formwork. I&rsquo;m looking for a software engineering internship.
               </p>
               <p className={styles.note}>
-                The light above is worked out the way the C++ visibility engine I wrote does it, so you can move the lantern
-                and the shadows follow.
+                The light above uses the same idea as the C++ visibility engine I wrote, in a simpler form, so you can move the
+                lantern and the shadows follow.
               </p>
               <div className={styles.links}>
                 <ContactLinks label="Links" />
@@ -121,9 +121,10 @@ export default function Home() {
               willing to relocate.
             </p>
             <p>
-              I like work whose result can be checked, so most of the projects above come with a benchmark, a held-out test set
-              or a written note on what went wrong. They are written in C++, TypeScript, Python, C# and C, and they run from a
-              low-level engine to deployed web apps with their own databases.
+              I like work whose result can be checked. The lighting engine has a committed benchmark and a decision log, and
+              the document Q&amp;A project has a held-out test set and a page of its own failures. My projects are written in
+              C++, TypeScript, Python, C# and C, and they run from a low-level engine to deployed web apps with their own
+              databases.
             </p>
           </div>
         </Section>
