@@ -1,0 +1,29 @@
+.hero { min-height: 90vh; display: flex; align-items: center; padding: 112px 0 64px; }
+.grid { display: grid; grid-template-columns: 1.15fr 1fr; gap: 64px; align-items: center; }
+.hello { font-size: 20px; color: var(--muted); margin-bottom: 8px; }
+.name { font-size: 56px; line-height: 1.1; font-weight: 700; color: var(--accent-text); letter-spacing: -0.01em; }
+.roles { font-size: 22px; color: var(--muted); margin: 20px 0 24px; min-height: 1.6em; }
+.intro { max-width: 540px; color: var(--muted); font-size: 16px; }
+.hl { color: var(--accent-text); background: var(--accent-soft); padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; margin-top: 32px; }
+.photoWrap { display: flex; justify-content: center; }
+.photo {
+  width: 100%; max-width: 400px; aspect-ratio: 5 / 6; border-radius: var(--radius-card);
+  transform: rotate(3deg); box-shadow: var(--shadow);
+  background: var(--card); border: 1px solid var(--border); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.photo img { width: 100%; height: 100%; object-fit: cover; }
+.initials { font-size: 96px; font-weight: 700; color: var(--accent-text); letter-spacing: 0.05em; }
+
+@media (max-width: 900px) {
+  .hero { min-height: 0; padding-top: 104px; }
+  .grid { grid-template-columns: 1fr; gap: 48px; }
+  .photoWrap { order: -1; }
+  .photo { max-width: 220px; }
+  .initials { font-size: 72px; }
+}
+@media (max-width: 480px) {
+  .name { font-size: 44px; }
+  .roles { font-size: 18px; }
+}

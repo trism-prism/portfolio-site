@@ -1,0 +1,25 @@
+.timeline { position: relative; max-width: 900px; margin: 0 auto; padding-left: 32px; display: grid; gap: 32px; list-style: none; }
+.timeline::before { content: ''; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--accent); opacity: 0.5; }
+.item { position: relative; }
+.item::before { content: ''; position: absolute; left: -32px; top: 28px; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); }
+.card { padding: 24px; }
+.head { display: flex; align-items: center; gap: 16px; }
+.logo { flex: none; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 10px; background: var(--accent); color: var(--on-accent); font-weight: 700; font-size: 22px; }
+.titles { flex: 1; min-width: 0; }
+.title { font-size: 20px; font-weight: 700; line-height: 1.3; }
+.company { color: var(--accent-text); font-weight: 500; font-size: 15px; }
+.where { color: var(--muted); }
+.date { flex: none; }
+.toggle { flex: none; display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; border: 1px solid var(--border); background: none; border-radius: 50%; color: var(--muted); transition: transform 0.2s, color 0.2s; }
+.toggle:hover { color: var(--accent-text); }
+.rot { transform: rotate(180deg); }
+.tech { margin-top: 16px; }
+.body { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); display: grid; gap: 16px; }
+.summary { color: var(--muted); }
+
+@media (max-width: 700px) {
+  .head { flex-wrap: wrap; }
+  .titles { flex-basis: calc(100% - 128px); }
+  .date { order: 5; margin-left: 64px; }
+  .card { padding: 20px; }
+}
