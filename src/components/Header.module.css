@@ -1,0 +1,37 @@
+.header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  background: var(--nav-bg);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.12);
+}
+.bar { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 24px; }
+.logo { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+.logo span { color: var(--accent-text); }
+.nav { display: flex; align-items: center; gap: 32px; margin-left: auto; }
+.link { position: relative; font-size: 14px; font-weight: 500; padding: 4px 0; color: var(--text); transition: color 0.2s; }
+.link:hover { color: var(--accent-text); }
+.link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: var(--accent); transform: scaleX(0); transition: transform 0.2s; }
+.active { color: var(--accent-text); }
+.active::after { transform: scaleX(1); }
+.right { display: flex; align-items: center; gap: 16px; }
+.divider { width: 1px; height: 24px; background: var(--border); }
+.iconBtn { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; background: none; border: 0; border-radius: 8px; color: var(--text); }
+.iconBtn:hover { color: var(--accent-text); }
+.talk { padding: 6px 16px; font-size: 13px; letter-spacing: 0; }
+.talkMobile, .burger { display: none; }
+
+@media (max-width: 900px) {
+  .burger { display: inline-flex; }
+  .talk, .divider { display: none; }
+  .right { margin-left: auto; }
+  .nav {
+    position: absolute; top: 64px; left: 0; right: 0; margin: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 8px 24px 20px; display: none;
+  }
+  .open { display: flex; }
+  .link { padding: 12px 0; font-size: 16px; }
+  .link::after { display: none; }
+  .talkMobile { display: inline-flex; margin-top: 12px; }
+}

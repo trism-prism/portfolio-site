@@ -1,0 +1,9 @@
+.row { display: flex; flex-wrap: wrap; gap: 12px; }
+.tile { display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; color: #fff; transition: transform 0.2s, filter 0.2s; }
+.tile:hover { transform: translateY(-3px); filter: brightness(1.1); }
+/* Brand tiles. Backgrounds are dark enough for white glyphs to pass 4.5:1. */
+.linkedin { background: #0a66c2; }
+.google { background: #c5372c; }
+.github { background: #24292f; }
+.leetcode { background: #a35f00; }
+.x { background: #000; }

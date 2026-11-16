@@ -1,0 +1,9 @@
+.main { min-height: 80vh; display: flex; align-items: center; padding: 120px 0 80px; text-align: center; }
+.eyebrow { font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 12px; }
+.title { font-size: 56px; font-weight: 700; line-height: 1.1; color: var(--accent-text); }
+.bar { display: block; width: 64px; height: 3px; border-radius: 2px; background: var(--accent); margin: 24px auto; }
+.text { color: var(--muted); max-width: 480px; margin: 0 auto 32px; }
+
+@media (max-width: 480px) {
+  .title { font-size: 40px; }
+}

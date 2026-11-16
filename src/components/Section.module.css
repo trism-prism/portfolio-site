@@ -1,0 +1,13 @@
+.section { padding: 96px 0; }
+.alt { background: var(--bg-alt); }
+.head { display: flex; flex-direction: column; align-items: center; text-align: center; margin-bottom: 56px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 12px; }
+.title { font-size: 48px; line-height: 1.15; font-weight: 700; letter-spacing: -0.01em; }
+.bar { width: 64px; height: 3px; border-radius: 2px; background: var(--accent); margin-top: 20px; }
+
+@media (max-width: 700px) {
+  .section { padding: 64px 0; }
+  .title { font-size: 34px; }
+  .head { margin-bottom: 40px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.15em; }
+}

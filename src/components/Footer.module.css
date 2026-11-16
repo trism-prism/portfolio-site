@@ -1,0 +1,14 @@
+.footer { background: var(--footer); padding: 64px 0 32px; }
+.top { display: grid; grid-template-columns: 2fr 1fr; gap: 48px; padding-bottom: 40px; border-bottom: 1px solid var(--border); }
+.logo { font-size: 24px; font-weight: 700; margin-bottom: 12px; }
+.logo span { color: var(--accent-text); }
+.blurb { max-width: 460px; color: var(--muted); font-size: 15px; }
+.label { font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent-text); margin-bottom: 16px; }
+.links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; }
+.links a { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 15px; transition: color 0.2s; }
+.links a:hover { color: var(--accent-text); }
+.copy { text-align: center; color: var(--muted); font-size: 14px; margin-top: 28px; }
+
+@media (max-width: 700px) {
+  .top { grid-template-columns: 1fr; gap: 32px; }
+}
