@@ -12,12 +12,7 @@ export type Tone = readonly [string, string];
 
 export const COLORS = {
   ground: '#1c1626',
-  indigo: '#2a2440',
-  amethyst: '#4a2f5c',
   plum: '#6b3a6e',
-  slate: '#3d4a5c',
-  teal: '#3f6b6b',
-  pearl: '#e6dccb',
   cyan: '#8fd8e0',
   lavender: '#b9a7e8',
   pink: '#e7a9cf',
@@ -34,19 +29,24 @@ export function mix(a: string, b: string, t: number): string {
   return '#' + ((1 << 24) | (ch(16) << 16) | (ch(8) << 8) | ch(0)).toString(16).slice(1);
 }
 
-/** Unlit and lit colour for each surface. Lit colours are chosen by hand so every surface keeps its own hue. */
+/**
+ * Unlit and lit colour for each surface. Unlit has three families: slate-teal stone, plum cloth and indigo for
+ * the far sky. Lit colours are chosen by hand so every surface keeps its own hue. Sky and skyline are never lit.
+ */
 export const TONES = {
-  sky: ['#2a2440', '#7a5578'],
-  far: ['#3d4a5c', '#a98270'],
-  wall: ['#2a2f45', '#b88e69'],
-  wallLight: ['#323852', '#c49a72'],
-  stone: ['#3c445f', '#d7b185'],
-  stoneAlt: ['#343b55', '#c6a077'],
-  shade: ['#1c1829', '#80584f'],
-  shaft: ['#323953', '#c79d72'],
-  shaftLit: ['#444d68', '#e6c394'],
-  floor: ['#2a2440', '#74617a'],
-  floorAlt: ['#322b4c', '#80698a'],
+  sky: ['#241f3a', '#241f3a'],
+  far: ['#37315c', '#37315c'],
+  back: ['#243842', '#a47c5c'],
+  backAlt: ['#2b434d', '#b08662'],
+  wall: ['#32454f', '#bd9370'],
+  wallLight: ['#3a505b', '#c99f77'],
+  stone: ['#466069', '#d9b488'],
+  stoneAlt: ['#3d555e', '#c8a27a'],
+  shade: ['#18232b', '#7d5a50'],
+  shaft: ['#38505a', '#c9a074'],
+  shaftLit: ['#4f6a74', '#e8c797'],
+  floor: ['#2a2542', '#6f5e78'],
+  floorAlt: ['#332d4d', '#7b6985'],
   curb: ['#3f6b6b', '#8cb7a0'],
   iron: ['#1c1626', '#4d3643'],
   cloth: ['#6b3a6e', '#c0668f'],
@@ -69,9 +69,16 @@ export type Shape = {
   occlude?: boolean;
   /** Never lit: the sky and the far skyline are out of the lantern's reach. */
   unlitOnly?: boolean;
+  /** Not drawn; only blocks light. */
+  hidden?: boolean;
+  /** On the back plane (floor and back wall): the surfaces that receive the pillars' shadows. */
+  plane?: 'back';
 };
 
 export type SceneId = 'wide' | 'narrow';
+
+/** Radii of a stepped ellipse, in scene units. */
+export type Reach = { rx: number; ry: number };
 
 export type Scene = {
   id: SceneId;
@@ -80,8 +87,14 @@ export type Scene = {
   /** Negative: how far the picture extends above y=0, so there is night sky above the cornice. */
   top: number;
   shapes: Shape[];
-  /** The light's outer ring (half strength) and core (full strength), as radii in scene units. */
-  reach: { outer: number; inner: number };
+  /**
+   * Pillars are in front of the wall, so their shadows are the pillar footprints projected from the lantern onto the
+   * wall: scaled about the lantern by 1/shadowDepth. They are drawn as strips, not as cones.
+   */
+  casters: Rect[];
+  shadowDepth: number;
+  /** The light's outer pool (half strength) and core (full strength). */
+  reach: { outer: Reach; inner: Reach };
   /** Lantern default and limits; the chain hangs from the iron rod at `rodY`. */
   lantern: { x: number; y: number; minX: number; maxX: number; minY: number; maxY: number; rodY: number };
 };
@@ -124,6 +137,22 @@ function skyline(w: number, baseY: number, topMin: number, topMax: number, seed:
 /** Half-widths of a stepped semicircle of radius r, one per 8-unit row going up from the springing line. */
 function archRows(r: number): number[] {
   return Array.from({ length: r / 8 }, (_, k) => Math.round(Math.sqrt(Math.max(0, r * r - (8 * k + 4) ** 2)) / 8) * 8);
+}
+
+/** Rows of a stepped ring between two arch radii, as rectangles. `skip` leaves out the listed rows on one side. */
+function archRing(cx: number, springY: number, rIn: number, rOut: number): { y: number; k: number; left: Point[]; right: Point[] }[] {
+  const inner = archRows(rIn);
+  const outer = archRows(rOut);
+  const rows: { y: number; k: number; left: Point[]; right: Point[] }[] = [];
+  for (let k = 0; k < outer.length; k++) {
+    const y = springY - 8 * (k + 1);
+    const hi = k < inner.length ? inner[k] : 0;
+    const ho = outer[k];
+    if (ho <= hi) continue;
+    if (k < inner.length) rows.push({ y, k, left: rect(cx - ho, y, ho - hi, 8), right: rect(cx + hi, y, ho - hi, 8) });
+    else rows.push({ y, k, left: rect(cx - ho, y, 2 * ho, 8), right: [] });
+  }
+  return rows;
 }
 
 /** A single crystal prism: two cap facets on top, two body facets below. */
@@ -179,15 +208,14 @@ type Spec = {
   lanternDx: number;
   lanternY: number;
   lanternRange: [number, number];
-  cornice: boolean;
-  reach: { outer: number; inner: number };
+  reach: { outer: Reach; inner: Reach };
 };
 
 const PW = 32;
+const ROD_Y = 44;
 
 function build(s: Spec): Scene {
   const { w, h, floorY, springY } = s;
-  const rodY = springY - 20;
 
   // Pillar and bay positions.
   const pillars: number[] = [];
@@ -203,16 +231,35 @@ function build(s: Spec): Scene {
   const shapes: Shape[] = [
     { id: 'sky', tone: TONES.sky, unlitOnly: true, rings: [rect(0, s.top, w, h - s.top)] },
     { id: 'skyline', tone: TONES.far, unlitOnly: true, rings: [skyline(w, floorY, s.skyTop[0], s.skyTop[1], s.skySeed)] },
-    { id: 'floor', tone: TONES.floor, rings: [rect(0, floorY, w, h - floorY)] },
-    { id: 'floor-joint', tone: TONES.floorAlt, rings: [rect(0, floorY + 16, w, 8)] },
-    { id: 'curb', tone: TONES.curb, rings: [rect(0, floorY, w, 8)] },
-    // A low garden wall behind the arcade: the surface that catches the pedestals' shadows.
-    { id: 'garden-wall', tone: TONES.wall, rings: [rect(0, floorY - 72, w, 72)] },
-    { id: 'garden-courses', tone: TONES.wallLight, rings: [rect(0, floorY - 56, w, 16), rect(0, floorY - 24, w, 16)] },
-    { id: 'garden-coping', tone: TONES.stone, rings: [rect(0, floorY - 80, w, 8)] },
+    { id: 'floor', tone: TONES.floor, plane: 'back', rings: [rect(0, floorY, w, h - floorY)] },
+    { id: 'floor-joint', tone: TONES.floorAlt, plane: 'back', rings: [rect(0, floorY + 16, w, 8)] },
+    { id: 'curb', tone: TONES.curb, plane: 'back', rings: [rect(0, floorY, w, 8)] },
   ];
 
-  // Mid plane, behind the pillars: pedestals with urns, an obelisk and a crystal on a plinth. They cast the shadows.
+  // The back wall: one masonry plane behind the whole arcade, with a small stepped window in each bay that shows
+  // the night sky. This is the surface the light and the shadows are read on.
+  const wb = floorY - 72; // window sills
+  const wsp = springY - 16; // where the window arches start
+  const windows: Point[][] = [];
+  const frame: Point[][] = [];
+  bays.forEach((b) => {
+    const rw = (b.x1 - b.x0 - 64) / 2;
+    const rows = archRows(rw);
+    const poly: Point[] = [p(b.cx - rw, wb)];
+    for (let k = 0; k < rows.length; k++) poly.push(p(b.cx - rows[k], wsp - 8 * k), p(b.cx - rows[k], wsp - 8 * (k + 1)));
+    for (let k = rows.length - 1; k >= 0; k--) poly.push(p(b.cx + rows[k], wsp - 8 * (k + 1)), p(b.cx + rows[k], wsp - 8 * k));
+    poly.push(p(b.cx + rw, wb));
+    windows.push(poly);
+    frame.push(rect(b.cx - rw - 8, wb, 2 * rw + 16, 8), rect(b.cx - rw - 8, wsp, 8, wb - wsp), rect(b.cx + rw, wsp, 8, wb - wsp));
+    for (const row of archRing(b.cx, wsp, rw, rw + 8)) frame.push(row.left, ...(row.right.length ? [row.right] : []));
+  });
+  shapes.push(
+    { id: 'back-wall', tone: TONES.back, plane: 'back', evenodd: true, rings: [rect(0, 32, w, floorY - 32), ...windows] },
+    { id: 'back-courses', tone: TONES.backAlt, plane: 'back', rings: [rect(0, wb + 24, w, 16), rect(0, wb + 56, w, 16)] },
+    { id: 'window-frames', tone: TONES.stone, plane: 'back', rings: frame },
+  );
+
+  // Mid plane: pedestals with urns, an obelisk and a crystal on a plinth. They cast shadows onto the back wall.
   const crystals: Shape[] = [];
   s.pedestals.forEach((pd, i) => {
     const b = bays[pd.bay];
@@ -239,31 +286,14 @@ function build(s: Spec): Scene {
         ...crystal(`crystal-l-${i}`, cx - 12, top, 8, 16, [COLORS.pink, COLORS.facetPearl, COLORS.lavender, COLORS.violet]),
         ...crystal(`crystal-r-${i}`, cx + 12, top, 8, 8, [COLORS.facetPearl, COLORS.cyan, COLORS.violet, COLORS.lavender]),
         ...crystal(`crystal-m-${i}`, cx, top, 12, 32, [COLORS.facetPearl, COLORS.cyan, COLORS.lavender, COLORS.violet]),
+        // the middle prism throws a shadow too
+        { id: `crystal-shadow-${i}`, hidden: true, occlude: true, rings: [[p(cx - 12, top), p(cx - 12, top - 32), p(cx, top - 44), p(cx + 12, top - 32), p(cx + 12, top)]] },
       );
     }
   });
   shapes.push(...crystals);
 
-  // Iron tie rod running the full width behind the pillars; the lantern hangs from it.
-  shapes.push({ id: 'rod', tone: TONES.iron, rings: [rect(0, rodY, w, 4)] });
-
-  // One banner, off centre, hanging from the rod.
-  {
-    const b = bays[s.banner.bay];
-    const cx = b.cx + s.banner.dx;
-    const top = rodY + 4;
-    const len = s.banner.length;
-    shapes.push({ id: 'banner-pin', tone: TONES.iron, rings: [rect(cx - 24, rodY - 4, 48, 8)] });
-    shapes.push({
-      id: 'banner',
-      tone: TONES.cloth,
-      occlude: true,
-      rings: [[p(cx - 16, top), p(cx + 16, top), p(cx + 16, top + len), p(cx, top + len - 16), p(cx - 16, top + len)]],
-    });
-    shapes.push(...diamondChain('banner', cx, top + 8, Math.floor((len - 32) / 24) + 1, 8, 8));
-  }
-
-  // Wall above the arches: one mass with a stepped semicircular opening per bay.
+  // The front wall: one mass with a stepped semicircular opening per bay.
   const mass: Point[] = [p(0, 0), p(w, 0), p(w, springY)];
   for (let i = bays.length - 1; i >= 0; i--) {
     const b = bays[i];
@@ -274,36 +304,34 @@ function build(s: Spec): Scene {
     mass.push(p(b.x0, springY));
   }
   mass.push(p(0, springY));
-  shapes.push({ id: 'wall', tone: TONES.wall, rings: [mass] });
-  // Courses of slightly lighter stone across the wall; they stop short of the arches by using the same cut.
-  if (s.cornice) {
-    shapes.push(
-      { id: 'cornice', tone: TONES.wallLight, rings: [rect(0, 0, w, 24)] },
-      { id: 'cornice-lip', tone: TONES.stone, rings: [rect(0, 24, w, 8)] },
-      { id: 'cornice-shadow', tone: TONES.shade, rings: [rect(0, 32, w, 8)] },
-    );
-  }
+  shapes.push(
+    { id: 'wall', tone: TONES.wall, rings: [mass] },
+    { id: 'cornice', tone: TONES.wallLight, rings: [rect(0, 0, w, 24)] },
+    { id: 'cornice-lip', tone: TONES.stone, rings: [rect(0, 24, w, 8)] },
+    { id: 'cornice-shadow', tone: TONES.shade, rings: [rect(0, 32, w, 8)] },
+  );
 
-  // Voussoirs: a ring of alternating stones round each arch, with a keystone. One arch has lost a few.
   bays.forEach((b, bi) => {
-    const inner = archRows(b.r);
+    // The inside of each arch: a band of shaded stone, so the opening reads as a vault with depth and is joined to its stones.
+    const soffit: Point[][] = [];
+    for (const row of archRing(b.cx, springY, b.r - 8, b.r)) soffit.push(row.left, ...(row.right.length ? [row.right] : []));
+    shapes.push({ id: `soffit-${bi}`, tone: TONES.shade, rings: soffit });
+
+    // Voussoirs: a ring of alternating stones round each arch, with a keystone. One arch has lost a few.
     const outer = archRows(b.r + 16);
     const a: Point[][] = [];
     const c: Point[][] = [];
     const voids: Point[][] = [];
     const missing = bi === s.weathered ? new Set([2, 3, outer.length - 3]) : new Set<number>();
-    for (let k = 0; k < outer.length; k++) {
-      const y = springY - 8 * (k + 1);
-      const hi = k < inner.length ? inner[k] : 0;
-      const ho = outer[k];
-      if (ho <= hi) continue;
-      const target = (k >> 1) % 2 === 0 ? a : c;
-      if (k < inner.length) {
-        (missing.has(k) ? voids : target).push(rect(b.cx - ho, y, ho - hi, 8));
-        (missing.has(k + 1) ? voids : target).push(rect(b.cx + hi, y, ho - hi, 8));
+    for (const row of archRing(b.cx, springY, b.r, b.r + 16)) {
+      const target = (row.k >> 1) % 2 === 0 ? a : c;
+      const inner = archRows(b.r);
+      if (row.k < inner.length) {
+        (missing.has(row.k) ? voids : target).push(row.left);
+        (missing.has(row.k + 1) ? voids : target).push(row.right);
       } else {
-        // crown rows above the opening, either side of the keystone
-        if (ho > 8) target.push(rect(b.cx - ho, y, ho - 8, 8), rect(b.cx + 8, y, ho - 8, 8));
+        const ho = outer[row.k];
+        if (ho > 8) target.push(rect(b.cx - ho, row.y, ho - 8, 8), rect(b.cx + 8, row.y, ho - 8, 8));
       }
     }
     shapes.push({ id: `vous-a-${bi}`, tone: TONES.stone, rings: a }, { id: `vous-b-${bi}`, tone: TONES.stoneAlt, rings: c });
@@ -312,7 +340,27 @@ function build(s: Spec): Scene {
     shapes.push({ id: `keystone-${bi}`, tone: TONES.shaftLit, rings: [rect(b.cx - 8, topY - 8, 16, 24)] });
   });
 
-  // Pillars: plinth, three flat strips of shaft, a stepped capital.
+  // Iron tie rod running the full width under the cornice; the lantern hangs from it.
+  shapes.push({ id: 'rod', tone: TONES.iron, rings: [rect(0, ROD_Y, w, 4)] });
+
+  // One banner, off centre, hanging from the rod.
+  {
+    const b = bays[s.banner.bay];
+    const cx = b.cx + s.banner.dx;
+    const top = ROD_Y + 4;
+    const len = s.banner.length;
+    shapes.push({ id: 'banner-pin', tone: TONES.iron, rings: [rect(cx - 24, ROD_Y - 4, 48, 8)] });
+    shapes.push({
+      id: 'banner',
+      tone: TONES.cloth,
+      occlude: true,
+      rings: [[p(cx - 16, top), p(cx + 16, top), p(cx + 16, top + len), p(cx, top + len - 16), p(cx - 16, top + len)]],
+    });
+    shapes.push(...diamondChain('banner', cx, top + 8, Math.floor((len - 32) / 24) + 1, 8, 8));
+  }
+
+  // Pillars: plinth, three flat strips of shaft, a stepped capital. They are lit like everything else; their shadows
+  // on the wall are projected strips (see `casters`).
   pillars.forEach((px, i) => {
     const t = springY;
     shapes.push(
@@ -332,8 +380,10 @@ function build(s: Spec): Scene {
     h,
     top: s.top,
     shapes,
+    casters: pillars.map((px) => ({ x: px + 4, y: springY, w: PW - 8, h: floorY - springY })),
+    shadowDepth: 0.62,
     reach: s.reach,
-    lantern: { x: lb.cx + s.lanternDx, y: s.lanternY, minX: 48, maxX: w - 48, minY: s.lanternRange[0], maxY: s.lanternRange[1], rodY },
+    lantern: { x: lb.cx + s.lanternDx, y: s.lanternY, minX: 48, maxX: w - 48, minY: s.lanternRange[0], maxY: s.lanternRange[1], rodY: ROD_Y },
   };
 }
 
@@ -348,20 +398,21 @@ export const wideScene = build({
   bayWidths: [112, 144, 128, 208, 128, 144, 112],
   pedestals: [
     { kind: 'urn', bay: 1, dx: 24, height: 72 },
-    { kind: 'plinth', bay: 2, dx: 0, height: 48 },
-    { kind: 'obelisk', bay: 4, dx: -8, height: 88 },
-    { kind: 'urn', bay: 6, dx: 8, height: 64 },
+    { kind: 'urn', bay: 2, dx: -16, height: 56 },
+    { kind: 'plinth', bay: 3, dx: 80, height: 48 },
+    { kind: 'obelisk', bay: 4, dx: 8, height: 88 },
+    { kind: 'urn', bay: 5, dx: -24, height: 64 },
+    { kind: 'urn', bay: 6, dx: 8, height: 72 },
   ],
-  banner: { bay: 5, dx: 16, length: 80 },
+  banner: { bay: 5, dx: 16, length: 96 },
   weathered: 2,
   skySeed: 7,
-  skyTop: [128, 176],
+  skyTop: [152, 192],
   lanternBay: 3,
-  lanternDx: 24,
-  lanternY: 208,
-  lanternRange: [196, 240],
-  cornice: true,
-  reach: { outer: 224, inner: 120 },
+  lanternDx: -24,
+  lanternY: 160,
+  lanternRange: [132, 232],
+  reach: { outer: { rx: 560, ry: 184 }, inner: { rx: 320, ry: 128 } },
 });
 
 export const narrowScene = build({
@@ -374,19 +425,18 @@ export const narrowScene = build({
   firstPillar: 8,
   bayWidths: [112, 144],
   pedestals: [
-    { kind: 'plinth', bay: 0, dx: 16, height: 48 },
+    { kind: 'plinth', bay: 1, dx: -56, height: 48 },
     { kind: 'obelisk', bay: 1, dx: 40, height: 80 },
   ],
-  banner: { bay: 0, dx: -32, length: 64 },
+  banner: { bay: 0, dx: -32, length: 80 },
   weathered: 0,
   skySeed: 21,
-  skyTop: [152, 208],
+  skyTop: [168, 208],
   lanternBay: 1,
   lanternDx: -8,
-  lanternY: 224,
-  lanternRange: [212, 252],
-  cornice: true,
-  reach: { outer: 112, inner: 64 },
+  lanternY: 144,
+  lanternRange: [120, 160],
+  reach: { outer: { rx: 232, ry: 136 }, inner: { rx: 136, ry: 96 } },
 });
 
 export const scenes = { wide: wideScene, narrow: narrowScene } as const;
@@ -427,16 +477,15 @@ export function sceneBounds(scene: Scene): Rect {
   return { x: 0, y: scene.top, w: scene.w, h: scene.h - scene.top };
 }
 
-/** How far the light reaches, as a stepped disc with big deliberate steps. */
 export const LIGHT_STEP = 8;
 
-/** Stepped disc around the origin. Rows and half-widths are multiples of `step`. */
-export function steppedDisc(r: number, step: number): Point[] {
-  const rows = r / step;
+/** Stepped ellipse around the origin. Rows and half-widths are multiples of `step`; rx = ry gives a stepped disc. */
+export function steppedEllipse(rx: number, ry: number, step: number): Point[] {
+  const rows = Math.round(ry / step);
   const right: Point[] = [];
   for (let k = -rows; k < rows; k++) {
     const yMid = (k + 0.5) * step;
-    const hw = Math.round(Math.sqrt(Math.max(0, r * r - yMid * yMid)) / step) * step;
+    const hw = Math.round((rx * Math.sqrt(Math.max(0, 1 - (yMid / ry) ** 2))) / step) * step;
     right.push(p(hw, k * step), p(hw, k * step + step));
   }
   const left = right.map((q) => p(-q.x, q.y)).reverse();

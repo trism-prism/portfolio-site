@@ -2,7 +2,7 @@
 
 ## Concept
 
-One lantern in a quiet colonnade. The top of the home page is a flat vector scene: a stepped-arch arcade at night with a single amber lantern hanging from an iron tie rod. The lit area is a true visibility polygon with hard shadows, computed by `src/lib/visibility.ts`. Visitors can move the lantern with the pointer, a sideways touch drag, or the arrow keys when the scene has focus. Nothing essential depends on it: below the scene the page is an ordinary document.
+One lantern in a quiet colonnade. The top of the home page is a flat vector scene: a stepped-arch cloister at night with a single amber lantern hanging from an iron rod under the cornice. The lit area is a true visibility polygon with hard shadows, computed by `src/lib/visibility.ts`. Visitors can move the lantern with the pointer, a sideways touch drag, or the arrow keys when the scene has focus. Nothing essential depends on it: below the scene the page is an ordinary document.
 
 Without JavaScript the scene is still complete, because the polygon for the default lantern position is computed at build time and written into the HTML.
 
@@ -10,8 +10,9 @@ Without JavaScript the scene is still complete, because the polygon for the defa
 
 - Flat cut-shape vector art in inline SVG. Hard edges, flat fills. No gradients, blur, glow, filters or drop shadows on art.
 - Everything sits on an 8-unit grid. Arches are stepped semicircles on that grid; other diagonals are 45 degrees (obelisk tips, the banner tail, capitals).
-- Depth comes from stacked flat layers, back to front: sky, far skyline, a low garden wall that catches shadows, mid-plane objects (pedestals, an obelisk, a crystal on a plinth, one banner), the iron rod, and the near frame (wall, voussoir rings, pillars). The picture has a strip of night sky above the cornice.
-- **Lit and unlit palettes.** Every near shape has two fills, a cool night colour and a warm lantern colour, chosen by hand so each surface keeps its own hue (masonry becomes sandstone, plum cloth becomes rose, the teal curb stays teal-green). The scene is drawn twice. The lit copy is shown only inside two nested clip paths: the visibility polygon, and a stepped disc on the 8-unit grid (the light's reach, 224 units on the wide scene). A second, smaller disc shows full strength and the ring between them shows a half-lit copy (the two palettes mixed 50/50), so the light falls off in one deliberate step. The polygon's bounding rectangle lies outside the disc, so its edges never show. The sky and the far skyline are never lit: a lantern cannot light them, so through every bay you see cool night beyond warm stone. The edge between lit and shadow is the polygon edge, crisp and exact.
+- Depth comes from stacked flat layers, back to front: sky, far skyline, the floor and one **back wall** (a masonry plane behind the whole arcade with a small stepped window in each bay, so night sky shows only through the windows), mid-plane objects (urns, an obelisk, a crystal on a plinth), the front wall with its stepped arches (each arch has a shaded soffit band, a ring of alternating voussoirs and a keystone), an iron tie rod under the cornice, one banner hanging from it, and the pillars. The picture has a strip of night sky above the cornice.
+- **Lit and unlit palettes.** Every near shape has two fills, a cool night colour and a warm lantern colour, chosen by hand so each surface keeps its own hue. The unlit scene has three clearly different families: slate-teal stone, plum cloth and pedestals, and indigo for the far sky and skyline. Lit, the stone becomes sandstone and the cloth becomes rose. The scene is drawn twice; the lit copy is shown only inside two nested clip paths: the visibility polygon, and a stepped ellipse on the 8-unit grid (the light's reach, 560 by 184 units on the wide scene, about 2.5 bays each side). A smaller ellipse shows full strength and the ring between them shows a half-lit copy (the two palettes mixed 50/50), so the light falls off in one deliberate step. The polygon's bounding rectangle lies outside the ellipse, so its edges never show. The sky and the far skyline are never lit, so through every window you see cool night beyond warm stone.
+- **Shadows.** Objects in the mid plane (urns, obelisk, plinth, banner) block light in the visibility polygon, so each throws a hard wedge that fans away from the lantern across the back wall and floor. The pillars stand in front of the wall, so their shadows are their footprints projected from the lantern onto the wall (scaled about the lantern by 1/0.62): strips that swing as the lantern moves. They are drawn by showing the unlit copy of the wall and floor inside those strips.
 - Crystal appears in two places only: the prism cluster on its plinth and the facet mark (favicon and the small logo). Each facet is one flat fill from the five facet colours; in shadow the same facet is mixed 55% toward night plum.
 - Embroidery (small hollow diamonds joined by thin lines) is the only ornament: section rules, corner brackets on screenshots, and the one banner in the scene. One stroke weight.
 - Amber means "lit" or "you can act on this": the lantern glass, link underlines and focus rings.
@@ -23,13 +24,14 @@ Illustration colours (`TONES` in `src/scene/geometry.ts`), unlit and lit:
 
 | Surface | Unlit | Lit |
 |---|---|---|
-| Sky (never lit) | `#2a2440` | none |
-| Far skyline (never lit) | `#3d4a5c` | none |
-| Wall | `#2a2f45` | `#b88e69` |
-| Stone (voussoirs, abacus) | `#3c445f` | `#d7b185` |
-| Pillar shaft, mid / lit strip | `#323953` / `#444d68` | `#c79d72` / `#e6c394` |
-| Shade (recesses, pillar shadow side) | `#1c1829` | `#80584f` |
-| Floor | `#2a2440` | `#74617a` |
+| Sky (never lit) | `#241f3a` | none |
+| Far skyline (never lit) | `#37315c` | none |
+| Back wall / courses | `#243842` / `#2b434d` | `#a47c5c` / `#b08662` |
+| Front wall | `#32454f` | `#bd9370` |
+| Stone (voussoirs, window frames) | `#466069` | `#d9b488` |
+| Pillar shaft, mid / lit strip | `#38505a` / `#4f6a74` | `#c9a074` / `#e8c797` |
+| Shade (soffits, pillar shadow side) | `#18232b` | `#7d5a50` |
+| Floor | `#2a2542` | `#6f5e78` |
 | Curb | `#3f6b6b` | `#8cb7a0` |
 | Cloth (banner) | `#6b3a6e` | `#c0668f` |
 | Pedestals | `#4a2f5c` | `#a05a82` |
@@ -70,7 +72,7 @@ Newsreader (serif) for the name and headings, Source Sans 3 for body and interfa
 
 ## How the scene works
 
-`src/scene/geometry.ts` defines every shape once, as polygons on the grid, with an unlit and a lit tone. `SceneMarkup.tsx` draws them (one render function for the page and the share image). Where `occlude` is set, the same shapes give the wall segments for `visibilityPolygon`. The near frame (wall, arches, pillars) does not cast shadows; the mid-plane pedestals and the banner do. The lantern passes in front of everything; a shape the light sits inside is ignored for that frame, and a wall within a hair of the light is skipped so the polygon never collapses to a point.
+`src/scene/geometry.ts` defines every shape once, as polygons on the grid, with an unlit and a lit tone. `SceneMarkup.tsx` draws them (one render function for the page and the share image). Where `occlude` is set, the same shapes give the wall segments for `visibilityPolygon`. The front wall, arches and pillars do not occlude (they are lit like any near surface); the mid-plane objects and the banner do. Pillar shadows are projected strips (`pillarShadows` in `src/scene/light.ts`). The lantern passes in front of everything; a shape the light sits inside is ignored for that frame, and a wall within a hair of the light is skipped so the polygon never collapses to a point.
 
 ## Adding a project
 

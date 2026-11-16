@@ -1,6 +1,6 @@
 import { toPoints } from '../lib/visibility';
-import { LANTERN_IRON, LANTERN_PARTS, LANTERN_TOP, LIGHT_STEP, mix, shapePath, steppedDisc, type Scene, type Shape } from './geometry';
-import { initialLit } from './light';
+import { LANTERN_IRON, LANTERN_PARTS, LANTERN_TOP, LIGHT_STEP, mix, shapePath, steppedEllipse, type Scene, type Shape } from './geometry';
+import { initialLit, initialShadows } from './light';
 
 
 /** 0 unlit, 1 lit, 2 the half-lit outer ring (halfway between the two). */
@@ -14,14 +14,17 @@ function paint(shape: Shape, i: 0 | 1 | 2) {
 
 /**
  * The scene as one SVG: the unlit night scene, then the same scene in lantern colours, shown only inside the
- * visibility polygon (and inside a stepped disc, so the light has a reach). Pure markup (no hooks), shared by the page and the share image.
+ * visibility polygon (and inside a stepped ellipse, so the light has a reach). Pure markup (no hooks), shared by the page and the share image.
  */
 export function SceneMarkup({ scene, className, width, height }: { scene: Scene; className?: string; width?: number; height?: number }) {
   const id = scene.id;
   const { x, y, rodY } = scene.lantern;
-  const lit = scene.shapes.filter((s) => !s.unlitOnly);
-  const outer = toPoints(steppedDisc(scene.reach.outer, LIGHT_STEP));
-  const inner = toPoints(steppedDisc(scene.reach.inner, LIGHT_STEP));
+  const drawn = scene.shapes.filter((s) => !s.hidden);
+  const lit = drawn.filter((s) => !s.unlitOnly);
+  const backPlane = lit.filter((s) => s.plane === 'back');
+  const rest = lit.filter((s) => s.plane !== 'back');
+  const outer = toPoints(steppedEllipse(scene.reach.outer.rx, scene.reach.outer.ry, LIGHT_STEP));
+  const inner = toPoints(steppedEllipse(scene.reach.inner.rx, scene.reach.inner.ry, LIGHT_STEP));
   return (
     <svg
       className={className}
@@ -35,11 +38,16 @@ export function SceneMarkup({ scene, className, width, height }: { scene: Scene;
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        {scene.shapes.map((s) => (
+        {drawn.map((s) => (
           <path key={s.id} id={`${id}-${s.id}`} d={shapePath(s)} />
         ))}
         <clipPath id={`${id}-poly`}>
           <polygon data-poly points={initialLit[id]} />
+        </clipPath>
+        <clipPath id={`${id}-shadow`}>
+          {initialShadows[id].map((pts, i) => (
+            <polygon key={i} data-shadow points={pts} />
+          ))}
         </clipPath>
         <clipPath id={`${id}-outer`} data-disc transform={`translate(${x} ${y})`}>
           <polygon points={outer} />
@@ -49,18 +57,34 @@ export function SceneMarkup({ scene, className, width, height }: { scene: Scene;
         </clipPath>
       </defs>
       <g>
-        {scene.shapes.map((s) => (
+        {drawn.map((s) => (
           <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 0)} />
         ))}
       </g>
       <g clipPath={`url(#${id}-poly)`}>
         <g clipPath={`url(#${id}-outer)`}>
-          {lit.map((s) => (
+          {backPlane.map((s) => (
+            <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 2)} />
+          ))}
+          <g clipPath={`url(#${id}-shadow)`}>
+            {backPlane.map((s) => (
+              <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 0)} />
+            ))}
+          </g>
+          {rest.map((s) => (
             <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 2)} />
           ))}
         </g>
         <g clipPath={`url(#${id}-inner)`}>
-          {lit.map((s) => (
+          {backPlane.map((s) => (
+            <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 1)} />
+          ))}
+          <g clipPath={`url(#${id}-shadow)`}>
+            {backPlane.map((s) => (
+              <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 0)} />
+            ))}
+          </g>
+          {rest.map((s) => (
             <use key={s.id} href={`#${id}-${s.id}`} {...paint(s, 1)} />
           ))}
         </g>

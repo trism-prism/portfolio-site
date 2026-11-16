@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { pointInPolygon, type Point } from '../lib/visibility';
-import { occluders, scenes, steppedDisc, type SceneId } from './geometry';
-import { litPolygon } from './light';
+import { occluders, scenes, steppedEllipse, type SceneId } from './geometry';
+import { litPolygon, pillarShadows } from './light';
 
 function area(poly: Point[]) {
   let s = 0;
@@ -35,22 +35,40 @@ describe.each(Object.keys(scenes) as SceneId[])('%s scene', (id) => {
     }
   });
 
-  it('casts a shadow: a point just behind a pedestal is outside the polygon', () => {
+  it('casts a shadow: a point just behind a pedestal, seen from the lantern, is outside the polygon', () => {
     const light = scene.lantern;
     const poly = litPolygon(scene, light);
-    const dist = (s: (typeof scene.shapes)[number]) => Math.hypot(s.rings[0][0].x - light.x, s.rings[0][0].y - light.y);
-    const pedestal = scene.shapes.filter((s) => s.occlude && s.id.startsWith('pedestal')).sort((a, b) => dist(a) - dist(b))[0];
-    expect(pedestal).toBeDefined();
-    const pts = pedestal!.rings[0];
-    const cx = pts.reduce((a, p) => a + p.x, 0) / pts.length;
-    const cy = pts.reduce((a, p) => a + p.y, 0) / pts.length;
-    expect(pointInPolygon({ x: cx, y: cy }, poly)).toBe(false);
+    const centre = (sh: (typeof scene.shapes)[number]) => {
+      const pts = sh.rings[0];
+      return { x: pts.reduce((a, q) => a + q.x, 0) / pts.length, y: pts.reduce((a, q) => a + q.y, 0) / pts.length };
+    };
+    const near = scene.shapes
+      .filter((sh) => sh.occlude && sh.id.startsWith('pedestal'))
+      .map((sh) => ({ c: centre(sh) }))
+      .sort((a, b) => Math.hypot(a.c.x - light.x, a.c.y - light.y) - Math.hypot(b.c.x - light.x, b.c.y - light.y))[0].c;
+    const d = Math.hypot(near.x - light.x, near.y - light.y);
+    const behind = { x: near.x + ((near.x - light.x) / d) * 40, y: near.y + ((near.y - light.y) / d) * 40 };
+    expect(pointInPolygon(behind, poly)).toBe(false);
+  });
+
+  it('projects each pillar onto the wall, away from the lantern', () => {
+    expect(scene.casters.length).toBeGreaterThan(1);
+    const l = scene.lantern;
+    const shadows = pillarShadows(scene, l);
+    scene.casters.forEach((c, i) => {
+      const cx = c.x + c.w / 2;
+      const sx = shadows[i].reduce((a, q) => a + q.x, 0) / shadows[i].length;
+      // farther from the lantern than the pillar, on the same side, and wider
+      expect(Math.sign(sx - l.x)).toBe(Math.sign(cx - l.x));
+      expect(Math.abs(sx - l.x)).toBeGreaterThan(Math.abs(cx - l.x));
+      expect(Math.max(...shadows[i].map((q) => q.x)) - Math.min(...shadows[i].map((q) => q.x))).toBeGreaterThan(c.w);
+    });
   });
 });
 
-describe('steppedDisc', () => {
+describe('steppedEllipse', () => {
   it('uses only multiples of the step and is symmetric', () => {
-    const d = steppedDisc(128, 32);
+    const d = steppedEllipse(256, 128, 32);
     for (const p of d) {
       expect(Math.abs(p.x) % 32).toBe(0);
       expect(Math.abs(p.y) % 32).toBe(0);

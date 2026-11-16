@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import { toPoints } from '../lib/visibility';
 import { LANTERN_TOP, scenes, type SceneId } from './geometry';
-import { litPolygon } from './light';
+import { litPolygon, pillarShadows } from './light';
 import { SceneMarkup } from './SceneMarkup';
 import styles from './LanternScene.module.css';
 
@@ -44,6 +44,7 @@ export function LanternScene() {
       const scene = scenes[id];
       const svg = svgs[id];
       svg.querySelector('[data-poly]')?.setAttribute('points', toPoints(litPolygon(scene, { x, y })));
+      pillarShadows(scene, { x, y }).forEach((poly, i) => svg.querySelectorAll('[data-shadow]')[i]?.setAttribute('points', toPoints(poly)));
       svg.querySelectorAll('[data-disc]').forEach((c) => c.setAttribute('transform', `translate(${x} ${y})`));
       svg.querySelector('[data-lantern]')?.setAttribute('transform', `translate(${x} ${y})`);
       svg.querySelector('[data-trolley]')?.setAttribute('transform', `translate(${x} 0)`);
