@@ -131,8 +131,11 @@ export function LanternScene() {
       if (!touch.dragging) {
         const dx = e.clientX - touch.x;
         const dy = e.clientY - touch.y;
-        if (Math.abs(dy) >= DRAG_START && Math.abs(dy) > Math.abs(dx)) touch = null;
-        else if (Math.abs(dx) >= DRAG_START && Math.abs(dx) > Math.abs(dy)) touch.dragging = true;
+        if (Math.abs(dy) >= DRAG_START && Math.abs(dy) > Math.abs(dx)) {
+          touch = null; // a scroll: leave the lantern where it is
+          return;
+        }
+        if (Math.abs(dx) >= DRAG_START && Math.abs(dx) > Math.abs(dy)) touch.dragging = true;
         else return;
       }
       target(e.clientX, e.clientY, true);
