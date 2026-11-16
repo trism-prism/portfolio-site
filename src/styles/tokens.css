@@ -1,0 +1,26 @@
+/* Design tokens. The contrast test in src/lib/contrast.test.ts reads the colours from this file. */
+:root {
+  /* Illustration colours live in src/scene/geometry.ts. These are the interface colours. */
+  --ground: #1c1626;
+  --surface: #2a2440;
+  --text: #e6dccb;
+  --text-muted: #b5abc2;
+  --accent: #e8a44a;
+  --line: #4a3f63;
+
+  --font-display: var(--font-newsreader), Georgia, 'Times New Roman', serif;
+  --font-text: var(--font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* 8-unit spacing scale */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-6: 3rem;
+  --space-8: 4rem;
+  --space-12: 6rem;
+
+  --page: 72rem;
+  --measure: 40rem;
+  --gutter: clamp(1.25rem, 5vw, 3rem);
+}

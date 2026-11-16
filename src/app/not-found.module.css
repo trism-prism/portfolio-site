@@ -1,0 +1,13 @@
+.main {
+  padding-block: var(--space-12) var(--space-6);
+}
+
+.main .wrap {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}
+
+.main h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+}

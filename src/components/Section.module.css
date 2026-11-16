@@ -1,0 +1,36 @@
+.section {
+  padding-block: var(--space-8);
+}
+
+.tight {
+  padding-block: var(--space-6);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.head h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+}
+
+.body {
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .section {
+    padding-block: var(--space-12);
+  }
+
+  .tight {
+    padding-block: var(--space-8);
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    gap: var(--space-8);
+  }
+}

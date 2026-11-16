@@ -1,0 +1,48 @@
+.figure {
+  margin: 0;
+}
+
+.scene {
+  position: relative;
+  /* Vertical drags stay with the browser, so the page scrolls over the scene on touch screens. */
+  touch-action: pan-y;
+  background: var(--surface);
+  cursor: crosshair;
+}
+
+.scene:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -6px;
+}
+
+.svg {
+  display: block;
+  width: 100%;
+}
+
+.wide {
+  height: min(30vw, 46svh);
+}
+
+.narrow {
+  display: none;
+  height: min(113vw, 46svh);
+}
+
+@media (max-width: 699.98px) {
+  .wide {
+    display: none;
+  }
+  .narrow {
+    display: block;
+  }
+}
+
+.caption {
+  max-width: var(--page);
+  margin: var(--space-3) auto 0;
+  padding: 0 var(--gutter);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}

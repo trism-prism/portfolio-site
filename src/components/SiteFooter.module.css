@@ -1,0 +1,20 @@
+.footer {
+  padding-block: var(--space-8) var(--space-12);
+  border-top: 1px solid var(--line);
+  margin-top: var(--space-4);
+}
+
+.heading {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  margin-bottom: var(--space-3);
+}
+
+.links {
+  margin-top: var(--space-3);
+}
+
+.small {
+  margin-top: var(--space-4);
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+}

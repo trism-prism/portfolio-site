@@ -1,0 +1,117 @@
+.hero {
+  padding-bottom: var(--space-4);
+}
+
+.intro {
+  padding-top: var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.intro h1 {
+  font-size: clamp(2.5rem, 6vw, 4.25rem);
+  line-height: 1.05;
+}
+
+.lede {
+  font-size: clamp(1.0625rem, 1.5vw, 1.25rem);
+  line-height: 1.55;
+  max-width: 44rem;
+}
+
+.projects {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.project {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.projectText {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.projectText h3,
+.more h3,
+.entries h3 {
+  font-size: clamp(1.375rem, 2vw, 1.625rem);
+}
+
+.projectText h3 a {
+  text-decoration: none;
+}
+
+.projectText h3 a:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  font-size: 0.9375rem;
+}
+
+.projectImage {
+  display: flex;
+  /* the corner brackets sit just outside the frame */
+  padding: 8px;
+}
+
+.more {
+  display: grid;
+  gap: var(--space-6) var(--space-6);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.more li {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--line);
+}
+
+.more li > p {
+  font-size: 1rem;
+}
+
+.entries {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.entries > div {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+}
+
+.meta {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.about {
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (min-width: 64rem) {
+  .project {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-6);
+  }
+
+  .more {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
