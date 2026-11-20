@@ -1,16 +1,18 @@
 .footer {
   border-top: 1px solid var(--border);
   margin-top: var(--space-6);
+  font-family: var(--font-display);
 }
 
 .inner {
   max-width: var(--page-max);
   margin: 0 auto;
-  padding: var(--space-4) var(--gutter);
+  padding: var(--space-5) var(--gutter);
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: var(--space-3);
+  align-items: end;
+  gap: var(--space-4);
 }
 
 .links {
@@ -20,4 +22,25 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-2) var(--space-4);
+}
+
+.links a {
+  color: var(--text);
+}
+
+.motion {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.motion select {
+  font: inherit;
+  color: var(--text-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding: 0.3rem 0.2rem;
+  margin-left: var(--space-1);
+  min-height: 36px;
 }

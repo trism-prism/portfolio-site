@@ -5,17 +5,46 @@ test('entry to a featured project and its case study', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tristan Morton');
   const featured = publicList.filter((p) => p.visibility === 'featured');
-  const section = page.getByRole('region', { name: 'Selected work' });
-  for (const p of featured) await expect(section.getByRole('link', { name: p.title })).toBeVisible();
+  // Trial: selected work is a tabbed viewer; every featured project has a tab.
+  const viewer = page.getByRole('region', { name: 'Selected work' });
+  await expect(viewer.getByRole('tab')).toHaveText(featured.map((p) => new RegExp(escapeRe(p.title))));
+  // The full index on the entry view links every public project.
+  const index = page.getByRole('region', { name: 'Index of work' });
+  for (const p of publicList) await expect(index.getByRole('link', { name: p.title, exact: true })).toBeVisible();
 
-  await section.getByRole('link', { name: withCaseStudy.title }).click();
-  await expect(page).toHaveURL(`/work/${withCaseStudy.slug}/`);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(withCaseStudy.title);
-  await expect(page.getByRole('heading', { name: 'Highlights' })).toBeVisible();
+  const target = featured.find((p) => p.caseStudy && p.slug !== featured[0]!.slug) ?? withCaseStudy;
+  await viewer.getByRole('tab', { name: new RegExp(escapeRe(target.title)) }).click();
+  await viewer.getByRole('link', { name: `Read about ${target.title}` }).click();
+  await expect(page).toHaveURL(`/work/${target.slug}/`);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(target.title);
+  await expect(page.getByRole('heading', { name: 'At a glance' })).toBeVisible();
   // Case-study headings are authored per project; check one exists and the source link is present.
   await expect(page.getByRole('region', { name: 'Case study' }).getByRole('heading', { level: 2 }).first()).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Source code' })).toHaveAttribute('href', withCaseStudy.links.repo!);
+  await expect(page.getByRole('link', { name: 'Source code', exact: true })).toHaveAttribute('href', target.links.repo!);
+  await expect(page.getByRole('link', { name: 'Read the source code' })).toHaveAttribute('href', target.links.repo!);
 });
+
+test('the selected-work viewer follows the tabs keyboard pattern', async ({ page }) => {
+  await page.goto('/');
+  const featured = publicList.filter((p) => p.visibility === 'featured');
+  const viewer = page.getByRole('region', { name: 'Selected work' });
+  const first = viewer.getByRole('tab').first();
+  await first.focus();
+  await page.keyboard.press('ArrowDown');
+  const second = viewer.getByRole('tab').nth(1);
+  await expect(second).toBeFocused();
+  await expect(second).toHaveAttribute('aria-selected', 'true');
+  await expect(viewer.getByRole('tabpanel')).toHaveCount(1);
+  await expect(viewer.getByRole('link', { name: `Read about ${featured[1]!.title}` })).toBeVisible();
+  await page.keyboard.press('End');
+  await expect(viewer.getByRole('tab').last()).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(first).toBeFocused();
+});
+
+function escapeRe(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
 test('a project without a case study still has a complete page', async ({ page }) => {
   await page.goto(`/work/${withoutCaseStudy.slug}/`);

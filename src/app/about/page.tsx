@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <>
-      <h1>About</h1>
+      <h1 className="page-title">About</h1>
       <div className="prose">
         {intro.paragraphs.map((p) => (
           <p key={p}>{p}</p>

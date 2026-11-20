@@ -29,7 +29,7 @@ test('without a relay, a valid message opens the mail app and never claims it wa
 
   await page.getByLabel('Name').fill('Ada Lovelace');
   await page.getByLabel('Email').fill('ada@example.com');
-  await page.getByLabel('Message').fill('Hello, I enjoyed reading about the engine.');
+  await page.getByRole('textbox', { name: 'Message' }).fill('Hello, I enjoyed reading about the engine.');
   await page.getByRole('button', { name: 'Open in email app' }).click();
 
   const status = page.getByRole('status');

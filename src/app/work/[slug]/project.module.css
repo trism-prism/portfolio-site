@@ -1,44 +1,235 @@
+.head {
+  padding: var(--space-4) 0 var(--space-5);
+  max-width: 62rem;
+}
+
 .crumb {
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+}
+
+.crumb a {
+  color: var(--text-muted);
+}
+
+.title {
+  font-size: clamp(2.6rem, 1.6rem + 3.6vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  margin: 0 0 var(--space-4);
+  max-width: 16ch;
+  overflow-wrap: anywhere;
 }
 
 .summary {
-  font-size: 1.15rem;
+  font-size: var(--step-1);
+  line-height: 1.5;
+  margin: 0;
+  max-width: 48ch;
 }
 
-.facts {
-  display: grid;
-  gap: var(--space-2) var(--space-4);
-  margin: var(--space-4) 0;
-  max-width: var(--measure);
+.significance {
+  margin: var(--space-3) 0 0;
+  max-width: 56ch;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
-.facts > div {
-  display: grid;
-  gap: var(--space-1);
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+  margin: var(--space-5) 0 0;
 }
 
-@media (min-width: 40rem) {
-  .facts > div {
-    grid-template-columns: 8rem 1fr;
+.extraLink {
+  font-family: var(--font-display);
+  font-weight: 600;
+  padding: var(--space-2) 0;
+}
+
+/* Decisions inside a case study: each reads as its own entry, marked by a rule in the accent. */
+.caseStudy h3 {
+  padding-left: var(--space-3);
+  border-left: 2px solid var(--accent);
+}
+
+/* Dark media band: screenshots side by side so comparisons read as comparisons. */
+.band {
+  background: var(--panel);
+  color: var(--on-panel-muted);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+}
+
+@media (min-width: 48rem) {
+  .band {
+    padding: var(--space-5);
   }
 }
 
+.bandInner {
+  display: grid;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+@media (min-width: 56rem) {
+  .band[data-count='2'] .bandInner,
+  .band[data-count='3'] .bandInner {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  }
+
+  /* A phone-shaped screenshot beside a wide one takes a narrow column. */
+  .band:has(.shot[data-portrait]) .bandInner {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
+  }
+}
+
+.shot {
+  margin: 0;
+}
+
+.shot img {
+  width: 100%;
+  border-radius: 2px;
+  background: var(--panel-raised);
+}
+
+.shot[data-portrait] img {
+  max-height: 34rem;
+  width: auto;
+  margin-inline: auto;
+}
+
+.shot figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  color: var(--on-panel-muted);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+.layout > *,
+.bandInner > * {
+  min-width: 0;
+}
+
+@media (min-width: 64rem) {
+  .layout {
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: var(--space-7);
+  }
+
+  .aside {
+    position: sticky;
+    top: var(--space-4);
+    align-self: start;
+  }
+}
+
+.aside {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+}
+
+.facts {
+  margin: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.facts > div {
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border);
+}
+
 .facts dt {
-  font-weight: 600;
+  font-size: var(--step--1);
+  color: var(--text-muted);
 }
 
 .facts dd {
-  margin: 0;
+  margin: var(--space-1) 0 0;
 }
 
 .links {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
+  display: grid;
+  gap: var(--space-1);
+}
+
+.toc {
+  margin-top: var(--space-5);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--rule-strong);
+}
+
+.tocTitle {
+  font-size: var(--step--1);
+  font-weight: 500;
+  color: var(--text-muted);
+  margin: 0 0 var(--space-2);
+}
+
+.toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+.toc a {
+  color: var(--text);
+  text-decoration: none;
+  display: inline-block;
+  padding: 0.2rem 0;
+}
+
+.toc a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.main {
+  max-width: var(--measure);
+}
+
+.main h2 {
+  font-size: var(--step-3);
+  margin: var(--space-6) 0 var(--space-3);
+  scroll-margin-top: var(--space-4);
+}
+
+.main h3 {
+  margin: var(--space-5) 0 var(--space-2);
+  scroll-margin-top: var(--space-4);
+}
+
+.glance h2 {
+  margin-top: 0;
+}
+
+.glance ul {
+  padding-left: 1.1rem;
+}
+
+.glance li + li {
+  margin-top: var(--space-2);
+}
+
+.caseStudy strong {
+  font-weight: 600;
 }
 
 .caseStudy table {
@@ -46,22 +237,81 @@
   width: 100%;
   display: block;
   overflow-x: auto;
+  font-size: 0.95rem;
+  margin: var(--space-4) 0;
 }
 
 .caseStudy th,
 .caseStudy td {
-  border: 1px solid var(--border);
-  padding: var(--space-1) var(--space-2);
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3) var(--space-2) 0;
   text-align: left;
   vertical-align: top;
 }
 
-.pager {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--space-3);
+.caseStudy th {
+  font-family: var(--font-display);
+  font-weight: 600;
+  border-bottom-color: var(--rule-strong);
+}
+
+.caseStudy td {
+  font-variant-numeric: tabular-nums;
+}
+
+.noCase {
   margin-top: var(--space-5);
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.pager {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-7);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--rule-strong);
+}
+
+@media (min-width: 48rem) {
+  .pager {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pagerLink {
+  display: grid;
+  gap: var(--space-1);
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--font-display);
+  padding: var(--space-2) 0;
+}
+
+.pagerLink:visited {
+  color: var(--text);
+}
+
+.pagerNext {
+  text-align: right;
+}
+
+@media (max-width: 47.99rem) {
+  .pagerNext {
+    text-align: left;
+  }
+}
+
+.pagerLabel {
+  font-size: var(--step--1);
+  color: var(--text-muted);
+}
+
+.pagerTitle {
+  font-size: var(--step-2);
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.pagerLink:hover .pagerTitle {
+  color: var(--accent);
 }

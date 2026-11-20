@@ -9,7 +9,7 @@ async function fill(page: Page) {
   await expect(page.locator('form[data-delivery="relay"]')).toBeVisible();
   await page.getByLabel('Name').fill('Ada Lovelace');
   await page.getByLabel('Email').fill('ada@example.com');
-  await page.getByLabel('Message').fill('Hello, I enjoyed reading about the engine.');
+  await page.getByRole('textbox', { name: 'Message' }).fill('Hello, I enjoyed reading about the engine.');
 }
 
 test('success is shown only after the relay accepts, and double clicks send once', async ({ page }) => {
@@ -33,7 +33,7 @@ test('success is shown only after the relay accepts, and double clicks send once
   release();
   await expect(page.getByRole('status')).toContainText('your message was sent');
   expect(calls).toBe(1);
-  await expect(page.getByLabel('Message')).toHaveValue('');
+  await expect(page.getByRole('textbox', { name: 'Message' })).toHaveValue('');
 });
 
 test('a relay failure is reported with the email fallback and keeps the message', async ({ page }) => {
@@ -44,7 +44,7 @@ test('a relay failure is reported with the email fallback and keeps the message'
   const status = page.getByRole('status');
   await expect(status).toContainText('did not accept your message');
   await expect(status.getByRole('link', { name: /@/ })).toHaveAttribute('href', /^mailto:/);
-  await expect(page.getByLabel('Message')).toHaveValue('Hello, I enjoyed reading about the engine.');
+  await expect(page.getByRole('textbox', { name: 'Message' })).toHaveValue('Hello, I enjoyed reading about the engine.');
   await expect(page.getByRole('button', { name: 'Send message' })).toBeEnabled();
 });
 

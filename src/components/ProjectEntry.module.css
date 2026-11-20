@@ -1,26 +1,106 @@
 .entry {
-  padding: var(--space-3) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-4) 0;
   border-top: 1px solid var(--border);
-  max-width: var(--measure);
+  position: relative;
+}
+
+.thumb {
+  order: -1;
+  background: var(--panel);
+  border-radius: var(--radius);
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+}
+
+.period {
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .title {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--step-2);
+  overflow-wrap: anywhere;
 }
 
-.meta {
-  margin: var(--space-1) 0 0;
-  color: var(--text-muted);
-  font-size: 0.95rem;
+.title a {
+  color: var(--text);
+  text-decoration: none;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms var(--ease), color 160ms var(--ease);
+}
+
+.title a:visited {
+  color: var(--text);
+}
+
+.title a:hover,
+.title a:focus-visible {
+  color: var(--accent);
+  background-size: 100% 2px;
+}
+
+/* The whole row is a target for pointer users; the heading link stays the only tab stop. */
+.title a::after {
+  content: '';
+  position: absolute;
+  inset: 0;
 }
 
 .summary {
   margin: var(--space-2) 0 0;
+  max-width: 60ch;
+}
+
+.significance {
+  margin: var(--space-2) 0 0;
+  max-width: 60ch;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .flag {
-  margin: var(--space-1) 0 0;
-  font-size: 0.9rem;
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--step--1);
+  color: var(--accent);
+}
+
+.stack {
+  margin: 0;
   color: var(--text-muted);
+}
+
+@media (min-width: 64rem) {
+  .entry {
+    grid-template-columns: 7rem minmax(0, 1fr) 13rem 14rem;
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  .thumb {
+    order: 0;
+  }
+
+  .period,
+  .stack {
+    padding-top: 0.45rem;
+  }
+
+  .entry:not([data-has-media]) .stack {
+    grid-column: 3 / span 2;
+  }
 }

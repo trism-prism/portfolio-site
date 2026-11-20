@@ -10,6 +10,8 @@ export const projects: Project[] = [
     title: '2D Visibility & Lighting Engine',
     summary:
       'A C++20 engine that computes exactly which area one point light can see among line-segment walls, the calculation behind sharp 2D shadows, with an interactive demo app.',
+    significance:
+      'Exact geometry instead of epsilon tricks, two methods shown to give bit-identical output, and a benchmark that also documents where the faster method stops helping.',
     role: 'Solo project: geometry, both query methods, the demo app, tests and the benchmark harness.',
     period: 'Nov 2026',
     kind: 'systems',
@@ -42,6 +44,12 @@ export const projects: Project[] = [
         caption: 'Grid: the same picture from fewer wall tests.',
       },
     ],
+    preview: {
+      src: '/work/visibility-engine/room-888.webp',
+      alt: 'One light among line-segment walls in the demo app: the lit area fans out in warm tones, with a hard-edged shadow behind every wall.',
+      width: 888,
+      height: 552,
+    },
     visibility: 'featured',
     order: 10,
     caseStudy: 'visibility-engine',
@@ -52,6 +60,8 @@ export const projects: Project[] = [
     title: 'Docs Q&A Copilot',
     summary:
       'Ask questions about two public benefits PDFs (296 pages) and get answers with page-level citations. An evaluation page scores the answers and shows every failure.',
+    significance:
+      'It publishes its own error rate: a frozen 50-question evaluation, held-out questions run once, and the limits of its own scorer.',
     role: 'Solo project: retrieval pipeline, evaluation harness, web app and deployment.',
     period: 'Jun 2026',
     kind: 'ai',
@@ -92,6 +102,8 @@ export const projects: Project[] = [
     title: 'Kiln',
     summary:
       'An installable study planner that turns a syllabus, spreadsheet or LMS calendar into a daily to-do list with reminders, and keeps working offline.',
+    significance:
+      'The sync server only ever stores ciphertext, and device pairing is built so a six-digit code cannot be brute-forced offline.',
     role: 'Solo project: the app, the scheduling engine, encrypted sync and the small Worker behind it.',
     period: 'Sep 2026',
     kind: 'software',
@@ -125,6 +137,8 @@ export const projects: Project[] = [
     title: 'GengaRate',
     summary:
       'A live site for rating anime and manga, with more than 1,600 titles imported from AniList, accounts and friends.',
+    significance:
+      'Careful authentication on a live site: refresh-token reuse detection, cross-tab locking, and database tests an in-memory fake cannot run.',
     role: 'Solo project: React front end, ASP.NET Core API, PostgreSQL schema and hosting.',
     period: 'Aug 2026',
     kind: 'software',
@@ -153,6 +167,8 @@ export const projects: Project[] = [
     title: 'Predicting College Football Upsets',
     summary:
       'An independent statistical study of 3,900 NCAA FBS games asking whether outcomes are predictable beyond the betting market’s closing spread.',
+    significance:
+      'Its main finding is a negative result, defended by catching two data leaks that would have made the model look better than it is.',
     role: 'Solo study: data pipeline, modelling and write-up.',
     period: 'Nov 2026',
     kind: 'data',
@@ -174,6 +190,7 @@ export const projects: Project[] = [
     title: 'Internship Scout Agent',
     summary:
       'A weekly agent that scores new internship postings against a résumé using Claude with tool calling, explains every match, and emails a digest.',
+    significance: 'An LLM agent designed to treat everything it reads as untrusted input.',
     role: 'Solo project: agent loop, data pipeline, scheduling and deployment.',
     period: 'May 2026',
     kind: 'ai',
@@ -196,6 +213,8 @@ export const projects: Project[] = [
     title: 'Heart Disease Prediction',
     summary:
       'A recall-first classifier on the UCI Cleveland heart disease data, served in a web form, with a model card and an external check on other sites. An educational demo, not a diagnostic tool.',
+    significance:
+      'Chooses the simpler model on evidence, and reports where its headline recall fails to carry over to other hospitals.',
     role: 'Solo project: modelling, evaluation, the app and run tracking in PostgreSQL.',
     period: 'Dec 2025 – Jan 2026',
     kind: 'data',
@@ -211,7 +230,7 @@ export const projects: Project[] = [
     },
     media: [],
     visibility: 'listed',
-    order: 70,
+    order: 80,
   },
   {
     id: 'tripwire',
@@ -219,6 +238,8 @@ export const projects: Project[] = [
     title: 'Tripwire',
     summary:
       'An open-source situational-awareness dashboard that loads the GDELT news-event feed every 15 minutes, flags unusual per-country spikes and shows them on a map.',
+    significance:
+      'Alerts checked by hand against their source articles, and tuning ideas dropped when they failed on untouched data.',
     role: 'Solo project: ingestion worker, spike scoring, dashboard and alert audit.',
     period: 'Feb 2026',
     kind: 'data',
@@ -231,7 +252,7 @@ export const projects: Project[] = [
     links: { repo: 'https://github.com/trism-prism/tripwire-awareness-dashboard' },
     media: [],
     visibility: 'listed',
-    order: 80,
+    order: 70,
   },
   // Kept as data for later: public repos, on the CV, not selected for the site yet.
   {

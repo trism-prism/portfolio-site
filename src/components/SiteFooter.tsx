@@ -27,7 +27,9 @@ export default function SiteFooter() {
             <a href={`mailto:${site.email}`}>{site.email}</a>
           </li>
         </ul>
-        <MotionControl />
+        <div className={styles.motion}>
+          <MotionControl />
+        </div>
       </div>
     </footer>
   );

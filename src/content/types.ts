@@ -34,6 +34,8 @@ export type Project = {
   title: string;
   /** One or two sentences: what it is and what it does. */
   summary: string;
+  /** Why it is worth a reader's attention, in one sentence grounded in the evidence below. */
+  significance?: string;
   /** What Tristan personally did on it. */
   role: string;
   /** Free text, e.g. 'Nov 2026'. */
@@ -45,6 +47,8 @@ export type Project = {
   highlights: string[];
   links: ProjectLinks;
   media: Media[];
+  /** The image that stands for the project in lists and previews. Defaults to the first media item. */
+  preview?: Media;
   visibility: ProjectVisibility;
   /** Sort order within the collection; lower comes first. */
   order: number;

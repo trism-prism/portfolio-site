@@ -1,0 +1,143 @@
+.viewer {
+  background: var(--panel);
+  color: var(--on-panel);
+  border-radius: var(--radius);
+  padding: var(--space-3);
+  display: grid;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+}
+
+.panel {
+  display: grid;
+  gap: var(--space-3);
+  position: relative;
+}
+
+/* The image and caption are one pointer target; the link stays the single tab stop. */
+.open::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.panel:hover .frame img {
+  opacity: 0.92;
+}
+
+.frame img {
+  transition: opacity 200ms var(--ease);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+.panel:not([hidden]) {
+  animation: viewer-in 320ms var(--ease);
+}
+
+@keyframes viewer-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.frame {
+  aspect-ratio: 16 / 10;
+  background: var(--panel-raised);
+  border-radius: 2px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.noMedia {
+  font-size: var(--step-3);
+  padding: var(--space-4);
+  margin: 0;
+}
+
+.caption {
+  font-family: var(--font-body);
+}
+
+.caption p {
+  margin: 0 0 var(--space-2);
+  color: var(--on-panel);
+}
+
+.open {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--on-panel);
+  text-decoration-color: var(--panel-accent);
+}
+
+.open:visited {
+  color: var(--on-panel);
+}
+
+.panel:hover .open {
+  text-decoration-thickness: 2px;
+}
+
+.tabs {
+  display: grid;
+  border-top: 1px solid #2d3a49;
+}
+
+.tab {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) 0 var(--space-2) var(--space-3);
+  font: inherit;
+  text-align: left;
+  color: #b8c3cf;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid #2d3a49;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: color 160ms var(--ease), border-color 160ms var(--ease);
+}
+
+.tab:hover {
+  color: var(--on-panel);
+}
+
+.tab[aria-selected='true'] {
+  color: var(--on-panel);
+  border-left-color: var(--panel-accent);
+}
+
+.tab:focus-visible {
+  outline-color: var(--panel-accent);
+  outline-offset: -2px;
+}
+
+.tabTitle {
+  font-weight: 600;
+}
+
+.tabMeta {
+  font-family: var(--font-mono);
+  font-size: var(--step--1);
+  white-space: nowrap;
+}

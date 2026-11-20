@@ -2,7 +2,7 @@
 
 Tristan Morton's portfolio: projects, background and contact, built as a static Next.js site.
 
-**Stage:** rebuild foundation (functional, deliberately plain presentation). A visual design is being trialled separately and is not approved. Nothing here is deployed until it is merged to `main`.
+**Stage:** design trial branch (`feat/portfolio-direction-trial`). The "editorial engineering studio" direction in [DESIGN.md](DESIGN.md) is experimental and awaiting review; see [docs/advisor-handoff.md](docs/advisor-handoff.md). Nothing here is deployed until it is merged to `main`.
 
 ## Where to start
 

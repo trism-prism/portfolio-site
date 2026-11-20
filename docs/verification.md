@@ -51,3 +51,49 @@ The first `full` run had one ESLint warning from linting the generated `out-rela
 - No real-device or screen-reader testing. Focus order was checked by automated Tab sequences plus a visual look, not a full manual audit.
 - Live contact delivery is untested because no relay is configured; only the integration contract is tested.
 - CI (`.github/workflows/ci.yml`) has not run yet: nothing has been pushed.
+
+## Design trial (`feat/portfolio-direction-trial`)
+
+Same environment as above. These results show the trial works. They do not mean the design is approved; it awaits Tristan's review.
+
+### Checks (2026-11-19, after the critic-driven revisions)
+
+| Check | Result |
+|---|---|
+| `./scripts/check.ps1 full` (tsc, ESLint, 31 unit tests, both static builds, 49 browser tests) | pass, 99.7 s |
+| Browser tests carried over from the foundation | all pass. Locators changed where the trial renamed things: "Highlights" became "At a glance", the viewer replaced the "Selected work" link list, and the message box is now found by role. The behaviour each test checks is unchanged. |
+| New: selected-work viewer keyboard pattern (arrow keys, End, wrap-around, one visible panel) | pass |
+| axe on 12 routes + 404, with the OS set to light and to dark (the trial page is light-only in both) | 0 violations |
+| No horizontal overflow at 320 / 390 / 1440 px; long-title stress at 320 px | pass after a fix (below) |
+
+### Defects found and fixed during the trial
+
+- All viewer panels showed at once: the panel's `display: grid` overrode the `hidden` attribute. Fixed with `.panel[hidden] { display: none }`.
+- Horizontal overflow at 320 px on the Docs Q&A page (67 px) and in the long-title stress test (1,892 px). Grid items took the width of their longest content. Fixed with `minmax(0, 1fr)` columns, `min-width: 0` on grid children and `overflow-wrap: anywhere` on titles.
+- The contact section's label "Send a message" made `getByLabel('Message')` ambiguous. The tests now find the field by role.
+
+### Independent critique (one read-only reviewer pass)
+
+Verdict: **revise, keep the direction**. Material findings and what was done:
+
+| Finding | Action |
+|---|---|
+| Mobile entry showed no work in the first screen | Source order is now name → selected work → introduction; at 390×844 the lead image and summary are in the first screen. |
+| The entry's "Start here" links repeated the header and read as a funnel | Removed. |
+| The viewer image was a small, unreadable full-app screenshot; only the text link opened the project; inactive tabs looked faint | A new optional `preview` image field gives the engine a cropped demo image. The image and caption are now one pointer target, while the link stays the only tab stop. Inactive tab text is brighter (`#b8c3cf` on `#121b26`). |
+| Index rows looked out of date order, and thumbnails were uneven | The index is split into "Featured" (curated, all with images) and "More work, newest first" (Heart Disease and Tripwire `order` swapped). |
+| Case studies read as a flat wall of text; secondary links were only in the side column | Decision sub-headings get an accent rule. Each project's other links (Design decisions, Benchmark, Evaluation page) sit beside the main buttons. |
+| The footer motion control is odd visible chrome | Restyled to be quiet. **Kept**: the product brief asks for an optional explicit override. |
+| Disagreed: the Formwork intern title "positions for internships" | **Kept as is.** It states the current role factually and doesn't target a role type. The intro wording is a draft Tristan will rewrite anyway. |
+| Not addressed: "scale and discovery" rests mostly on the name's size; serif everywhere feels uniform; the media band could carry a diagram or benchmark chart | Left for Tristan's review. These are identity questions, not defects. |
+
+### Screenshots (Playwright Chromium, not real devices)
+
+In `docs/screenshots/trial/`: entry at 1440×1000 (fold and full page), 390×844 (fold and full page) and 320 (full page); the engine and Docs Q&A case studies at desktop size, and Docs Q&A on mobile; Kiln (no case study) and Tripwire (no images, mobile); contact at desktop, with validation errors, and on mobile; the entry with reduced motion. Regenerate with `node scripts/capture.mjs` against a served build.
+
+### Trial limits
+
+- The design was judged from screenshots and the in-app browser at set viewport sizes. No real phones, no screen reader.
+- Motion was checked only for presence and absence (reduced motion removes the viewer fade). How it feels was not evaluated by anyone but me.
+- Pages outside the slice (About, Work and the 404 page) inherit the tokens and type but were not designed. They are readable, and passed the overflow and axe tests.
+- `next build` now downloads three Google Fonts at build time, so an offline build fails until they are cached.

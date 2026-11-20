@@ -12,8 +12,8 @@ export default function WorkPage() {
   const list = publicProjects();
   return (
     <>
-      <h1>Work</h1>
-      <p className="prose">
+      <h1 className="page-title">Work</h1>
+      <p className="lede">
         {list.length} projects. Each has its own page with what I did, the technology and links to the code where
         it is public. Some also have a longer case study.
       </p>

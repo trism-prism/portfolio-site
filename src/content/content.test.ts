@@ -46,7 +46,7 @@ describe('project records', () => {
 
   it('point at media files that exist, with the declared dimensions and alt text', () => {
     for (const p of projects) {
-      for (const m of p.media) {
+      for (const m of [...p.media, ...(p.preview ? [p.preview] : [])]) {
         const file = path.join(publicDir, m.src);
         expect(existsSync(file), `${p.id}: ${m.src}`).toBe(true);
         const size = imageSize(readFileSync(file));
