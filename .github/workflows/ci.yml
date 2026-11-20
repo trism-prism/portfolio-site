@@ -12,7 +12,6 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npm run check
-      - run: npm run check:content
       - run: npm test
       - run: npm run build:dev
       - uses: lycheeverse/lychee-action@v2

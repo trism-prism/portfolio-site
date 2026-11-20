@@ -1,97 +1,92 @@
-import type { Metadata } from 'next';
-import { existsSync } from 'node:fs';
-import { join } from 'node:path';
-import { Inter, JetBrains_Mono } from 'next/font/google';
-import Link from 'next/link';
-import { config } from '@/config';
-import { ActiveNav } from '@/components/ActiveNav';
-import { Icon, type IconName } from '@/components/Icon';
-import { ThemeToggle } from '@/components/ThemeToggle';
-import { CursorLight } from '@/components/CursorLight';
-import { EmailContact } from '@/components/EmailContact';
+import type { Metadata, Viewport } from 'next';
+import { Bricolage_Grotesque, Instrument_Serif, Inter, JetBrains_Mono, Yellowtail } from 'next/font/google';
+import { personal } from '@/data/personal';
+import { hasPlaceholders } from '@/data/audit';
+import { MotionProvider } from '@/lib/motion';
+import { motionBootScript, themeBootScript } from '@/lib/boot';
+import { ThemeController } from '@/components/shell/Theme';
+import { Nav } from '@/components/shell/Nav';
+import { AmbientBackground, ProgressBar, TechField } from '@/components/shell/Ambient';
+import { FloatingControls, IntroSplash, Konami, SmoothScroll, Toasts } from '@/components/shell/Chrome';
+import { CommandPalette } from '@/components/shell/CommandPalette';
+import { Annotations } from '@/components/shell/Annotations';
+import { CvViewer } from '@/components/shell/CvViewer';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' });
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains', display: 'swap' });
+const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage', display: 'swap', axes: ['opsz'] });
+const instrument = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
+const yellowtail = Yellowtail({ subsets: ['latin'], weight: '400', variable: '--font-yellowtail', display: 'swap' });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(config.siteUrl),
-  title: { default: `${config.name} | Software engineer`, template: `%s | ${config.name}` },
-  description: config.description,
-  icons: { icon: { url: '/favicon.svg?v=2', type: 'image/svg+xml' } },
-  alternates: { canonical: './' },
-  openGraph: { type: 'website', siteName: config.name },
+  metadataBase: new URL(personal.siteUrl),
+  title: { default: `${personal.name} · Software engineer`, template: `%s · ${personal.name}` },
+  description: personal.description,
+  icons: { icon: { url: '/favicon.svg', type: 'image/svg+xml' } },
+  alternates: { canonical: './', types: { 'application/rss+xml': '/rss.xml' } },
+  openGraph: { type: 'website', siteName: personal.name, title: personal.name, description: personal.description },
   twitter: { card: 'summary_large_image' },
+  // Private worktree: never index while any placeholder remains.
+  robots: hasPlaceholders ? { index: false, follow: false } : undefined,
 };
 
-const links: { name: IconName; label: string; href: string }[] = [
-  { name: 'resume', label: 'Resume (PDF)', href: '/resume.pdf' },
-  { name: 'github', label: 'GitHub', href: config.github },
-  { name: 'linkedin', label: 'LinkedIn', href: config.linkedin },
-  { name: 'email', label: 'Email', href: `mailto:${config.email}` },
-];
+export const viewport: Viewport = { themeColor: '#0a1113', colorScheme: 'dark light' };
 
-const hasResume = existsSync(join(process.cwd(), 'public', 'resume.pdf'));
-// Pending URLs stay in the markup for the strict placeholder guard, without becoming broken links.
-
-// Applies the saved theme before first paint to avoid a flash.
-const themeScript = "try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}";
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      name: personal.name,
+      jobTitle: 'Software Engineering & AI Systems Intern',
+      url: personal.siteUrl,
+      email: `mailto:${personal.email}`,
+      address: { '@type': 'PostalAddress', addressLocality: 'Leesburg', addressRegion: 'VA', addressCountry: 'US' },
+      alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'Northern Virginia Community College' }],
+      sameAs: [personal.links.github, personal.links.linkedin],
+    },
+    { '@type': 'WebSite', name: personal.name, url: personal.siteUrl },
+  ],
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable}`} suppressHydrationWarning>
+    <html
+      lang="en"
+      data-motion="full"
+      className={`${inter.variable} ${mono.variable} ${bricolage.variable} ${instrument.variable} ${yellowtail.variable}`}
+      suppressHydrationWarning
+    >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript + motionBootScript }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body>
-        <CursorLight />
-        <a href="#content" className="absolute left-4 -top-16 z-10 bg-accent px-4 py-2 text-accent-fg focus:top-4">
-          Skip to content
-        </a>
-        <div className="site-shell mx-auto max-w-7xl px-6 py-12 md:px-12 md:py-16 lg:flex lg:justify-between lg:gap-4 lg:py-0">
-          <header className="identity-panel lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-[46%] lg:shrink-0 lg:self-start lg:flex-col lg:justify-between lg:py-24">
-            <div>
-              <h1 className="text-4xl font-bold tracking-tight text-head sm:text-5xl">
-                <Link href="/">{config.name}</Link>
-              </h1>
-              <p className="mt-3 text-lg font-medium text-head sm:text-xl">{config.tagline}</p>
-              <ActiveNav />
-            </div>
-            <div className="mt-8 flex items-center gap-5 lg:mt-0">
-              <ul className="flex items-center gap-1">
-                {links.map((l) => l.href.includes('{{') || (l.name === 'resume' && !hasResume) ? (
-                  <li key={l.name}>
-                    <span
-                      role="link"
-                      aria-label={`${l.label} (not yet available)`}
-                      aria-disabled="true"
-                      title={`${l.label} (not yet available)`}
-                      data-pending-url={l.href.includes('{{') ? l.href : undefined}
-                      className="flex h-11 w-11 items-center justify-center text-fg opacity-50"
-                    >
-                      <Icon name={l.name} />
-                    </span>
-                  </li>
-                ) : (
-                  <li key={l.name}>
-                    {l.name === 'email' ? <><EmailContact /><noscript><a href={l.href} className="text-sm text-accent">{config.email}</a></noscript></> : <a
-                      href={l.href}
-                      aria-label={l.label}
-                      title={l.label}
-                      className="flex h-11 w-11 items-center justify-center text-fg hover:text-accent"
-                    >
-                      <Icon name={l.name} />
-                    </a>}
-                  </li>
-                ))}
-              </ul>
-              <ThemeToggle />
-            </div>
-          </header>
-          <main id="content" tabIndex={-1} className="min-w-0 pt-12 lg:w-[54%] lg:py-24">
-            {children}
-          </main>
-        </div>
+        <MotionProvider>
+          <a href="#main" className="skip-link btn btn-primary">
+            Skip to content
+          </a>
+          <AmbientBackground />
+          <TechField />
+          <ProgressBar />
+          <IntroSplash />
+          <Nav />
+          <SmoothScroll />
+          <ThemeController />
+          {children}
+          <FloatingControls />
+          <CommandPalette />
+          <Annotations />
+          <CvViewer />
+          <Toasts />
+          <Konami />
+        </MotionProvider>
+        <noscript>
+          <div style={{ position: 'fixed', bottom: 0, insetInline: 0, padding: 12, background: '#101a1d', color: '#eef5f4', textAlign: 'center', zIndex: 100 }}>
+            Animations need JavaScript; all content is still here. Résumé: <a href="/resume.pdf">resume.pdf</a> · Email: {personal.email}
+          </div>
+        </noscript>
       </body>
     </html>
   );
