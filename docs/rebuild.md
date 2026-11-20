@@ -10,14 +10,14 @@ The one current-state record for the rebuild. Update it in place; do not add dat
 | Preservation tag (committed state only) | `preserve/feat-rebuild-2026-11-19` → `1e5b867` (local, not pushed) |
 | Base | `main` @ `cbfc0a9`, equal to `origin/main` after `git fetch` on 2026-11-19 |
 | Foundation branch / worktree | `feat/portfolio-rebuild` at `C:\Studio\_trials\portfolio-site-rebuild` |
-| Foundation checkpoint SHA | recorded in the commit that follows this checkpoint; see "Status" |
+| Foundation checkpoint SHA | `781c3b5b6b34e028fcc575217270aa6589277301` (passing `check:full`) |
 | Trial branch / worktree | `feat/portfolio-direction-trial` at `C:\Studio\_trials\portfolio-site-direction-trial` (created from the foundation SHA) |
 
 Why `main` as the base: it is what production serves and what the Vercel project builds, it equals `origin/main`, and `feat/rebuild` carries a design direction that is retired, not a foundation to build on.
 
 ## Status
 
-- **Foundation:** complete and passing `check:full` locally (see [verification.md](verification.md)).
+- **Foundation:** complete at `781c3b5`, passing `check:full` locally (see [verification.md](verification.md)). The trial branch starts from that commit.
 - **Trial:** waiting for Tristan's chosen direction.
 - **Blocked on configuration (not code):** live contact delivery needs a relay account (see Open).
 
