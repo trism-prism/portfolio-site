@@ -1,0 +1,26 @@
+.entry {
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--border);
+  max-width: var(--measure);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.meta {
+  margin: var(--space-1) 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.summary {
+  margin: var(--space-2) 0 0;
+}
+
+.flag {
+  margin: var(--space-1) 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}

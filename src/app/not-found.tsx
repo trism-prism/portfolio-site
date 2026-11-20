@@ -2,12 +2,20 @@ import Link from 'next/link';
 
 export default function NotFound() {
   return (
-    <section>
-      <h2 className="text-3xl font-bold tracking-tight text-head">Page not found</h2>
-      <p className="mt-3">
-        That page doesn&apos;t exist. Go <Link href="/" className="font-medium text-head hover:text-accent">home</Link> or see the{' '}
-        <Link href="/#projects" className="font-medium text-head hover:text-accent">projects</Link>.
-      </p>
-    </section>
+    <div className="prose">
+      <h1>Page not found</h1>
+      <p>There is nothing at this address. It may have moved, or the link may be mistyped.</p>
+      <ul>
+        <li>
+          <Link href="/">Home</Link>
+        </li>
+        <li>
+          <Link href="/work/">All projects</Link>
+        </li>
+        <li>
+          <Link href="/contact/">Contact</Link>
+        </li>
+      </ul>
+    </div>
   );
 }

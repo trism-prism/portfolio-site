@@ -11,21 +11,15 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: npm run check
-      - run: npm run check:content
-      - run: npm test
-      - run: npm run build:dev
+      - run: npm run check:quick
+      - run: npm run build:e2e
+      # Internal links and assets in the production build must resolve.
       - uses: lycheeverse/lychee-action@v2
         with:
-          args: --no-progress --offline --root-dir "$(pwd)/out" './out/**/*.html'
+          args: --no-progress --offline --root-dir "${{ github.workspace }}/out" './out/**/*.html'
           fail: true
-      - uses: lycheeverse/lychee-action@v2
-        with:
-          # LinkedIn blocks bots; Streamlit uses 303 redirects. Hosting URL remains provisional.
-          args: >-
-            --no-progress --root-dir "$(pwd)/out" --max-retries 2 --accept 200,303,403,429
-            --exclude '\{\{' --exclude 'localhost'
-            --exclude '^https://www\.linkedin\.com/in/tristan-morton/?$'
-            --exclude '^https://portfolio-site\.vercel\.app/'
-            './out/**/*.html'
-          fail: true
+      - run: npx playwright install --with-deps chromium
+      - run: npm run e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with: { name: playwright-traces, path: test-results, retention-days: 7 }

@@ -1,10 +1,11 @@
 import type { MetadataRoute } from 'next';
-import { config } from '@/config';
-import { getCaseStudies } from '@/lib/content';
+import { publicProjects } from '@/lib/projects';
+import { site } from '@/site';
 
 export const dynamic = 'force-static';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const paths = ['/', ...getCaseStudies().map((p) => `/projects/${p.slug}/`)];
-  return paths.map((p) => ({ url: new URL(p, config.siteUrl).href }));
+  const pages = ['/', '/work/', '/about/', '/contact/'];
+  const projectPages = publicProjects().map((p) => `/work/${p.slug}/`);
+  return [...pages, ...projectPages].map((path) => ({ url: new URL(path, site.url).toString() }));
 }

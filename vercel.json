@@ -1,0 +1,7 @@
+{
+  "redirects": [
+    { "source": "/projects/heart-disease", "destination": "/work/heart-disease-prediction/", "permanent": true },
+    { "source": "/projects/heart-disease/", "destination": "/work/heart-disease-prediction/", "permanent": true },
+    { "source": "/projects/:path*", "destination": "/work/", "permanent": true }
+  ]
+}

@@ -3,5 +3,11 @@ out
 .next
 .vercel
 .env*
+!.env.example
 next-env.d.ts
 *.tsbuildinfo
+
+# Test and build output
+out-relay
+playwright-report
+test-results

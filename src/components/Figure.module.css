@@ -1,0 +1,19 @@
+.figure {
+  margin: var(--space-4) 0;
+}
+
+.figure img {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.portrait {
+  max-height: 32rem;
+  width: auto;
+}
+
+.caption {
+  margin-top: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
