@@ -22,7 +22,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Tech tiles | Kept, with the same content, restyled to the motif. |
 | Impression | **Craft and care**: obsessive attention to detail; everything made by hand and made well. |
 | Themed vocabulary | **Structure, plain words.** Map, route, legend and constellation names are real features; labels and most titles use plain words. No catalogue numbers (TM-001), log numbers, compass bearings or "Set a course"-style copy. A recruiter never decodes a term. |
-| Name in the hero | **Handwritten script.** The face is chosen from a comparison of 3–4 alternatives, because Yellowtail is the reference site's face for its owner's name. |
+| Name in the hero | **Sacramento** (handwritten monoline script, SIL OFL), chosen over Pinyon Script, Herr Von Muellerhoff, Caveat and Yellowtail (`docs/design/mockups/name-01-scripts.png`). Used for the name and signature only; small chart labels such as constellation names stay in Instrument Serif italic. Yellowtail is retired. |
 | Skills | **Keep the moving marquee rails**, restyled to the motif. Not constellation cells. |
 | Footer scenes | **Recast all four into the night-sky world** as a switchable set. |
 | Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. |
@@ -71,6 +71,7 @@ spectral colour, used for its star, its legend mark and its plate corners, never
 **Type**
 - Display: Bricolage Grotesque, bold, tight tracking (headings, names, numbers).
 - Accent: Instrument Serif italic (one accent word per heading; constellation names).
+- Signature: Sacramento, for the owner's name (hero, footer signature) only.
 - Body: Inter.
 - Chart labels: JetBrains Mono, uppercase, wide tracking, small (11–12px); only for annotations, never prose.
 
@@ -107,11 +108,10 @@ spectral colour, used for its star, its legend mark and its plate corners, never
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Script face for the name**: compare 3–4 handwritten faces (not Yellowtail) on the real hero.
-2. **Light mode values**: twilight sky palette, star treatment and contrast checks.
-3. **Footer scene concepts**: four night-sky scenes replacing Lightroom, Game day, Trivia and Orbit.
-4. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
-5. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+1. **Light mode values**: twilight sky palette, star treatment and contrast checks.
+2. **Footer scene concepts**: four night-sky scenes replacing Lightroom, Game day, Trivia and Orbit.
+3. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
+4. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules
 
