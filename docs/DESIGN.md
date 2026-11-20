@@ -66,7 +66,26 @@ sections of this file; anything not covered here is a design question, not an im
 Kind colours follow the idea that astronomers class stars by their spectrum: each project type has a
 spectral colour, used for its star, its legend mark and its plate corners, never for body text.
 
-**Colour (light):** twilight sky (decided); values not designed yet.
+**Colour (light): twilight sky** (direction decided; values proposed, pending approval)
+
+Source of truth for both themes: `src/components/lab/themeTokens.ts`. Every text and signal colour is
+tested at WCAG AA (4.5:1) against each sky stop and against cards composited on them
+(`src/components/lab/tokens.test.ts`, 22 checks, all passing). Comparison: `docs/design/mockups/theme-*`.
+
+| Token | Dark | Twilight |
+|---|---|---|
+| Sky top / mid / horizon | `#141428` / `#0a0b16` / `#05060b` | `#b8c6e0` / `#cdd7e9` / `#ecdfd8` (dusk blue warming to the horizon) |
+| `ink` / `ink-2` / `ink-3` | `#eceaf3` / `#a9a6b8` / `#8a879c` | `#131a2e` / `#35405e` / `#47506e` |
+| Card fill / border | `rgba(17,18,32,.74)` / `rgba(255,255,255,.09)` | `rgba(250,251,255,.62)` / `rgba(19,26,46,.12)`, with a soft shadow |
+| Stars | white | white with a faint navy halo so they stay visible on a pale sky |
+| Constellation lines | `rgba(236,234,243,.35)` | `rgba(19,26,46,.42)` |
+| Serif accent | `#cfc9f5` | `#563ca7` |
+| Buttons | `#eceaf3` on `#07080d` | `#f4f6fb` on `#131a2e` |
+| Software / Systems / AI / Data | `#5eead4` / `#60a5fa` / `#a78bfa` / `#fbbf24` | `#095951` / `#1944bd` / `#6026c5` / `#7b4304` |
+| Rose / Route | `#f472b6` / `#fbbf24` | `#99144e` / `#8b3708` |
+
+In twilight, project covers stay on dark panels (`#0d1220`) so the cover animations are unchanged, per the
+decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 **Type**
 - Display: Bricolage Grotesque, bold, tight tracking (headings, names, numbers).
@@ -108,7 +127,7 @@ spectral colour, used for its star, its legend mark and its plate corners, never
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Light mode values**: twilight sky palette, star treatment and contrast checks.
+1. **Light mode approval**: twilight values above are proposed and contrast-checked; awaiting Tristan's look.
 2. **Footer scene concepts**: four night-sky scenes replacing Lightroom, Game day, Trivia and Orbit.
 3. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
 4. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
