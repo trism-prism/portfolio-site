@@ -475,7 +475,7 @@ export function LogSheet() {
       <div className="grid grid-cols-[200px_1fr] gap-10">
         <div className="space-y-2">
           {Object.entries(newsTypeLabels).map(([k, l]) => (
-            <p key={k} className="flex items-center gap-3 font-mono text-[12.5px]" style={{ color: k === 'launch' ? INK : MUTED }}>
+            <p key={k} className="flex items-center gap-3 font-mono text-[12.5px]" style={{ color: MUTED }}>
               <StarGlyph color={typeTone[k]} /> {l}
               <span className="ml-auto" style={{ color: DIM }}>
                 {news.filter((n) => n.type === k).length}
