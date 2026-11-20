@@ -1,6 +1,6 @@
 # Advisor handoff
 
-Copy the block below into the advisor chat. It reflects the state on 2026-11-19. The trial commit SHA is in `docs/rebuild.md` and the final report.
+Copy the block below into the advisor chat. It reflects the state on 2026-11-20.
 
 ```text
 Act as my independent portfolio advisor. Evaluate this implemented trial against
@@ -30,8 +30,8 @@ Repository/worktree paths, branch names, base/foundation/trial commit SHAs:
 - Foundation: feat/portfolio-rebuild @ 781c3b5 (+ e3aaa58 records the SHA),
   worktree C:\Studio\_trials\portfolio-site-rebuild.
 - Trial: feat/portfolio-direction-trial, branched from 781c3b5, worktree
-  C:\Studio\_trials\portfolio-site-direction-trial. Trial commit SHA: see
-  docs/rebuild.md in that worktree.
+  C:\Studio\_trials\portfolio-site-direction-trial. Trial commit 73b20cb
+  (92b88f5 and later commits only update docs).
 
 Preservation status of the original dirty checkout:
 - C:\Studio\code\web\portfolio-site on feat/rebuild @ 1e5b867, untouched:
@@ -112,7 +112,12 @@ Known limitations, unresolved design concerns and reviewer findings:
   study repo is private so it has no link; GengaRate has two live URLs.
 
 Owner approval status and specific decisions needed:
-- NOT approved. Decide: keep / revise / reject this direction; whether the
+- NOT approved. My first reaction is "revise", but I have not chosen what to
+  revise and no revisions have been made; I want your assessment first.
+  Candidate revisions: make scale come from the work rather than the size of
+  my name; sans for interface and summaries, serif only for long reading; one
+  real diagram or chart in a case study; replace the tabbed viewer.
+- Decide: keep / revise / reject this direction; whether the
   tabbed viewer earns its place; light-only vs adding a dark variant; whether
   to add diagrams/charts to case-study media; contact relay provider
   (Formspree or Web3Forms); whether to publish minivmm.
