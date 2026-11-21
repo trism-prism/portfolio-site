@@ -238,6 +238,12 @@ body {
   color-scheme: dark;
 }
 
+/* Medal colours for Achievements: --medal is read by the card's tone bar and the star; twilight uses the route colour for all three. */
+.medal-gold { --medal: #fbbf24; }
+.medal-silver { --medal: #c8cbd8; }
+.medal-bronze { --medal: #d08a52; }
+:root[data-theme='light'] :is(.medal-gold, .medal-silver, .medal-bronze) { --medal: var(--route); }
+
 /* ---------- Placeholders ---------- */
 .ph-text {
   color: inherit;
