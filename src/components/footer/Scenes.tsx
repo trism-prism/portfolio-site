@@ -7,10 +7,10 @@
 //   Orbit               the moth circles an armillary sphere; holding the email button speeds it up
 // Drawing and spec text come from the approved lab frames (src/components/lab/FooterMoth.tsx), recomposed at 720 × 240.
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { boxWalls, polyPath, raySeg, visibility, type Pt, type Seg } from '@/lib/visibility';
-import { clamp, easeInOut, easeOut, lerp, seg } from '@/lib/kit';
-import { FW, FH, GROUND, GOLD, OUT, STONE, LAB, Sky, Hills, Note, Flying, Seated, r1 } from './Night';
+import { clamp, easeInOut, easeOut, lerp, mulberry32, seg } from '@/lib/kit';
+import { FW, FH, GROUND, GOLD, OUT, STONE, LAB, Sky, Hills, Note, Flying, Seated, Spark, makeStars, r1 } from './Night';
 
 export { FW, FH };
 export type FooterSceneProps = { t: number; reduced: boolean; hold: number; idle: boolean };
@@ -198,11 +198,120 @@ export function Lantern({ t, reduced, idle }: FooterSceneProps) {
   );
 }
 
+/* ---------------- 2. Star trails ----------------
+   Scrolling the page is a long exposure: scroll speed turns the sky around the pole star and the stars draw
+   trails; scrolling back rewinds them. The moth on an old survey pillar watches. */
+const POLE = { x: 500, y: 60 };
+const SPEC = ['#5eead4', '#60a5fa', '#a78bfa', '#f472b6', '#fbbf24'];
+const PILLAR_X = 200;
+/** Degrees of exposure added per px/ms of scroll speed, per 66 ms sample. */
+const EXPOSURE_GAIN = 4;
+
+/** An arc of `sweep` radians around the pole from angle `a0`, split in two when it is longer than a half turn. */
+function arcPath(rad: number, a0: number, sweep: number) {
+  const at = (a: number) => `${r1(POLE.x + rad * Math.cos(a))} ${r1(POLE.y + rad * Math.sin(a))}`;
+  const r = r1(rad);
+  if (sweep <= Math.PI) return `M${at(a0)} A${r} ${r} 0 0 1 ${at(a0 + sweep)}`;
+  return `M${at(a0)} A${r} ${r} 0 0 1 ${at(a0 + sweep / 2)} A${r} ${r} 0 0 1 ${at(a0 + sweep)}`;
+}
+
+export function StarTrails({ t, reduced, idle }: FooterSceneProps) {
+  const [exp, setExp] = useState(40);
+  const [cheerAt, setCheerAt] = useState(-9);
+  const [prevK, setPrevK] = useState(0);
+  const lastT = useRef(t);
+
+  // Scroll speed is the exposure: down adds in proportion to speed, up rewinds (same 15 Hz sampling as before).
+  useEffect(() => {
+    if (reduced) return;
+    let lastY = window.scrollY;
+    let lastTime = performance.now();
+    const on = () => {
+      const now = performance.now();
+      if (now - lastTime < 66) return;
+      const v = (window.scrollY - lastY) / (now - lastTime);
+      lastY = window.scrollY;
+      lastTime = now;
+      setExp((e) => clamp(e + v * EXPOSURE_GAIN, 0, 360));
+    };
+    window.addEventListener('scroll', on, { passive: true });
+    return () => window.removeEventListener('scroll', on);
+  }, [reduced]);
+
+  // Idle: the exposure fades back to nothing over about four seconds.
+  useEffect(() => {
+    const dt = clamp(t - lastT.current, 0, 0.1);
+    lastT.current = t;
+    if (idle && dt) setExp((e) => (e < 0.4 ? 0 : e * Math.exp(-dt * 1.2)));
+  }, [t, idle]);
+
+  const k = Math.floor(exp / 90);
+  if (k !== prevK) {
+    if (k > prevK && !reduced) setCheerAt(t);
+    setPrevK(k);
+  }
+
+  const shown = reduced ? 40 : exp;
+  const stars = useMemo(() => {
+    const rnd = mulberry32(27);
+    return makeStars(5, 100).map(([x, y, s, o], i) => {
+      const dx = x - POLE.x;
+      const dy = y - POLE.y;
+      return { x, y, rad: Math.max(Math.hypot(dx, dy), 4), a0: Math.atan2(dy, dx), w: r1(0.5 + rnd() * 0.6), o: r1(0.25 + rnd() * 0.55), c: i % 9 === 0 ? SPEC[i % 5] : '#fff', s, dot: o };
+    });
+  }, []);
+  const trails = useMemo(() => {
+    const sweep = (shown * Math.PI) / 180;
+    return stars.map((s, i) => <path key={i} d={sweep > 0.002 ? arcPath(s.rad, s.a0, sweep) : ''} stroke={s.c} strokeWidth={s.w} opacity={s.o} />);
+  }, [stars, shown]);
+
+  const cheering = !reduced && !idle && t - cheerAt < 0.9;
+  const cap = r1(GROUND - 86 * LAB);
+  return (
+    <g>
+      <defs>
+        <clipPath id="trails-sky">
+          <rect width={FW} height={GROUND} />
+        </clipPath>
+      </defs>
+      <Sky seed={5} stars={false} />
+      {stars.map((s, i) => (
+        <circle key={i} cx={s.x} cy={s.y} r={s.s} fill={s.c} opacity={s.dot} />
+      ))}
+      <g clipPath="url(#trails-sky)" fill="none" strokeLinecap="round">
+        {trails}
+      </g>
+      <circle cx={POLE.x} cy={POLE.y} r="9" fill="#fff" opacity=".12" />
+      <Spark x={POLE.x} y={POLE.y} s={5} c="#fff" />
+      <Hills />
+      {/* an old survey pillar */}
+      <g transform={`translate(${PILLAR_X} ${GROUND}) scale(${LAB})`}>
+        <polygon points="-20,2 20,2 14,-78 -14,-78" fill={STONE} stroke={OUT} strokeWidth="1.4" />
+        <rect x="-18" y="-86" width="36" height="9" rx="2" fill="#2f3762" stroke={OUT} strokeWidth="1.2" />
+        <rect x="-7" y="-54" width="14" height="9" rx="1.5" fill={GOLD} opacity=".75" />
+        <path d="M0 -52 L4 -47 H-4Z" fill={OUT} opacity=".6" />
+      </g>
+      {cheering ? (
+        <Flying cx={PILLAR_X} cy={r1(cap - 26)} w={64} pose="cheer" />
+      ) : (
+        <Seated cx={PILLAR_X} base={cap} size={58} pose={idle ? 'sleep' : 'sit'} />
+      )}
+      <Note>EXPOSURE {Math.round(shown)}° · SCROLL SPEED TURNS THE SKY</Note>
+    </g>
+  );
+}
+
 export const footerScenes = [
   {
     id: 'lantern',
     name: 'Lantern',
     Scene: Lantern,
     label: 'Your pointer carries a lantern across a hilltop of standing stones; the lit area is a real visibility polygon, the idea behind the visibility engine project.',
+  },
+  {
+    id: 'trails',
+    name: 'Star trails',
+    Scene: StarTrails,
+    label: 'Scrolling the page is a long exposure: scroll speed turns the sky around the pole star and the stars draw trails. Scrolling back rewinds them.',
   },
 ] as const;
