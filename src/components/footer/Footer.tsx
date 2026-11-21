@@ -105,7 +105,9 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col items-center gap-4 text-center">
+        <p className="font-sig mt-8 text-center text-[30px] leading-none text-fg">{personal.name}</p>
+
+        <div className="mt-10 flex flex-col items-center gap-4 text-center">
           <p className="display text-[26px] text-fg">
             Say <span className="serif-accent">hello</span>
           </p>
