@@ -127,7 +127,12 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Footer scene concepts**: four night-sky scenes replacing Lightroom, Game day, Trivia and Orbit.
+1. **Footer scene concepts** (proposed, frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`):
+   - **Lantern** (replaces Lightroom): pointer moves the prism's lantern among standing stones; real visibility polygon; lit people wave, shadowed people doze.
+   - **Star trails** (replaces Game day): scroll speed is a long exposure turning the sky around the pole star; scrolling back rewinds.
+   - **Name the constellation** (replaces Trivia): stars form a figure from one project; the right guess sends a shooting star to the email button.
+   - **Orbit** (recast): the cast circle the prism on a hilltop; holding the email button speeds them up and the stars streak.
+   All four keep the interaction of the scene they replace, stay on a night sky in both themes, and have a defined Reduced-motion frame.
 2. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
 3. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
