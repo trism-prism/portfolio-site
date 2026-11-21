@@ -17,7 +17,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Theme | Dark is the default; a properly designed light option is required. |
 | Palette | Prismatic spectrum: mostly neutral, with a restrained spectrum used as signal colour. |
 | Motif | **Constellations & cartography** carries the personal references (wonder, scale, discovery, traces of history). Chosen over light & refraction after comparing six sections in both. |
-| Prism character | Keeps its full role: logo, roaming heading mascot, footer cast. Art can be refined. |
+| Characters (revised 2026-11-20) | **No human characters** anywhere, including the footer cast. Tristan is **not a fan of the current prism character**: the mascot is open again, and the prism is only one option. A mascot can still play the roles the prism had (logo, roaming heading mascot, footer star), pending the new choice. Supersedes the earlier "prism keeps its full role" decision. |
 | Terminal styling | Removed: no shell prompt, `cd` commands, git-push confirmation or git-hash labels. |
 | Tech tiles | Kept, with the same content, restyled to the motif. |
 | Impression | **Craft and care**: obsessive attention to detail; everything made by hand and made well. |
@@ -127,14 +127,15 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Footer scene concepts** (proposed, frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`):
+1. **Mascot / character** (top priority): explore non-human alternatives to the prism, staying open beyond the prism (it remains one option). Present several concepts side by side before any scene work.
+2. **Footer scene concepts.** Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
    - **Lantern** (replaces Lightroom): pointer moves the prism's lantern among standing stones; real visibility polygon; lit people wave, shadowed people doze.
    - **Star trails** (replaces Game day): scroll speed is a long exposure turning the sky around the pole star; scrolling back rewinds.
    - **Name the constellation** (replaces Trivia): stars form a figure from one project; the right guess sends a shooting star to the email button.
    - **Orbit** (recast): the cast circle the prism on a hilltop; holding the email button speeds them up and the stars streak.
    All four keep the interaction of the scene they replace, stay on a night sky in both themes, and have a defined Reduced-motion frame.
-2. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
-3. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+3. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
+4. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules
 
