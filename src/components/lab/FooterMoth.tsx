@@ -243,8 +243,11 @@ function QuizScene() {
     ],
   ];
   const visible = `${Lt.join(',')} 404,96 446,196 ${Lt.join(',')} 636,176 712,124`;
-  const chips = projects.slice(0, 4).map((p, i) => ({ title: p.title, state: i === 0 ? 'right' : i === 2 ? 'wrong' : 'idle' }));
-  let cx = 28;
+  const chips = projects.slice(0, 4).reduce<{ title: string; state: string; x: number; w: number }[]>((acc, p, i) => {
+    const prev = acc[acc.length - 1];
+    acc.push({ title: p.title, state: i === 0 ? 'right' : i === 2 ? 'wrong' : 'idle', x: prev ? prev.x + prev.w + 10 : 28, w: Math.round(p.title.length * 6.9 + 34) });
+    return acc;
+  }, []);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display: 'block' }} aria-hidden>
       <defs>
@@ -282,9 +285,7 @@ function QuizScene() {
       <path d="M200 310 C 230 260 280 230 318 206" fill="none" stroke={LAV} strokeOpacity=".35" strokeDasharray="2 7" />
       <Flying cx={340} cy={190} w={86} rot={18} eyes="up" />
       {chips.map((c) => {
-        const w = Math.round(c.title.length * 6.9 + 34);
-        const x = cx;
-        cx += w + 10;
+        const { x, w } = c;
         const right = c.state === 'right';
         const wrong = c.state === 'wrong';
         return (
