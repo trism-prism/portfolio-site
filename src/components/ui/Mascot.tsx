@@ -1,14 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { PrismCharacter, type PrismPose } from './Prism';
+import { MothCharacter, mothFeetInset, type MothPose } from './Moth';
 import { useMotion } from '@/lib/motion';
 import { useIdle } from '@/lib/hooks';
 
-// The roaming prism sits on the rule of whichever section heading is active. On arrival it drops in,
+// The roaming moth sits on the rule of whichever section heading is active. On arrival it drops in,
 // squashes on landing, idles, winks and sits; on departure it crouches and hops out. After 20 s of no
 // input it falls asleep. In Reduced motion it simply sits.
 
+const SIZE = 46; // width of the seated moth in px
 const ACTIVE_EVT = 'tm-active-section';
 export function announceActive(id: string) {
   window.dispatchEvent(new CustomEvent(ACTIVE_EVT, { detail: id }));
@@ -52,7 +53,7 @@ export function Mascot({ sectionId }: { sectionId: string }) {
 
   if (phase === 'away') return null;
   const asleep = idle && phase === 'sit';
-  const pose: PrismPose =
+  const pose: MothPose =
     asleep ? 'sleep' : phase === 'drop' ? 'jump' : phase === 'land' ? 'land' : phase === 'wink' ? 'wink' : phase === 'leave' ? 'crouch' : phase === 'sit' ? 'sit' : 'idle';
   const style: React.CSSProperties =
     phase === 'drop'
@@ -62,8 +63,9 @@ export function Mascot({ sectionId }: { sectionId: string }) {
         : {};
   return (
     <div className="mascot-slot" aria-hidden="true">
-      <div className="mascot" style={{ ...style, bottom: pose === 'sit' || pose === 'sleep' ? -14 : 0 }}>
-        <PrismCharacter pose={pose} size={46} />
+      {/* every pose is SIZE tall with the same bottom edge: the seated feet land on the 1px rule, the wider spread poses stay centred above it */}
+      <div className="mascot" style={{ ...style, top: 'auto', height: SIZE, bottom: 1 - mothFeetInset(SIZE), display: 'grid', placeItems: 'end center' }}>
+        <MothCharacter pose={pose} size={SIZE} />
         {asleep && !reduced && (
           <span className="mono absolute -top-3 right-0 text-xs text-muted" style={{ animation: 'zz 2.4s ease-out infinite' }}>
             z

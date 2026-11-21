@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { sections } from '@/data/sections';
 import { emit, goTo } from '@/lib/nav';
 import { announceActive } from '@/components/ui/Mascot';
-import { PrismMark } from '@/components/ui/Prism';
+import { MothMark } from '@/components/ui/Moth';
 import { Icon } from '@/components/ui/Icon';
 
 const primary = sections.filter((s) => s.primary && s.id !== 'contact');
@@ -92,7 +92,7 @@ export function Nav() {
     >
       <div className="wrap flex h-full items-center gap-3">
         <a href="#hero" onClick={link('hero')} className="rounded-xl border border-line-2 bg-panel p-1" aria-label="Tristan Morton, back to top" data-annotate="mark">
-          <PrismMark size={34} animated />
+          <MothMark size={34} animated />
         </a>
         <nav aria-label="Sections" className="ml-auto hidden items-center gap-1 lg:flex">
           {primary.map((s) => navBtn(s.id, s.nav))}

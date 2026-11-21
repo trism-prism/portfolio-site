@@ -3,7 +3,7 @@
 import { latest, personal } from '@/data/personal';
 import { emit, goTo } from '@/lib/nav';
 import { Icon } from '@/components/ui/Icon';
-import { PrismMark } from '@/components/ui/Prism';
+import { MothMark } from '@/components/ui/Moth';
 import { ProximityText } from '@/components/ui/ProximityText';
 
 export function Hero() {
@@ -11,7 +11,7 @@ export function Hero() {
   return (
     <section id="hero" className="relative z-[2] flex min-h-[100svh] flex-col items-center justify-center px-4 pb-24 pt-28 text-center" aria-labelledby="hero-title">
       <div className="hero-in" style={{ animationDelay: '.05s' }}>
-        <PrismMark size={64} animated title="Prism mark" />
+        <MothMark size={64} animated title="Moth mark" />
       </div>
       <p className="hero-in mt-6 inline-flex items-center gap-2 rounded-full border border-line-2 bg-panel/70 px-3.5 py-1.5 text-[13px] text-fg-2" style={{ animationDelay: '.12s' }}>
         <span className="relative inline-flex h-2 w-2">

@@ -11,7 +11,7 @@ import { emit, onUi } from '@/lib/nav';
 import { Icon } from '@/components/ui/Icon';
 import { Stage } from '@/components/scenes/Stage';
 import { ThemeButton } from '@/components/shell/Theme';
-import { PrismMark } from '@/components/ui/Prism';
+import { MothMark } from '@/components/ui/Moth';
 
 const SCENE_KEY = 'tm-footer-scene';
 const YEAR = new Date().getFullYear();
@@ -114,7 +114,7 @@ export function Footer() {
 
         <div className="mt-14 flex flex-col items-center justify-between gap-5 border-t border-line py-8 md:flex-row">
           <div className="flex items-center gap-3">
-            <PrismMark size={28} />
+            <MothMark size={28} />
             <p className="text-[13px] text-muted">
               © {YEAR} {personal.name} · Leesburg, VA
             </p>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { sectionIds } from '@/data/sections';
-import { PrismCharacter } from '@/components/ui/Prism';
+import { MothCharacter } from '@/components/ui/Moth';
 
 export const metadata: Metadata = { title: 'Not found', robots: { index: false } };
 
@@ -14,7 +14,7 @@ export default function NotFound() {
       <script dangerouslySetInnerHTML={{ __html: redirect }} />
       <div>
         <div className="flex justify-center">
-          <PrismCharacter pose="sleep" size={72} />
+          <MothCharacter pose="sleep" size={96} />
         </div>
         <p className="mono mt-6 text-[13px] text-accent">404 · no light reaches this page</p>
         <h1 className="display mt-3 text-[44px] text-fg">Nothing here.</h1>

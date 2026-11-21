@@ -301,7 +301,7 @@ body {
 .rail:hover .rail-track { animation-play-state: paused; }
 @keyframes rail { to { transform: translateX(-50%); } }
 
-/* ---------- Prism mark ---------- */
+/* ---------- Moth mark ---------- */
 .mark-eyes { transform-box: fill-box; transform-origin: center; animation: blink 5.6s infinite; }
 @keyframes blink { 0%, 70%, 74%, 100% { transform: scaleY(1); } 72% { transform: scaleY(.1); } }
 .mark:hover .mark-eyes { animation: none; }
