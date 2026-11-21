@@ -132,7 +132,7 @@ export function Hero() {
             </button>
           </div>
           <div className="hero-in mt-4 flex flex-wrap items-center justify-center gap-3 lg:justify-start" style={{ animationDelay: '.62s' }}>
-            <a href={personal.links.resume} download className="btn btn-ghost">
+            <a href={personal.links.resume} download className="btn btn-ghost lg:-ml-[19px]">
               <Icon name="download" size={16} /> Résumé PDF
             </a>
             <a className="icon-btn" href={personal.links.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in a new tab)">
