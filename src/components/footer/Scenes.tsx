@@ -222,7 +222,7 @@ export function StarTrails({ t, reduced, idle }: FooterSceneProps) {
   const [exp, setExp] = useState(40);
   const [cheerAt, setCheerAt] = useState(-9);
   const [prevK, setPrevK] = useState(0);
-  const lastT = useRef(t);
+  const [clock, setClock] = useState(t);
 
   // Scroll speed is the exposure: down adds in proportion to speed, up rewinds (same 15 Hz sampling as before).
   useEffect(() => {
@@ -241,12 +241,13 @@ export function StarTrails({ t, reduced, idle }: FooterSceneProps) {
     return () => window.removeEventListener('scroll', on);
   }, [reduced]);
 
-  // Idle: the exposure fades back to nothing over about four seconds.
-  useEffect(() => {
-    const dt = clamp(t - lastT.current, 0, 0.1);
-    lastT.current = t;
+  // Idle: the exposure fades back to nothing over about four seconds. Advanced on the scene clock while rendering
+  // (a state update from an effect on every frame would chain passive updates).
+  if (clock !== t) {
+    const dt = clamp(t - clock, 0, 0.1);
+    setClock(t);
     if (idle && dt) setExp((e) => (e < 0.4 ? 0 : e * Math.exp(-dt * 1.2)));
-  }, [t, idle]);
+  }
 
   const k = Math.floor(exp / 90);
   if (k !== prevK) {
@@ -524,20 +525,16 @@ const landOf = (s: Landing, t: number) => {
 };
 
 export function Orbit({ t, reduced, hold, idle }: FooterSceneProps) {
-  const [st, setSt] = useState({ a: 0.6, boost: 0 });
+  const [st, setSt] = useState({ t, a: 0.6, boost: 0 });
   const [landing, setLanding] = useState<Landing>({ idle: false, at: -99, l0: 0 });
-  const lastT = useRef(t);
 
-  // Angle and the eased hold, integrated on the scene clock; releasing the button settles over about 0.8 s.
-  useEffect(() => {
-    const dt = clamp(t - lastT.current, 0, 0.1);
-    lastT.current = t;
-    if (!dt || reduced) return;
-    setSt((s) => {
-      const boost = s.boost + (hold - s.boost) * (1 - Math.exp(-dt / 0.25));
-      return { boost, a: s.a - (idle ? 0 : dt * ORBIT_W * (1 + 3 * boost)) };
-    });
-  }, [t, hold, idle, reduced]);
+  // Angle and the eased hold, integrated on the scene clock while rendering (no effect, so no chained passive
+  // updates); releasing the button settles over about 0.8 s.
+  if (st.t !== t) {
+    const dt = reduced ? 0 : clamp(t - st.t, 0, 0.1);
+    const boost = st.boost + (hold - st.boost) * (1 - Math.exp(-dt / 0.25));
+    setSt({ t, boost, a: st.a - (idle ? 0 : dt * ORBIT_W * (1 + 3 * boost)) });
+  }
 
   if (!reduced && landing.idle !== idle) setLanding({ idle, at: t, l0: landOf(landing, t) });
 
