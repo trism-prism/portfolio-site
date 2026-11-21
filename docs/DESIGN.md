@@ -18,6 +18,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Palette | Prismatic spectrum: mostly neutral, with a restrained spectrum used as signal colour. |
 | Motif | **Constellations & cartography** carries the personal references (wonder, scale, discovery, traces of history). Chosen over light & refraction after comparing six sections in both. |
 | Characters (revised 2026-11-20) | **No human characters** anywhere, including the footer cast. Tristan is **not a fan of the current prism character**: the mascot is open again, and the prism is only one option. A mascot can still play the roles the prism had (logo, roaming heading mascot, footer star), pending the new choice. Supersedes the earlier "prism keeps its full role" decision. |
+| Mascot | **The Moth** (`docs/design/mockups/mascot-*`, drawn in `src/components/lab/Mascots.tsx`): a night moth whose wings carry a star chart; folded wings become a cloak when it sits. It takes every role the prism had: logo/favicon, the mascot seated on section rules, and the footer character. **One character only**: no guest characters (the sky whale was declined). The prism is retired as a character. Chosen 2026-11-20 over Prism, Mote, Surveyor, Sky whale and Compass. |
 | Terminal styling | Removed: no shell prompt, `cd` commands, git-push confirmation or git-hash labels. |
 | Tech tiles | Kept, with the same content, restyled to the motif. |
 | Impression | **Craft and care**: obsessive attention to detail; everything made by hand and made well. |
@@ -101,7 +102,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 | Component | Description | Mockup |
 |---|---|---|
 | Sky backdrop | Sparse seeded star field and faint graticule arcs behind every section; no blur washes. | all |
-| Chart header | Four-point star + section number + label; right-aligned annotation; display title with serif accent; ruler-style rule with major/minor ticks; the prism seated on the rule. | all |
+| Chart header | Four-point star + section number + label; right-aligned annotation; display title with serif accent; ruler-style rule with major/minor ticks; the moth seated on the rule. | all |
 | Card | **Decided:** the existing rounded card, restyled (sky-raised fill, hairline border, kind colour as a small accent). Square plates with corner ticks were rejected. | — |
 | Star glyph | Four-point star in a kind colour; used as bullet, legend mark and timeline node. | all |
 | Legend chip | Filter control with star glyph and count (shape follows the rounded card language). | projects |
@@ -127,15 +128,14 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Mascot / character** (top priority): explore non-human alternatives to the prism, staying open beyond the prism (it remains one option). Present several concepts side by side before any scene work. **Proposed:** six concepts at `/lab/mascots` (`docs/design/mockups/mascot-*`): Prism (current), Mote (a fallen star), Moth (wings carry a star chart), Surveyor (a snail carrying its map), Sky whale, Compass (a guide that points the way).
-2. **Footer scene concepts.** Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
+1. **Footer scene concepts.** Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
    - **Lantern** (replaces Lightroom): pointer moves the prism's lantern among standing stones; real visibility polygon; lit people wave, shadowed people doze.
    - **Star trails** (replaces Game day): scroll speed is a long exposure turning the sky around the pole star; scrolling back rewinds.
    - **Name the constellation** (replaces Trivia): stars form a figure from one project; the right guess sends a shooting star to the email button.
    - **Orbit** (recast): the cast circle the prism on a hilltop; holding the email button speeds them up and the stars streak.
    All four keep the interaction of the scene they replace, stay on a night sky in both themes, and have a defined Reduced-motion frame.
-3. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
-4. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+2. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
+3. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules
 
