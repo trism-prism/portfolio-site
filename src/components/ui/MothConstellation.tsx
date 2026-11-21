@@ -96,14 +96,22 @@ function starDelay(id: string) {
   return r2(Math.min(...reach));
 }
 
-export function MothConstellation({ size = 400, named = false, draw = false, className }: { size?: number; named?: boolean; draw?: boolean; className?: string }) {
+/**
+ * `progress` (0..1) is an optional, caller-driven draw (the intro's timeline): the lines grow outward from the head and the
+ * stars fade in as it advances, replacing the CSS draw-in. Without it the behaviour is unchanged.
+ */
+export function MothConstellation({ size = 400, named = false, draw = false, progress, className }: { size?: number; named?: boolean; draw?: boolean; progress?: number; className?: string }) {
   const d = (s: number) => ({ ['--d' as string]: `${s}s` }) as React.CSSProperties;
+  const driven = progress !== undefined;
+  // seconds on the CSS draw's clock that `progress` stands for; the last star finishes its 0.5 s fade at progress 1
+  const clock = START + Math.min(1, Math.max(0, progress ?? 0)) * (MOTH_DRAW_SECONDS + 0.2 - START);
+  const grown = (delay: number, dur: number) => Math.min(1, Math.max(0, (clock - delay) / dur));
   return (
     <svg
       viewBox={`0 0 ${MOTH_VIEW.w} ${MOTH_VIEW.h}`}
       width={size}
       height={r2((size * MOTH_VIEW.h) / MOTH_VIEW.w)}
-      className={`${draw ? 'moth-draw ' : ''}${className ?? ''}`.trim() || undefined}
+      className={`${draw && !driven ? 'moth-draw ' : ''}${className ?? ''}`.trim() || undefined}
       aria-hidden="true"
       focusable="false"
       style={{ display: 'block', overflow: 'visible' }}
@@ -117,15 +125,17 @@ export function MothConstellation({ size = 400, named = false, draw = false, cla
           x2={l.to[0]}
           y2={l.to[1]}
           pathLength={1}
-          style={{ stroke: 'var(--constellation)', strokeWidth: 1, ...d(l.delay) }}
+          style={{ stroke: 'var(--constellation)', strokeWidth: 1, ...d(l.delay), ...(driven ? { strokeDasharray: 1, strokeDashoffset: r2(1 - grown(l.delay, LINE_DUR)) } : null) }}
         />
       ))}
       {SPREAD.map((s) => {
         const [x, y] = s.p;
         const delay = d(starDelay(s.id));
+        const fade = driven ? r2(grown(starDelay(s.id), 0.5)) : 1;
+        const driven1 = driven ? { opacity: fade } : null;
         if (s.id === 'head')
           return (
-            <g key={s.id} className="moth-star" style={delay}>
+            <g key={s.id} className="moth-star" style={{ ...delay, ...driven1 }}>
               <circle cx={x} cy={y} r={13} opacity={0.16} style={{ fill: 'var(--star)' }} />
               <circle cx={x} cy={y} r={4.6} strokeWidth={1.5} style={{ fill: 'var(--star)', stroke: 'var(--star-halo)' }} />
             </g>
@@ -133,15 +143,15 @@ export function MothConstellation({ size = 400, named = false, draw = false, cla
         const k = SOFT[s.id];
         if (k !== undefined)
           return (
-            <g key={s.id} className="moth-star" style={delay}>
+            <g key={s.id} className="moth-star" style={{ ...delay, ...driven1 }}>
               <circle cx={x} cy={y} r={9} opacity={0.18} style={{ fill: `var(${SPECTRUM[k]})` }} />
               <circle cx={x} cy={y} r={3.4} opacity={0.85} style={{ fill: `var(${SPECTRUM[k]})` }} />
             </g>
           );
-        return <circle key={s.id} className="moth-star" cx={x} cy={y} r={2} opacity={0.75} style={{ fill: 'var(--star)', stroke: 'var(--star-halo)', ...delay }} />;
+        return <circle key={s.id} className="moth-star" cx={x} cy={y} r={2} opacity={0.75} style={{ fill: 'var(--star)', stroke: 'var(--star-halo)', ...delay, ...(driven ? { opacity: r2(0.75 * fade) } : null) }} />;
       })}
       {named && (
-        <text className="moth-name" x={200} y={250} textAnchor="middle" fontSize={20} fontStyle="italic" style={{ fontFamily: 'var(--font-serif)', fill: 'var(--accent-serif)', ...d(MOTH_DRAW_SECONDS - 0.3) }}>
+        <text className="moth-name" x={200} y={250} textAnchor="middle" fontSize={20} fontStyle="italic" style={{ fontFamily: 'var(--font-serif)', fill: 'var(--accent-serif)', ...d(MOTH_DRAW_SECONDS - 0.3), ...(driven ? { opacity: r2(grown(MOTH_DRAW_SECONDS - 0.3, 0.5)) } : null) }}>
           the Moth
         </text>
       )}
