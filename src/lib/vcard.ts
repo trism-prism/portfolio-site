@@ -32,7 +32,6 @@ export function buildVCard(p: {
   title: string;
   note: string;
   links: string[];
-  location: string;
 }): string {
   const lines = [
     'BEGIN:VCARD',

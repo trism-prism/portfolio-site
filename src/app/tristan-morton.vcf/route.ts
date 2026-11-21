@@ -13,7 +13,6 @@ export function GET() {
     title: 'Software engineer',
     note: 'Software engineer working across full stack and AI engineering.',
     links: [personal.links.github, personal.links.linkedin],
-    location: personal.location,
   });
   return new Response(card, { headers: { 'Content-Type': 'text/vcard; charset=utf-8' } });
 }

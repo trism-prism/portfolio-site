@@ -133,14 +133,13 @@ describe('vCard', () => {
     expect(f.replace(/\r\n /g, '')).toBe(line);
   });
   test('builds a CRLF vCard 4.0', () => {
-    const v = buildVCard({ name: 'A B', first: 'A', last: 'B', email: 'a@b.co', url: 'https://x.y', title: 'T', note: 'n', links: [], location: 'Here' });
+    const v = buildVCard({ name: 'A B', first: 'A', last: 'B', email: 'a@b.co', url: 'https://x.y', title: 'T', note: 'n', links: [] });
     expect(v.startsWith('BEGIN:VCARD\r\nVERSION:4.0\r\n')).toBe(true);
     expect(v.endsWith('END:VCARD\r\n')).toBe(true);
   });
-  test('address carries region and country only, never the town passed in', () => {
-    const v = buildVCard({ name: 'A B', first: 'A', last: 'B', email: 'a@b.co', url: 'https://x.y', title: 'T', note: 'n', links: [], location: 'Hometown' });
+  test('address carries region and country only', () => {
+    const v = buildVCard({ name: 'A B', first: 'A', last: 'B', email: 'a@b.co', url: 'https://x.y', title: 'T', note: 'n', links: [] });
     expect(v).toContain('\r\nADR;TYPE=home:;;;;VA;;US\r\n');
-    expect(v).not.toContain('Hometown');
   });
 });
 
