@@ -7,6 +7,7 @@ import { goTo, onUi } from '@/lib/nav';
 import { ph } from '@/data/ph';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Icon } from '@/components/ui/Icon';
+import { StarGlyph } from '@/components/ui/StarGlyph';
 import { Text, PhRibbon, safeHref } from '@/components/ui/Text';
 import { GlossText } from '@/components/ui/Gloss';
 import { Modal } from '@/components/ui/Modal';
@@ -15,7 +16,7 @@ import { SceneHost } from '@/components/scenes/Stage';
 import { covers } from '@/components/scenes/covers/registry';
 import { DocsQaTerminal, HeartThreshold, VisibilityDemo } from '@/components/scenes/demos/Demos';
 
-const kindColor = (k: Project['kind']) => `var(--kind-${k})`;
+const kindColor = (k: string) => `var(--kind-${k})`;
 const demos = { visibility: VisibilityDemo, docsqa: DocsQaTerminal, heart: HeartThreshold };
 const statusLabel = { live: 'Live', complete: 'Complete', 'in-progress': 'In progress' };
 
@@ -77,41 +78,42 @@ export function Projects() {
         <SkyMap filter={filter} onFilter={setFilter} query={q} onOpen={(slug) => void openSlug(slug)} />
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div role="group" aria-label="Filter projects" className="flex flex-wrap gap-2">
-            {filters.map((f) =>
-              n[f.id] === 0 && filter !== f.id ? null : (
+            {filters.map((f) => {
+              if (n[f.id] === 0 && filter !== f.id) return null;
+              const on = filter === f.id;
+              const isKind = f.id !== 'all' && f.id !== 'featured';
+              return (
                 <button
                   key={f.id}
                   type="button"
-                  aria-pressed={filter === f.id}
+                  aria-pressed={on}
                   onClick={() => setFilter(f.id)}
-                  className={`mono relative flex h-10 items-center gap-2 rounded-xl border px-3.5 text-[13px] transition-colors ${
-                    filter === f.id ? 'border-transparent bg-accent-strong text-[#031b19]' : 'border-line-2 text-fg-2 hover:text-fg'
+                  className={`flex h-10 items-center gap-2 rounded-full border px-4 text-[13.5px] transition-colors ${
+                    on ? 'border-transparent bg-button-bg text-button-fg' : 'border-line bg-panel text-fg-2 hover:text-fg'
                   }`}
                 >
+                  {isKind && <StarGlyph color={on ? 'currentColor' : kindColor(f.id)} />}
                   {f.label}
-                  <span className={`rounded px-1.5 text-[11px] ${filter === f.id ? 'bg-black/15' : 'bg-panel-2'}`}>{n[f.id]}</span>
+                  <span style={{ opacity: 0.65 }}>{n[f.id]}</span>
                 </button>
-              ),
-            )}
+              );
+            })}
           </div>
-          <label className="relative block lg:w-[320px]">
+          <label className="relative block lg:w-[300px]">
             <span className="sr-only">Search projects by title, description or technology</span>
-            <Icon name="search" size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" />
+            <Icon name="search" size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted" />
             <input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search title or technology"
-              className="h-11 w-full rounded-xl border border-line-2 bg-panel pl-10 pr-3 text-[15px] text-fg outline-none placeholder:text-muted focus:border-accent"
+              placeholder="Search projects or technology"
+              className="h-10 w-full rounded-full border border-line bg-panel pl-10 pr-4 text-[14px] text-fg outline-none placeholder:text-muted focus:border-accent"
             />
           </label>
         </div>
-        <div className="mono mt-4 flex justify-between text-[12.5px] text-muted" aria-live="polite">
-          <span>
-            {list.length} of {n[filter]} projects
-          </span>
-          <span>{q ? 'Newest first' : 'Spotlight, then newest'}</span>
-        </div>
+        <p className="mono mt-4 text-[12px] text-muted" aria-live="polite">
+          {list.length} of {n[filter]} projects
+        </p>
 
         {list.length === 0 ? (
           <div className="panel mt-6 grid place-items-center p-12 text-center">
