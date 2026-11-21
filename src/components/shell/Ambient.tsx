@@ -64,17 +64,22 @@ export function AmbientBackground() {
               <circle key={k} cx={Math.round(size.w * 0.87)} cy={Math.round(size.h * 1.28)} r={Math.round(size.h * k)} />
             ))}
           </g>
-          {sky.stars.map((st, i) => (
-            <circle
-              key={i}
-              className={`sky-star${i >= sky.shown ? ' sky-extra' : ''}${st.tw ? ' sky-tw' : ''}`}
-              cx={st.x}
-              cy={st.y}
-              r={st.r}
-              style={st.tw ? ({ '--o': st.o, '--d': `${st.d}s`, '--delay': `${st.delay}s`, opacity: st.o } as React.CSSProperties) : { opacity: st.o }}
-            />
-          ))}
+          {sky.stars.map((st, i) =>
+            st.tw ? null : (
+              <circle key={i} className={`sky-star${i >= sky.shown ? ' sky-extra' : ''}`} cx={st.x} cy={st.y} r={st.r} style={{ opacity: st.o }} />
+            ),
+          )}
         </svg>
+      )}
+      {/* the twinkling stars are plain dots so their opacity animation runs on the compositor, not the main thread */}
+      {sky?.stars.map((st, i) =>
+        st.tw ? (
+          <span
+            key={i}
+            className={`sky-dot${i >= sky.shown ? ' sky-extra' : ''}`}
+            style={{ left: st.x - st.r, top: st.y - st.r, width: st.r * 2, height: st.r * 2, '--o': st.o, '--d': `${st.d}s`, '--delay': `${st.delay}s`, opacity: st.o } as React.CSSProperties}
+          />
+        ) : null,
       )}
     </div>
   );

@@ -259,14 +259,17 @@ body {
 }
 
 /* ---------- Sky backdrop ---------- */
-/* Stars and graticule arcs are drawn once (see AmbientBackground); only the few twinkling stars animate. */
+/* Stars and graticule arcs are drawn once (see AmbientBackground); only the few twinkling dots animate, on the compositor. */
 .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
 .ambient svg { display: block; width: 100%; height: 100%; }
 .sky-star { fill: var(--star); stroke: var(--star-halo); stroke-width: 1.8; paint-order: stroke; }
 .sky-graticule { fill: none; stroke: var(--graticule); }
 /* twilight shows about two thirds of the stars the dark sky has */
 :root[data-theme='light'] .sky-extra { display: none; }
-.sky-tw { animation: twinkle var(--d, 5s) ease-in-out var(--delay, 0s) infinite; }
+.sky-dot {
+  position: absolute; border-radius: 50%; background: var(--star); box-shadow: 0 0 0 .9px var(--star-halo);
+  will-change: opacity; animation: twinkle var(--d, 5s) ease-in-out var(--delay, 0s) infinite;
+}
 @keyframes twinkle { 0%, 100% { opacity: var(--o, .6); } 50% { opacity: calc(var(--o, .6) * .3); } }
 
 /* ---------- Tech field ---------- */
@@ -337,7 +340,7 @@ body {
 @keyframes konami { from { opacity: 0; transform: translate(-50%, 20px) scale(.9); } }
 
 /* ---------- Reduced motion policy ---------- */
-[data-motion='reduced'] .sky-tw,
+[data-motion='reduced'] .sky-dot,
 [data-motion='reduced'] .field-tile,
 [data-motion='reduced'] .mark-eyes,
 [data-motion='reduced'] .rail-track { animation: none !important; }
