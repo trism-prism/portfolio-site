@@ -165,3 +165,4 @@ are shared by almost everything. The advisor reviews each result in the browser 
    - Chip counts sit at 75% in dark and 85% in twilight (65% failed 4.5:1).
    - Touch taps go to the kind buttons, not the stars.
    - The cards' tech line shows only whole names (up to three) plus "+N", and never truncates a name.
+9. [The intro: the moth emerges](design/handoffs/09-moth-intro.md): ready. The nine-frame storyboard on one 4.2 s eased timeline. It replaces the prism splash and ends with a ring of light revealing the site as the moth flies into the nav logo. `?intro=<seconds>` freezes it at a given time for review.
