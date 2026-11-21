@@ -25,7 +25,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Name in the hero | **Sacramento** (handwritten monoline script, SIL OFL), chosen over Pinyon Script, Herr Von Muellerhoff, Caveat and Yellowtail (`docs/design/mockups/name-01-scripts.png`). Used for the name and signature only; small chart labels such as constellation names stay in Instrument Serif italic. Yellowtail is retired. |
 | Skills | **Keep the moving marquee rails**, restyled to the motif. Not constellation cells. |
 | Footer scenes | **Recast all four into the night-sky world** as a switchable set. |
-| Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. |
+| Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. **Values approved** as shown in `docs/design/mockups/theme-*` (token table in section 3). |
 | Cards | **Keep rounded cards**, restyled to the new palette. No square plates or corner registration ticks. |
 | Experience + education | **Merged into one "route" section**: route map across both, detail cards below. |
 | Project cover animations | **Keep the current cover scenes and their drawing style**; at most recolour them to the new palette. Do not redraw them as star charts. |
@@ -66,7 +66,7 @@ sections of this file; anything not covered here is a design question, not an im
 Kind colours follow the idea that astronomers class stars by their spectrum: each project type has a
 spectral colour, used for its star, its legend mark and its plate corners, never for body text.
 
-**Colour (light): twilight sky** (direction decided; values proposed, pending approval)
+**Colour (light): twilight sky** (approved by Tristan, 2026-11-20)
 
 Source of truth for both themes: `src/components/lab/themeTokens.ts`. Every text and signal colour is
 tested at WCAG AA (4.5:1) against each sky stop and against cards composited on them
@@ -127,10 +127,9 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Light mode approval**: twilight values above are proposed and contrast-checked; awaiting Tristan's look.
-2. **Footer scene concepts**: four night-sky scenes replacing Lightroom, Game day, Trivia and Orbit.
-3. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
-4. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+1. **Footer scene concepts**: four night-sky scenes replacing Lightroom, Game day, Trivia and Orbit.
+2. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
+3. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules
 
