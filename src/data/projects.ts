@@ -36,6 +36,8 @@ export type Project = {
   cover: CoverKey;
   demo?: DemoKey;
   collaborators?: string[];
+  /** Up to three headline numbers for the spotlight card. Each carries its own condition in the label. */
+  measures?: { value: string; label: string }[];
 };
 
 // Every fact comes from the public repo, the résumé or the CV. Numbers carry their conditions.
@@ -80,6 +82,12 @@ export const projects: Project[] = [
     ],
     cover: 'visibility',
     demo: 'visibility',
+    // From the public repo's BENCHMARK.md.
+    measures: [
+      { value: '127x', label: 'faster at best, on 4,000-wall mazes' },
+      { value: '66', label: 'benchmark rows' },
+      { value: '4', label: 'wall layouts tested' },
+    ],
   },
   {
     id: 2,
