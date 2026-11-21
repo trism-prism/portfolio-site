@@ -94,7 +94,7 @@ export function Projects() {
                 >
                   {isKind && <StarGlyph color={on ? 'currentColor' : kindColor(f.id)} />}
                   {f.label}
-                  <span style={{ opacity: 0.65 }}>{n[f.id]}</span>
+                  <span className="chip-count">{n[f.id]}</span>
                 </button>
               );
             })}

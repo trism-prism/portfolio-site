@@ -95,6 +95,7 @@ export function SkyMap({ filter, onFilter, query, onOpen }: { filter: Filter; on
             <div
               key={s.slug}
               aria-hidden="true"
+              data-slug={s.slug}
               className="sky-hit absolute z-10"
               style={{ left: pct(s.x, W), top: pct(s.y, H) }}
               onClick={() => onOpen(s.slug)}
