@@ -238,8 +238,8 @@ function Rays({ k = 1 }: { k?: number }) {
   );
 }
 
-function Moth({ pose, w, cx, base }: { pose: 'sit' | 'wave' | 'cheer' | 'jump'; w: number; cx: number; base: number }) {
-  const seated = pose === 'sit';
+function Moth({ pose, w, cx, base }: { pose: 'sit' | 'crouch' | 'wave' | 'cheer' | 'jump'; w: number; cx: number; base: number }) {
+  const seated = pose === 'sit' || pose === 'crouch';
   const h = seated ? w : (w * 120) / 160;
   return (
     <g transform={`translate(${r1(cx - w / 2)} ${r1(base - h)})`}>
