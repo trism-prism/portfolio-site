@@ -2,29 +2,47 @@
 
 /* ---------- Tokens ---------- */
 :root {
-  --bg: #0a1113;
-  --bg-alt: #0d1619;
-  --panel: #101a1d;
-  --panel-2: #142124;
-  --fg: #eef5f4;
-  --fg-2: #a6b6b6;
-  --muted: #869799;
-  --line: rgb(255 255 255 / 0.075);
-  --line-2: rgb(255 255 255 / 0.14);
-  --accent: #2dd4bf;
-  --accent-strong: #14b8a6;
+  --bg: #0a0b16;
+  --bg-alt: #141428;
+  --panel: rgba(17,18,32,.74);
+  --panel-2: rgba(255,255,255,.04);
+  --fg: #eceaf3;
+  --fg-2: #a9a6b8;
+  --muted: #8a879c;
+  --line: rgba(255,255,255,.09);
+  --line-2: rgba(255,255,255,.16);
+  --accent: #5eead4;
+  --accent-strong: #2dd4bf;
   --accent-soft: #5eead4;
   --accent-pale: #99f6e4;
-  --accent-ink: #032321;
+  --accent-ink: #07080d;
   --violet: #a78bfa;
-  --amber: #f59e0b;
-  --coral: #fb7185;
+  --amber: #fbbf24;
+  --coral: #f472b6;
   --green: #22c55e;
   --red: #ef4444;
-  --sky: #38bdf8;
+  --sky: #60a5fa;
   --gold: #fbbf24;
   --silver: #cbd5e1;
   --bronze: #d97706;
+  /* approved constellation tokens (src/components/lab/themeTokens.ts) */
+  --sky-top: #141428;
+  --sky-mid: #0a0b16;
+  --sky-bottom: #05060b;
+  --star: #ffffff;
+  --star-halo: transparent;
+  --graticule: rgba(255,255,255,.055);
+  --constellation: rgba(236,234,243,.35);
+  --accent-serif: #cfc9f5;
+  --kind-software: #5eead4;
+  --kind-systems: #60a5fa;
+  --kind-ai: #a78bfa;
+  --kind-data: #fbbf24;
+  --rose: #f472b6;
+  --route: #fbbf24;
+  --button-bg: #eceaf3;
+  --button-fg: #07080d;
+  --footer-ground: #0b0e20;
   /* scene drawing tokens */
   --sc-line: rgb(255 255 255 / 0.2);
   --sc-faint: rgb(255 255 255 / 0.08);
@@ -35,27 +53,50 @@
   --ph: #f5b301;
   color-scheme: dark;
 }
+/* "light" is the stored attribute value; the theme is called twilight. */
 :root[data-theme='light'] {
-  --bg: #f3f7f6;
-  --bg-alt: #ebf2f0;
-  --panel: #ffffff;
-  --panel-2: #f2f7f6;
-  --fg: #0d1d20;
-  --fg-2: #3d5356;
-  --muted: #5a6f72;
-  --line: rgb(8 32 36 / 0.09);
-  --line-2: rgb(8 32 36 / 0.16);
-  --accent: #0d9488;
-  --accent-strong: #0f766e;
-  --accent-soft: #0f9f92;
-  --accent-pale: #115e59;
-  --accent-ink: #f3fffd;
+  --bg: #cdd7e9;
+  --bg-alt: #b8c6e0;
+  --panel: rgba(250,251,255,.62);
+  --panel-2: rgba(19,26,46,.04);
+  --fg: #131a2e;
+  --fg-2: #35405e;
+  --muted: #47506e;
+  --line: rgba(19,26,46,.14);
+  --line-2: rgba(19,26,46,.22);
+  --accent: #095951;
+  --accent-strong: #0b6b62;
+  --accent-soft: #095951;
+  --accent-pale: #0b6b62;
+  --accent-ink: #f4f6fb;
+  --violet: #6026c5;
+  --amber: #7b4304;
+  --coral: #99144e;
+  --sky: #1944bd;
+  --gold: #8b3708;
+  --sky-top: #b8c6e0;
+  --sky-mid: #cdd7e9;
+  --sky-bottom: #ecdfd8;
+  --star: #ffffff;
+  --star-halo: rgba(44,58,104,.28);
+  --graticule: rgba(19,26,46,.08);
+  --constellation: rgba(19,26,46,.42);
+  --accent-serif: #563ca7;
+  --kind-software: #095951;
+  --kind-systems: #1944bd;
+  --kind-ai: #6026c5;
+  --kind-data: #7b4304;
+  --rose: #99144e;
+  --route: #8b3708;
+  --button-bg: #131a2e;
+  --button-fg: #f4f6fb;
+  --footer-ground: #0b0e20;
   --sc-line: rgb(8 32 36 / 0.28);
   --sc-faint: rgb(8 32 36 / 0.1);
   --sc-panel: rgb(8 32 36 / 0.04);
   --sc-label: #557074;
   --sc-ink: #ffffff;
-  --shadow: 0 20px 50px -24px rgb(8 32 36 / 0.35);
+  --shadow: 0 18px 40px -26px rgba(19,26,46,.45);
   --ph: #b45309;
   color-scheme: light;
 }
@@ -75,6 +116,23 @@
   --color-accent-soft: var(--accent-soft);
   --color-accent-ink: var(--accent-ink);
   --color-violet: var(--violet);
+  --color-sky-top: var(--sky-top);
+  --color-sky-mid: var(--sky-mid);
+  --color-sky-bottom: var(--sky-bottom);
+  --color-star: var(--star);
+  --color-star-halo: var(--star-halo);
+  --color-graticule: var(--graticule);
+  --color-constellation: var(--constellation);
+  --color-accent-serif: var(--accent-serif);
+  --color-kind-software: var(--kind-software);
+  --color-kind-systems: var(--kind-systems);
+  --color-kind-ai: var(--kind-ai);
+  --color-kind-data: var(--kind-data);
+  --color-rose: var(--rose);
+  --color-route: var(--route);
+  --color-button-bg: var(--button-bg);
+  --color-button-fg: var(--button-fg);
+  --color-footer-ground: var(--footer-ground);
   --color-amber: var(--amber);
   --color-coral: var(--coral);
   --color-green: var(--green);
@@ -83,7 +141,7 @@
   --font-mono: var(--font-jetbrains), ui-monospace, monospace;
   --font-display: var(--font-bricolage), var(--font-inter), system-ui, sans-serif;
   --font-serif: var(--font-instrument), Georgia, serif;
-  --font-sig: var(--font-yellowtail), cursive;
+  --font-sig: var(--font-sacramento), cursive;
 }
 
 @layer base {
@@ -96,7 +154,7 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
 body {
-  background: var(--bg);
+  background: var(--bg) linear-gradient(180deg, var(--sky-top), var(--sky-mid) 55%, var(--sky-bottom)) fixed;
   color: var(--fg);
   font-family: var(--font-sans);
   line-height: 1.6;
@@ -154,6 +212,24 @@ body {
 .icon-btn:hover { color: var(--fg); border-color: color-mix(in srgb, var(--accent) 50%, var(--line-2)); }
 .link-u { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); text-underline-offset: 4px; }
 .link-u:hover { text-decoration-color: var(--accent); }
+
+/* Covers and scene stages stay on a dark panel in both themes: pin the dark values they read. */
+.cover-stage {
+  background: #0d1220;
+  --fg: #eceaf3;
+  --accent: #5eead4;
+  --accent-soft: #5eead4;
+  --violet: #a78bfa;
+  --amber: #fbbf24;
+  --coral: #f472b6;
+  --sky: #60a5fa;
+  --sc-line: rgb(255 255 255 / 0.2);
+  --sc-faint: rgb(255 255 255 / 0.08);
+  --sc-panel: rgb(255 255 255 / 0.035);
+  --sc-label: #7d9396;
+  --sc-ink: #0a1113;
+  color-scheme: dark;
+}
 
 /* ---------- Placeholders ---------- */
 .ph-text {

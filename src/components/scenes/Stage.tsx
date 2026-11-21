@@ -65,7 +65,7 @@ export function SceneHost({
 export function Stage({ w = 320, h = 200, children }: { w?: number; h?: number; children?: React.ReactNode }) {
   const id = useId().replace(/:/g, '');
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="block h-full w-full" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+    <svg viewBox={`0 0 ${w} ${h}`} className="cover-stage block h-full w-full" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
       <defs>
         <pattern id={`dots-${id}`} width="10" height="10" patternUnits="userSpaceOnUse">
           <circle cx="1" cy="1" r=".6" fill="var(--sc-faint)" />
