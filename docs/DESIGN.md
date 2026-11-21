@@ -36,6 +36,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Projects rule scope (2026-11-21) | The rule covers **decoration and structure** (constellations, figures). **Plain text that cites or links a project as evidence stays**: Focus "Backed by" chips and Stats notes as mocked. The small star figure on each Focus card goes. |
 | Stats extras (2026-11-21) | Keep the **GitHub contribution heatmap**, restyled below the lists as a quiet grid of stars by day. **Drop the coding-profile cards** until real profiles exist (data stays). |
 | About photo (2026-11-21) | **No photo.** About is exactly the mockup; the photo placeholder and its orbit of tech tiles go. |
+| No location data (2026-11-21) | **The site shows no location**: no town, state, address or coordinates anywhere (hero, About facts, footer, CV viewer, vCard, `llms.txt`, structured data, work and school cards). School and organisation names are fine. The hero's marker reads only "You are here". |
 | Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. **Values approved** as shown in `docs/design/mockups/theme-*` (token table in section 3). |
 | Cards | **Keep rounded cards**, restyled to the new palette. No square plates or corner registration ticks. |
 | Experience + education | **Merged into one "route" section**: route map across both, detail cards below. |
@@ -123,7 +124,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 | Section | Treatment | Status |
 |---|---|---|
-| Hero | Charted sky; the Moth constellation (no project labels); route from "you are here"; coordinates of Leesburg; chart-marker tech tiles. | Decided (figure to draw) |
+| Hero | Charted sky; the Moth constellation (no project labels); route from "you are here" (no place name); chart-marker tech tiles. | Decided (figure to draw) |
 | About | See section 1. | Decided |
 | Experience + education | One merged section: route map plus detail cards. Plain title (e.g. "Experience & education"). | Decided |
 | Skills | Existing marquee rails, restyled. | Decided |

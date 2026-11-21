@@ -1,15 +1,16 @@
-# Handoff 7: the hero with the Moth constellation, chart-marker tech tiles
+# Handoff 7: the hero with the Moth constellation, chart-marker tech tiles, no location data
 
 For one implementer in this worktree (`feat/showcase-rebuild`, private: never push, merge or deploy).
 Follows `docs/DESIGN.md` section 1 (rows **Hero and Projects**, **Moth constellation**, **Where projects appear**,
-**Name in the hero**, **Tech tiles**, **Themed vocabulary**), section 2, section 4 (Chart marker, Route) and
+**Name in the hero**, **Tech tiles**, **Themed vocabulary**, **No location data**), section 2, section 4 (Chart marker, Route) and
 section 7. Builds on handoffs 1–6. The advisor reviews in the browser before handoff 8.
 
 ## Goal
 
 The hero matches `docs/design/mockups/theme-01-hero-dark.png` and `theme-05-hero-twilight.png`, with two approved
 changes to those frames: the constellation is **the Moth** (variant A, soft spectrum, no project labels) instead
-of the labelled "Prism" triangle, and **no project appears in the hero**. The floating tech tiles take the
+of the labelled "Prism" triangle, and **no project appears in the hero**. Separately, the site stops showing any
+location data (section 4). The floating tech tiles take the
 chart-marker look everywhere they appear.
 
 ## Source of truth
@@ -43,7 +44,7 @@ At ≥1024px, left-aligned in the 1152px content width (the current hero is cent
   1440 × 900 viewport, behind nothing interactive.
 - The route: a dashed `--route` path (1.5px, dash 5 6) from a "you are here" marker near the bottom centre
   (≈ 640, 770) curving up to the moth's head star, as in the mockup; the marker is a 6px ring with a 2px dot and the
-  label `YOU ARE HERE · LEESBURG, VA` in mono 10.5px, wide tracking, `--route`. The route draws after the
+  label `YOU ARE HERE` (no place name) in mono 10.5px, wide tracking, `--route`. The route draws after the
   constellation (about 0.8 s). Reduced motion: complete.
 - **Remove** from the hero: the large moth mark above the status pill (the moth lives in the nav logo), and the
   "Latest" project links row (projects appear only in the Projects section; the same items are in Activity).
@@ -63,12 +64,29 @@ their drawing, so they read in both themes (they are faint in twilight today):
 - Tile colours come from the spectrum tokens (cycle software, systems, ai, rose, route by index) instead of the
   hard-coded hex values, so twilight uses its darker set.
 
+## 4. No location data anywhere
+
+Decision: the site shows no town, state, address or coordinates. School and organisation names stay.
+- `src/data/personal.ts`: delete `location` and the "Based in" fact.
+- `src/data/experience.ts` and `src/data/education.ts`: delete the `place` field from the types and every record.
+- Remove every use, so the build has no dangling references: the footer line ("© {year} {name} · Leesburg, VA"
+  becomes "© {year} {name}"), `src/components/sections/Experience.tsx` ("{org} · {place}" becomes "{org}" in the
+  current-role card, secondary cards and the details modal), `src/components/shell/CvViewer.tsx` (header line and
+  experience lines), `src/lib/vcard.ts` (no `ADR` line), `src/app/tristan-morton.vcf/route.ts`,
+  `src/app/llms.txt/route.ts` (no Location line), and `src/app/layout.tsx` (no `address` in the JSON-LD).
+- Update any test that expects these fields.
+- Do not edit `public/resume.pdf` or `public/cv.pdf`; report whether they contain a location (search their text)
+  so Tristan can update them himself.
+
 ## Files
 
 - **May touch:** `src/components/sections/Hero.tsx`, new `src/components/ui/MothConstellation.tsx`,
   `src/components/shell/Ambient.tsx` (`TechField` drawing and its tile colours only), `src/app/globals.css` (hero
-  and tile styles only).
-- **Must not touch:** `src/data/**` (including `latest` and `personal`; the Latest row simply stops rendering),
+  and tile styles only), and for section 4 only: `src/data/personal.ts`, `src/data/experience.ts`,
+  `src/data/education.ts`, `src/components/footer/Footer.tsx` (the copyright line), `src/components/sections/Experience.tsx`,
+  `src/components/shell/CvViewer.tsx`, `src/lib/vcard.ts`, `src/app/tristan-morton.vcf/route.ts`,
+  `src/app/llms.txt/route.ts`, `src/app/layout.tsx` (JSON-LD), and tests that reference the removed fields.
+- **Must not touch:** other `src/data/**` (`latest` stays; the Latest row simply stops rendering),
   `src/components/ui/Moth.tsx`, `SectionHeader`, `AmbientBackground`, `ProgressBar`, the nav, the intro splash in
   `Chrome.tsx` (a later handoff), the footer, tokens, `src/components/lab/**`.
 
@@ -80,6 +98,8 @@ their drawing, so they read in both themes (they are faint in twilight today):
   hero, plus a side-by-side with `theme-01-hero-dark.png` and `theme-05-hero-twilight.png` (embed the images so the
   comparison file actually shows them: earlier comparison pages used relative paths that broke).
 - `grep -n "latest\|featured" src/components/sections/Hero.tsx` finds nothing.
+- `grep -rniE "leesburg|harrisonburg|, VA\b|\.location\b|\.place\b|addressLocality" src public --include=*.ts --include=*.tsx`
+  finds nothing outside `src/components/lab/` (`window.location` is fine). Build output (`out/`) has no "Leesburg".
 - Tech tiles: readable in twilight (label contrast ≥ 4.5:1 against the tile fill), same positions and parallax as
   before; screenshot a section further down showing the side tiles.
 - Motion: the constellation draws, then the route; Reduced motion shows both complete; nothing loops except the
