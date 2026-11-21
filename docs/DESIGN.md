@@ -27,6 +27,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Skills | **Keep the moving marquee rails**, restyled to the motif. Not constellation cells. |
 | Footer scenes | **Recast all four into the night-sky world** as a switchable set. |
 | Footer scene set (2026-11-20) | **Approved:** the four scenes recast around the moth alone, as framed in `docs/design/mockups/footer-*` and specified (interaction, response, idle, Reduced motion) in `src/components/lab/FooterMoth.tsx`: **Lantern** (pointer carries a lantern; real visibility polygon; the moth circles the light; lit stones show carved constellations), **Star trails** (scroll speed is a long exposure; the moth sits on an old survey pillar and looks up), **Name the constellation** (pick the project a figure charts; the moth flies to its brightest star; a shooting star falls to the email button), **Orbit** (the moth circles an armillary sphere; holding the email button speeds it up and streaks the stars). Footer ground `#0b0e20`. |
+| About, Achievements, Focus areas, Stats (2026-11-20) | **Approved** as mocked in `docs/design/mockups/sections-*` (source `src/components/lab/SectionsLab.tsx`, dark and twilight): About with greeting, intro, four rounded fact cards, interests drawn as one constellation, facts list; Achievements in three columns (honours, certifications with level as one to three stars, competitions) plus badge chips; Focus areas with the lead area full width and six cards, each with a small figure of the work that backs it and "Backed by" chips; Stats with four highlight cards (hairline chart each) and Shipping and Scale as two lists. Placeholders keep the amber tag. |
 | Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. **Values approved** as shown in `docs/design/mockups/theme-*` (token table in section 3). |
 | Cards | **Keep rounded cards**, restyled to the new palette. No square plates or corner registration ticks. |
 | Experience + education | **Merged into one "route" section**: route map across both, detail cards below. |
@@ -115,12 +116,12 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 | Section | Treatment | Status |
 |---|---|---|
 | Hero | Charted sky; the featured projects form "the Prism" constellation; route from "you are here"; coordinates of Leesburg; chart-marker tech tiles. | Lab |
-| About | Not mocked yet. | Open |
+| About | See section 1. | Decided |
 | Experience + education | One merged section: route map plus detail cards. Plain title (e.g. "Experience & education"). | Decided |
 | Skills | Existing marquee rails, restyled. | Decided |
 | Projects | Sky map whose legend is the filter; spotlight card and cards for the rest using the **existing cover animations**; full list below. | Mocked |
 | Project detail | Case-study layout with measurements, at-a-glance and a margin chart of where it sits. | Mocked |
-| Achievements, Focus areas, Stats | Not mocked yet. | Open |
+| Achievements, Focus areas, Stats | See section 1. | Decided |
 | Activity | Plain dates and type labels on the timeline; no entry numbers or hashes. | Decided |
 | Contact + footer | Contact plates and form; footer horizon with the Prism constellation and the seated character. | Mocked |
 | Footer scenes | Four scenes recast around the moth (section 1). | Decided |
@@ -129,8 +130,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **About, Achievements, Focus areas, Stats.** **Proposed:** `/lab/sections` (`docs/design/mockups/sections-*`, dark and twilight). About: greeting, intro, four rounded fact cards, interests as one constellation, a facts list. Achievements: honours, certifications (level as one to three stars) and competitions in three columns, badges as chips. Focus areas: the lead area full width, six cards below, each with a small figure of the work that backs it and "Backed by" chips. Stats: four highlight cards with a hairline chart each, Shipping and Scale as two lists.
-2. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+1. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules
 
