@@ -160,4 +160,8 @@ are shared by almost everything. The advisor reviews each result in the browser 
    - `IntroSplash` sets `data-intro="on"` on `<html>` while it covers the page, which pauses the hero entrance, the Moth draw and the route until the splash lifts. The intro handoff should keep that signal.
    - The dev double-mount no longer drops a stored Reduced motion setting (`e8390b2`).
    - `public/resume.pdf` and `public/cv.pdf` keep the town, which Tristan approved (see **No home town**).
-8. [Projects as a sky map whose legend is the filter](design/handoffs/08-projects-sky-map.md): ready. A data-driven map with one constellation per kind (lines join each kind's projects in date order), legend chips, a spotlight with measurements from data, and simplified cards. Covers unchanged.
+8. [Projects as a sky map whose legend is the filter](design/handoffs/08-projects-sky-map.md): done (`51c7073..88e32ac`), reviewed. It's a data-driven map with one constellation per kind (lines join each kind's projects in date order), legend chips, a spotlight with measurements from data, and simplified cards; the covers are unchanged. Accepted changes from the handoff:
+   - The layout helper is `skyLayout.ts`, because `skyMap.ts` collides with `SkyMap.tsx` on Windows.
+   - Chip counts sit at 75% in dark and 85% in twilight (65% failed 4.5:1).
+   - Touch taps go to the kind buttons, not the stars.
+   - The cards' tech line shows only whole names (up to three) plus "+N", and never truncates a name.
