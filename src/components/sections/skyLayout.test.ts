@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 import { projects, type Project } from '@/data/projects';
-import { KINDS, MIN_GAP, layoutSkyMap, type SkyMapLayout } from './skyMap';
+import { KINDS, MIN_GAP, layoutSkyMap, type SkyMapLayout } from './skyLayout';
 
 const allStars = (l: SkyMapLayout) => l.groups.flatMap((g) => g.stars);
 const synthetic = (slug: string, date: string, kind: Project['kind'] = 'data'): Project => ({ ...projects[0], id: 900 + slug.length, slug, kind, date, featured: false, spotlight: false });

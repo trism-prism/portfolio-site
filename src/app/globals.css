@@ -362,6 +362,41 @@ body {
 .glow-card:hover::before, .glow-card:focus-within::before { opacity: 1; }
 [data-motion='full'] .glow-card.liftable:hover, [data-motion='full'] .glow-card.liftable:focus-within { transform: translateY(-6px); }
 
+/* ---------- Projects: sky map (see SkyMap.tsx) ---------- */
+/* The markup is the finished frame. `.sky-hold` (set after hydration, until the map first scrolls into view) hides the
+   lines and stars; `.sky-play` draws them once. Dimming is opacity on `.sky-dim` groups. */
+.sky-dim { transition: opacity .3s ease; }
+.sky-hold .sky-line { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.sky-hold .sky-star { opacity: 0; }
+.sky-play .sky-line { animation: sky-line .4s ease-out var(--d, 0s) both; }
+.sky-play .sky-star { animation: sky-fade .3s ease-out var(--d, 0s) both; }
+@keyframes sky-line { from { stroke-dasharray: 1; stroke-dashoffset: 1; } to { stroke-dasharray: 1; stroke-dashoffset: 0; } }
+@keyframes sky-fade { from { opacity: 0; } }
+[data-motion='reduced'] .sky-dim { transition: none; }
+[data-motion='reduced'] .sky-hold .sky-line { stroke-dasharray: none; stroke-dashoffset: 0; }
+[data-motion='reduced'] .sky-hold .sky-star { opacity: 1; }
+[data-motion='reduced'] .sky-play .sky-line,
+[data-motion='reduced'] .sky-play .sky-star { animation: none; }
+.sky-btn { cursor: pointer; }
+.sky-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; border-radius: 16px; }
+.sky-label { transform: translate(-50%, -50%); transition: opacity .3s; }
+.sky-btn:hover .sky-label { opacity: .8; }
+/* Stars are for pointer users only; touch and keyboard use the kind buttons and the cards. */
+.sky-hit { width: 28px; height: 28px; margin: -14px 0 0 -14px; border-radius: 50%; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .sky-hit { pointer-events: auto; cursor: pointer; } }
+.sky-tip {
+  position: absolute; left: 50%; z-index: 20; width: max-content; max-width: 240px; padding: 6px 10px;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 6px 20px rgb(0 0 0 / .25);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none; transition: opacity .15s;
+}
+.sky-tip-above { bottom: calc(100% + 4px); transform: translateX(-50%); }
+.sky-tip-below { top: calc(100% + 4px); transform: translateX(-50%); }
+.sky-tip-start { left: 0; transform: none; }
+.sky-tip-end { left: auto; right: 0; transform: none; }
+.sky-hit:hover .sky-tip { opacity: 1; }
+[data-motion='reduced'] .sky-tip { transition: none; }
+
 /* ---------- Reveal ---------- */
 .reveal { opacity: 0; transform: translateY(14px); transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1); }
 .reveal.in { opacity: 1; transform: none; }

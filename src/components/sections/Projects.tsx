@@ -10,11 +10,12 @@ import { Icon } from '@/components/ui/Icon';
 import { Text, PhRibbon, safeHref } from '@/components/ui/Text';
 import { GlossText } from '@/components/ui/Gloss';
 import { Modal } from '@/components/ui/Modal';
+import { SkyMap } from './SkyMap';
 import { SceneHost } from '@/components/scenes/Stage';
 import { covers } from '@/components/scenes/covers/registry';
 import { DocsQaTerminal, HeartThreshold, VisibilityDemo } from '@/components/scenes/demos/Demos';
 
-const kindColor: Record<string, string> = { software: 'var(--accent)', ai: 'var(--violet)', data: 'var(--amber)', systems: 'var(--sky)' };
+const kindColor = (k: Project['kind']) => `var(--kind-${k})`;
 const demos = { visibility: VisibilityDemo, docsqa: DocsQaTerminal, heart: HeartThreshold };
 const statusLabel = { live: 'Live', complete: 'Complete', 'in-progress': 'In progress' };
 
@@ -73,6 +74,7 @@ export function Projects() {
     <section id="projects" className="section" aria-labelledby="projects-title">
       <div className="wrap">
         <SectionHeader id="projects" />
+        <SkyMap filter={filter} onFilter={setFilter} query={q} onOpen={(slug) => void openSlug(slug)} />
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div role="group" aria-label="Filter projects" className="flex flex-wrap gap-2">
             {filters.map((f) =>
@@ -191,7 +193,7 @@ function Meta({ p }: { p: Project }) {
         <span className="h-1.5 w-1.5 rounded-full" style={{ background: p.status === 'live' ? 'var(--green)' : p.status === 'complete' ? 'var(--sky)' : 'var(--amber)' }} />
         {statusLabel[p.status]}
       </span>
-      <span className="chip !text-[11px]" style={{ color: kindColor[p.kind], borderColor: `color-mix(in srgb, ${kindColor[p.kind]} 40%, transparent)` }}>
+      <span className="chip !text-[11px]" style={{ color: kindColor(p.kind), borderColor: `color-mix(in srgb, ${kindColor(p.kind)} 40%, transparent)` }}>
         {kindLabels[p.kind]}
       </span>
       {p.badge && <span className="chip !text-[11px] !text-amber">{p.badge}</span>}
