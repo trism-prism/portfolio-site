@@ -139,7 +139,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-None open. Remaining work is implementation: shared section styling, the approved sections, the hero with the Moth constellation, the intro, and the data-driven footer quiz.
+None open. Every approved design is built (handoffs 1–9). What remains before going public is outside design: resolving `PLACEHOLDERS.md`, so that `npm run build` passes, and Tristan's approval to push, merge and deploy.
 
 ## 7. Handoff rules
 
@@ -165,4 +165,16 @@ are shared by almost everything. The advisor reviews each result in the browser 
    - Chip counts sit at 75% in dark and 85% in twilight (65% failed 4.5:1).
    - Touch taps go to the kind buttons, not the stars.
    - The cards' tech line shows only whole names (up to three) plus "+N", and never truncates a name.
-9. [The intro: the moth emerges](design/handoffs/09-moth-intro.md): ready. The nine-frame storyboard on one 4.2 s eased timeline. It replaces the prism splash and ends with a ring of light revealing the site as the moth flies into the nav logo. `?intro=<seconds>` freezes it at a given time for review.
+9. [The intro: the moth emerges](design/handoffs/09-moth-intro.md): done (`211ec0f..5c5243a`), reviewed in two rounds. It replaces the prism splash. `?intro` plays it; `?intro=<seconds>` freezes it for review.
+   - **Review fixes:**
+     - the anchor thread fades as the chrysalis falls;
+     - the night stays opaque outside the ring until 85% of beat 9, so the ring does the reveal;
+     - the stage is `125vw` below 640px;
+     - the head boot script sets `data-intro='on'` before first paint, with a CSS night cover and a 6 s failsafe;
+     - skipping fades out in 0.22 s (worst case measured 319 ms).
+   - **Accepted deviations:**
+     - the ring masks only the sky layer, so the moth can fly through it;
+     - the chrysalis points use their own ease-out;
+     - the name lights before the nav because the ring starts at the centre;
+     - a 64 ms long task appears in about one run in three; it is page hydration, which occurs without the intro too.
+   - **Not yet watched live by Tristan:** reviewed from frozen frames, the recorded video and frame timing (about 59 fps).
