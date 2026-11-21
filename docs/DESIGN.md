@@ -138,3 +138,5 @@ Each implementation handoff states: goal; files it may touch and must not touch;
 it follows; acceptance checks (`npm run check`, `npm test`, `npm run build:dev`, screenshots at 1440px and
 375px, Reduced motion). One implementer at a time in this worktree: `globals.css`, tokens and `Stage.tsx`
 are shared by almost everything. The advisor reviews each result in the browser before the next one starts.
+
+**Handoffs written:** 1. [Approved tokens, twilight theme, Sacramento](design/handoffs/01-tokens-theme-sacramento.md) (ready; not started).
