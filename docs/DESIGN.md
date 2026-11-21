@@ -123,7 +123,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 | About | See section 1. | Decided |
 | Experience + education | One merged section: route map plus detail cards. Plain title (e.g. "Experience & education"). | Decided |
 | Skills | Existing marquee rails, restyled. | Decided |
-| Projects | Sky map whose legend is the filter; spotlight card and cards for the rest using the **existing cover animations**; full list below. | Mocked |
+| Projects | Sky map whose legend is the filter; spotlight card and cards for the rest using the **existing cover animations**; full list below. | Decided |
 | Project detail | Case-study layout with measurements, at-a-glance and a margin chart of where it sits. | Mocked |
 | Achievements, Focus areas, Stats | See section 1. | Decided |
 | Activity | Plain dates and type labels on the timeline; no entry numbers or hashes. | Decided |
