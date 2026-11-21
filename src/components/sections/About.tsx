@@ -33,7 +33,11 @@ export function About() {
             <ul className="mt-8 grid gap-4 lg:grid-cols-2">
               {a.cards.map((c, i) => (
                 <Reveal as="li" key={i} delay={0.15 + i * 0.08} className="h-full">
-                  <div className={`panel h-full p-5 ${isPh(c.text) ? 'ph-card' : ''}`} data-tone style={{ '--tone': cardTones[i] } as React.CSSProperties}>
+                  <div
+                    className={`panel h-full p-5 ${isPh(c.text) ? 'ph-card' : ''}`}
+                    data-tone
+                    style={{ '--tone': cardTones[i] } as React.CSSProperties}
+                  >
                     <p className="label flex items-center gap-2 tracking-[.18em]">
                       <StarGlyph color={cardTones[i]} size={11} /> {cardNames[i]}
                     </p>
@@ -71,7 +75,7 @@ export function About() {
               </div>
             </Reveal>
             <Reveal delay={0.18}>
-              <dl className="panel px-5 py-2">
+              <dl className="panel px-5 py-2" data-annotate="placeholders">
                 {a.facts.map((f, i) => (
                   <div key={f.label} className={`flex items-baseline justify-between gap-4 py-3 ${i ? 'border-t border-line' : ''}`}>
                     <dt className="label tracking-[.18em]">{f.label}</dt>
