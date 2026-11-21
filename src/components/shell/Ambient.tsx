@@ -17,12 +17,12 @@ const round1 = (n: number) => Math.round(n * 10) / 10;
 function makeSky(w: number, h: number) {
   const rnd = mulberry32(2026);
   const count = Math.round((w * h) / DARK_PER_STAR);
-  const stars: SkyStar[] = Array.from({ length: count }, () => {
+  const stars: SkyStar[] = Array.from({ length: count }, (_, i) => {
     const x = Math.round(rnd() * w);
     const y = Math.round(rnd() * h);
     const r = rnd() < 0.07 ? 1.6 : round1(0.6 + rnd() * 0.7);
     const o = round1(0.25 + rnd() * 0.55);
-    const tw = rnd() < 0.08 ? 1 : 0;
+    const tw = i % 12 === 5 ? 1 : 0; // every 12th star twinkles: about 8%
     const d = round1(4 + rnd() * 3);
     const delay = -round1(rnd() * 7);
     return { x, y, r, o, tw, d, delay };
