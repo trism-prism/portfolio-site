@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { contributions, kindLabels, projects, type Project } from '@/data/projects';
 import { counts, filterProjects, filters, type Filter } from '@/lib/search';
 import { goTo, onUi } from '@/lib/nav';
@@ -267,9 +267,46 @@ function SpotlightCard({ p, onOpen }: { p: Project; onOpen: () => void }) {
   );
 }
 
+/** One quiet line of technologies. Shows up to three whole names, then "+N"; drops to two (or one) when three do not fit. Never cuts a name. */
+function TechLine({ tech }: { tech: string[] }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [n, setN] = useState(Math.min(3, tech.length));
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ctx = document.createElement('canvas').getContext('2d');
+    const fit = () => {
+      if (!ctx) return;
+      const cs = getComputedStyle(el);
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const room = el.clientWidth;
+      let best = 1;
+      for (let k = Math.min(3, tech.length); k >= 1; k--) {
+        const rest = tech.length - k;
+        const text = tech.slice(0, k).join(' · ') + (rest ? ` +${rest}` : '');
+        if (ctx.measureText(text).width <= room) {
+          best = k;
+          break;
+        }
+      }
+      setN(best);
+    };
+    fit();
+    const ro = new ResizeObserver(fit);
+    ro.observe(el);
+    void document.fonts?.ready.then(fit);
+    return () => ro.disconnect();
+  }, [tech]);
+  const rest = tech.length - n;
+  return (
+    <p ref={ref} className="mono mt-3 overflow-hidden whitespace-nowrap text-[11.5px] text-muted">
+      {tech.slice(0, n).join(' · ')}
+      {rest > 0 && ` +${rest}`}
+    </p>
+  );
+}
+
 function ProjectCard({ p, onOpen }: { p: Project; onOpen: () => void }) {
-  const shown = p.tech.slice(0, 4);
-  const more = p.tech.length - shown.length;
   const suffix = p.status === 'live' ? ' · Live' : p.status === 'in-progress' ? ' · In progress' : '';
   return (
     <article data-tone style={tone(p)} onPointerMove={trackPointer} className="panel glow-card liftable flex h-full flex-col overflow-hidden">
@@ -290,10 +327,7 @@ function ProjectCard({ p, onOpen }: { p: Project; onOpen: () => void }) {
         </h3>
         <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-fg-2">{p.summary}</p>
         <div className="flex-1" />
-        <p className="mono mt-3 flex text-[11.5px] text-muted">
-          <span className="truncate">{shown.join(' · ')}</span>
-          {more > 0 && <span className="shrink-0 pl-1.5">+{more}</span>}
-        </p>
+        <TechLine tech={p.tech} />
       </div>
     </article>
   );
