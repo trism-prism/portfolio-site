@@ -47,5 +47,5 @@ async function run(label, { motion, intro, steps }) {
 
 await run('full/no-intro', { motion: 'full', intro: false, steps: [[1.6, 'motion-mid-draw.png'], [2.6, null], [4.5, null]] });
 await run('reduced', { motion: 'reduced', intro: false, steps: [[3, 'motion-reduced-1440.png']] });
-await run('full/first-visit-intro', { motion: 'full', intro: true, steps: [[1.5, 'motion-intro-covering.png'], [3, null], [4.2, null], [5.0, 'motion-after-intro-5s.png'], [7, 'motion-after-intro-7s.png']] });
+await run('full/first-visit-intro', { motion: 'full', intro: true, steps: [[1.5, 'motion-intro-covering.png'], [3, null], [4.2, null], [6.0, 'motion-after-intro-6s.png'], [8, 'motion-after-intro-8s.png']] });
 await browser.close();
