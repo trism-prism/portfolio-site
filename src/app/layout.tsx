@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next';
-import { Bricolage_Grotesque, Instrument_Serif, Inter, JetBrains_Mono, Yellowtail } from 'next/font/google';
+import { Bricolage_Grotesque, Instrument_Serif, Inter, JetBrains_Mono, Sacramento } from 'next/font/google';
 import { personal } from '@/data/personal';
 import { hasPlaceholders } from '@/data/audit';
 import { MotionProvider } from '@/lib/motion';
@@ -17,7 +17,7 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'sw
 const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains', display: 'swap' });
 const bricolage = Bricolage_Grotesque({ subsets: ['latin'], variable: '--font-bricolage', display: 'swap', axes: ['opsz'] });
 const instrument = Instrument_Serif({ subsets: ['latin'], weight: '400', style: 'italic', variable: '--font-instrument', display: 'swap' });
-const yellowtail = Yellowtail({ subsets: ['latin'], weight: '400', variable: '--font-yellowtail', display: 'swap' });
+const sacramento = Sacramento({ subsets: ['latin'], weight: '400', variable: '--font-sacramento', display: 'swap' });
 
 export const metadata: Metadata = {
   metadataBase: new URL(personal.siteUrl),
@@ -55,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html
       lang="en"
       data-motion="full"
-      className={`${inter.variable} ${mono.variable} ${bricolage.variable} ${instrument.variable} ${yellowtail.variable}`}
+      className={`${inter.variable} ${mono.variable} ${bricolage.variable} ${instrument.variable} ${sacramento.variable}`}
       suppressHydrationWarning
     >
       <head>

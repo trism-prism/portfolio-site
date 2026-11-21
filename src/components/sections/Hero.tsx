@@ -23,7 +23,7 @@ export function Hero() {
       <h1 id="hero-title" className="display mt-10 text-[44px] leading-[1.02] text-fg sm:text-[64px] lg:text-[76px]" data-annotate="headline">
         <span className="hero-in block" style={{ animationDelay: '.2s' }}>
           Hi, I&apos;m{' '}
-          <span className="relative inline-block font-sig text-[1.08em] font-normal tracking-normal" style={{ background: 'linear-gradient(90deg, var(--accent-soft), var(--violet))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', paddingInline: '.08em' }}>
+          <span className="relative inline-block font-sig text-[1.24em] font-normal tracking-normal" style={{ background: 'linear-gradient(90deg, var(--accent-soft), var(--violet))', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', paddingInline: '.08em' }}>
             Tristan Morton
           </span>
           <span className="text-accent">.</span>
