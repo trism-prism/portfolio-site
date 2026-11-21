@@ -320,7 +320,40 @@ body {
 .hero-route-here { animation: moth-fade .5s ease-out var(--rd, 1.8s) both; }
 @keyframes route-draw { from { stroke-dashoffset: 1; } }
 [data-motion='reduced'] .hero-route-line, [data-motion='reduced'] .hero-route-here { animation: none; }
-/* First visit: hold the Moth draw while the intro splash covers the page; it starts as the splash lifts. (.hero-in is held in Hero.tsx, where it is defined.) */
+/* Intro (src/components/shell/intro): it always plays on the night sky, so the overlay pins the dark values the drawings read. */
+.intro-night {
+  --bg: #0a0b16;
+  --fg: #eceaf3;
+  --fg-2: #a9a6b8;
+  --panel: rgba(17,18,32,.74);
+  --line-2: rgba(255,255,255,.16);
+  --star: #ffffff;
+  --star-halo: transparent;
+  --constellation: rgba(236,234,243,.35);
+  --accent-serif: #cfc9f5;
+  --kind-software: #5eead4;
+  --kind-systems: #60a5fa;
+  --kind-ai: #a78bfa;
+  --rose: #f472b6;
+  --route: #fbbf24;
+  color-scheme: dark;
+}
+.intro-overlay { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; overflow: hidden; }
+.intro-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #141428, #0a0b16 55%, #05060b); }
+.intro-stage { position: relative; display: block; width: min(92vw, 760px); height: auto; overflow: visible; }
+.intro-skip {
+  position: absolute; right: 16px; bottom: 16px; padding: 5px 14px; border-radius: 999px;
+  border: 1px solid var(--line-2); background: var(--panel); color: var(--fg-2);
+  font: 12px/1.4 var(--font-inter), system-ui, sans-serif; cursor: pointer;
+}
+.intro-skip:hover { color: var(--fg); }
+.intro-skip:focus-visible { outline: 2px solid var(--accent-serif); outline-offset: 2px; }
+/* The nav logo's moth stays hidden while the intro runs: the flying moth lands in it, so there is one moth, never two. */
+[data-intro] [data-intro-target] { opacity: 0; }
+[data-intro-target] { transition: opacity .1s linear; }
+html[data-intro][data-intro-arrive] [data-intro-target] { opacity: 1; }
+
+/* First visit: hold the Moth draw while the intro covers the page ('on'); it starts when the ring of light begins ('landing'). (.hero-in is held in Hero.tsx, where it is defined.) */
 [data-intro='on'] .moth-draw .moth-line,
 [data-intro='on'] .moth-draw .moth-star,
 [data-intro='on'] .moth-draw .moth-name,

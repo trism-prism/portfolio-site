@@ -7,7 +7,8 @@ import { motionBootScript, themeBootScript } from '@/lib/boot';
 import { ThemeController } from '@/components/shell/Theme';
 import { Nav } from '@/components/shell/Nav';
 import { AmbientBackground, ProgressBar, TechField } from '@/components/shell/Ambient';
-import { FloatingControls, IntroSplash, Konami, SmoothScroll, Toasts } from '@/components/shell/Chrome';
+import { FloatingControls, Konami, SmoothScroll, Toasts } from '@/components/shell/Chrome';
+import { Intro } from '@/components/shell/intro/Intro';
 import { CommandPalette } from '@/components/shell/CommandPalette';
 import { Annotations } from '@/components/shell/Annotations';
 import { CvViewer } from '@/components/shell/CvViewer';
@@ -70,7 +71,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AmbientBackground />
           <TechField />
           <ProgressBar />
-          <IntroSplash />
+          <Intro />
           <Nav />
           <SmoothScroll />
           <ThemeController />

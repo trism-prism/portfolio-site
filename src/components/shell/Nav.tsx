@@ -91,7 +91,7 @@ export function Nav() {
       }`}
     >
       <div className="wrap flex h-full items-center gap-3">
-        <a href="#hero" onClick={link('hero')} className="rounded-xl border border-line-2 bg-panel p-1" aria-label="Tristan Morton, back to top" data-annotate="mark">
+        <a href="#hero" onClick={link('hero')} className="rounded-xl border border-line-2 bg-panel p-1" aria-label="Tristan Morton, back to top" data-annotate="mark" data-intro-target>
           <MothMark size={34} animated />
         </a>
         <nav aria-label="Sections" className="ml-auto hidden items-center gap-1 lg:flex">
