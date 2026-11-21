@@ -136,7 +136,7 @@ footer text. Use `personal.name`.
 
 - `npm run check`, `npm test` (including `figures.test.ts`), `npm run build:dev` pass. If the running dev server
   locks `out/`, run the build in a temporary copy as handoff 2 did, and say so.
-- `grep -rn "PrismCharacter|PrismMark|footer/Cast|from './Cast'|LOOKS" src --include=*.tsx\|PrismMark\|from './Cast'\|Person" src --include=*.tsx` finds nothing outside
+- `grep -rnE "PrismCharacter|PrismMark|footer/Cast|from './Cast'|LOOKS" src --include=*.tsx` finds nothing outside
   `src/components/lab/`.
 - Screenshots saved under `docs/design/review/handoff-3/`, at 1440px and 375px, dark and twilight, of each scene,
   plus these states: Lantern with the pointer at two positions (show shadows moving and stones lighting);
