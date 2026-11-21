@@ -152,4 +152,5 @@ are shared by almost everything. The advisor reviews each result in the browser 
 2. [The moth replaces the prism](design/handoffs/02-moth-character.md): done (`26a4527..0c54d6b`), reviewed; favicon redrawn by the advisor for 16px (`f72bfb5`).
 3. [The four footer scenes, rebuilt around the moth](design/handoffs/03-footer-scenes.md): done (`c910adc..ee14da5`), reviewed against the frames.
 4. [Shared section styling](design/handoffs/04-section-styling.md): done (`d4c7571..5635d1a`), reviewed; advisor fixed a lab type error (`ae456b4`).
-5. [About, Achievements, Focus areas, Stats](design/handoffs/05-about-achievements-focus-stats.md): ready; not started.
+5. [About, Achievements, Focus areas, Stats](design/handoffs/05-about-achievements-focus-stats.md): done (`6bdcb2c..498577e`), reviewed against the mockups.
+6. [Experience & education as one route, Skills rails restyled](design/handoffs/06-route-and-skills.md): ready; not started. Skills has no mockup: the handoff's spec is the advisor's design, for Tristan to review in the built result.
