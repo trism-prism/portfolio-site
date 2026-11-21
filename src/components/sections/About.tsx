@@ -78,7 +78,7 @@ export function About() {
               <dl className="panel px-5 py-2" data-annotate="placeholders">
                 {a.facts.map((f, i) => (
                   <div key={f.label} className={`flex items-baseline justify-between gap-4 py-3 ${i ? 'border-t border-line' : ''}`}>
-                    <dt className="label tracking-[.18em]">{f.label}</dt>
+                    <dt className="label shrink-0 whitespace-nowrap tracking-[.18em]">{f.label}</dt>
                     <dd className="text-right text-[14px] text-fg">
                       <Text v={f.value} />
                     </dd>

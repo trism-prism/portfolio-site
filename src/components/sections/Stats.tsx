@@ -124,7 +124,7 @@ export function Stats() {
                 <h3 className="label tracking-[.18em]">{g.label}</h3>
                 <ul>
                   {g.stats.map((s, i) => (
-                    <li key={s.label} className={`grid grid-cols-[110px_1fr] items-baseline gap-4 py-3.5 ${i ? 'border-t border-line' : ''} ${s.placeholder ? 'ph-card' : ''}`}>
+                    <li key={s.label} className={`grid items-baseline gap-1 py-3.5 md:grid-cols-[110px_1fr] md:gap-4 ${i ? 'border-t border-line' : ''} ${s.placeholder ? 'ph-card' : ''}`}>
                       <span className="display text-[30px] leading-none tracking-[-0.03em] text-fg">
                         <CountUp value={s.value} />
                       </span>
