@@ -10,10 +10,17 @@ export default function Image() {
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: 96, background: '#0a1113', color: '#eef5f4' }}>
-        <svg width="96" height="96" viewBox="0 0 48 48">
-          <path d="M24 6.5c1.4 0 2.2.8 3 2.1L41.6 35c1.2 2.3 0 4.6-2.6 4.6H9c-2.6 0-3.8-2.3-2.6-4.6L21 8.6c.8-1.3 1.6-2.1 3-2.1z" fill="#2dd4bf" />
-          <ellipse cx="19" cy="28" rx="2.3" ry="3" fill="#0a1113" />
-          <ellipse cx="29" cy="28" rx="2.3" ry="3" fill="#0a1113" />
+        <svg width="96" height="96" viewBox="0 0 32 32">
+          <path d="M15 17 C10 19 7 24 9 27.5 C12 29.5 15 25 15.5 20Z" fill="#272650" stroke="#cfc9f5" strokeWidth=".7" />
+          <path d="M15.5 13 C11.5 7 5 3.5 2.6 6.6 C1.2 10.6 6 16.6 15.5 17.6Z" fill="#272650" stroke="#cfc9f5" strokeWidth=".7" />
+          <circle cx="8" cy="9.6" r="1.4" fill="#f5c45e" />
+          <path d="M17 17 C22 19 25 24 23 27.5 C20 29.5 17 25 16.5 20Z" fill="#272650" stroke="#cfc9f5" strokeWidth=".7" />
+          <path d="M16.5 13 C20.5 7 27 3.5 29.4 6.6 C30.8 10.6 26 16.6 16.5 17.6Z" fill="#272650" stroke="#cfc9f5" strokeWidth=".7" />
+          <circle cx="24" cy="9.6" r="1.4" fill="#60a5fa" />
+          <ellipse cx="16" cy="19" rx="2.2" ry="6.5" fill="#e9e4f5" />
+          <circle cx="16" cy="11" r="3" fill="#f3f0fb" />
+          <circle cx="14.9" cy="11.2" r=".9" fill="#16152c" />
+          <circle cx="17.1" cy="11.2" r=".9" fill="#16152c" />
         </svg>
         <div style={{ fontSize: 92, fontWeight: 700, letterSpacing: -3, marginTop: 32 }}>{personal.name}</div>
         <div style={{ fontSize: 40, marginTop: 16, color: '#5eead4' }}>I build software you can inspect.</div>
