@@ -46,12 +46,17 @@ const LINES: [string, string][] = [
 const SPECTRUM = ['--kind-software', '--kind-systems', '--kind-ai', '--rose', '--route'] as const;
 const SOFT: Record<string, number> = { foreL: 2, foreR: 0, hindL: 3, hindR: 1, tail: 4 };
 
-/** Position of the head star in the 400 × 260 viewBox, for routes and the intro to aim at. */
+/** Position of the head star in the 400 × 260 viewBox, for the intro to aim at. */
 export const MOTH_HEAD: P = [200, 66];
+/** Position of the tail star (the gold one) in the viewBox: where the hero route ends. */
+export const MOTH_TAIL: P = [200, 196];
 export const MOTH_VIEW = { w: 400, h: 260 } as const;
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
 const at = (id: string) => SPREAD.find((s) => s.id === id)!.p;
+
+/** The 15 constellation lines as point pairs in viewBox units, for geometry checks. */
+export const MOTH_LINES: [P, P][] = LINES.map(([a, b]) => [at(a), at(b)]);
 
 // Draw order: breadth-first from the head, so the lines grow outward through the figure.
 const dist: Record<string, number> = { head: 0 };

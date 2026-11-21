@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { personal } from '@/data/personal';
 import { emit, goTo } from '@/lib/nav';
 import { Icon } from '@/components/ui/Icon';
-import { MOTH_DRAW_SECONDS, MOTH_HEAD, MOTH_VIEW, MothConstellation } from '@/components/ui/MothConstellation';
+import { MOTH_DRAW_SECONDS, MOTH_TAIL, MOTH_VIEW, MothConstellation } from '@/components/ui/MothConstellation';
+import { routePath } from './heroRoute';
 import { ProximityText } from '@/components/ui/ProximityText';
 
 const r1 = (n: number) => Math.round(n * 10) / 10;
 
-// Where the route runs, in hero pixels: from the "you are here" marker up to the Moth's head star.
-type Route = { w: number; h: number; mx: number; my: number; hx: number; hy: number };
+// Where the route runs, in hero pixels: from the "you are here" marker up to the Moth's tail star. `s` is the
+// figure's rendered scale over its 400-wide viewBox.
+type Route = { w: number; h: number; mx: number; my: number; tx: number; ty: number; s: number };
 
 const SPECTRUM = 'linear-gradient(90deg, var(--kind-software), var(--kind-systems), var(--kind-ai), var(--rose), var(--route))';
 
@@ -20,7 +22,7 @@ export function Hero() {
   const mothRef = useRef<HTMLDivElement>(null);
   const [route, setRoute] = useState<Route | null>(null);
 
-  // The route joins two things placed by CSS (the marker near the bottom, the head star in the figure), so
+  // The route joins two things placed by CSS (the marker near the bottom, the tail star in the figure), so
   // it is measured after layout and redrawn on resize. It only exists from 1024px up.
   useEffect(() => {
     const hero = heroRef.current;
@@ -39,8 +41,9 @@ export function Hero() {
         h: r1(a.height),
         mx: r1(m.left - a.left - m.width * 0.35),
         my: r1(a.height - 130),
-        hx: r1(m.left - a.left + (m.width * MOTH_HEAD[0]) / MOTH_VIEW.w),
-        hy: r1(m.top - a.top + (m.height * MOTH_HEAD[1]) / MOTH_VIEW.h),
+        tx: r1(m.left - a.left + (m.width * MOTH_TAIL[0]) / MOTH_VIEW.w),
+        ty: r1(m.top - a.top + (m.height * MOTH_TAIL[1]) / MOTH_VIEW.h),
+        s: r1((m.width / MOTH_VIEW.w) * 100) / 100,
       };
       setRoute((prev) => (prev && (Object.keys(next) as (keyof Route)[]).every((k) => prev[k] === next[k]) ? prev : next));
     };
@@ -55,12 +58,7 @@ export function Hero() {
     };
   }, []);
 
-  let d = '';
-  if (route) {
-    const dx = route.hx - route.mx;
-    const dy = route.hy - route.my;
-    d = `M${route.mx} ${route.my} C${r1(route.mx + dx * 0.3)} ${r1(route.my + dy * 0.1)} ${r1(route.hx - 0.42 * Math.abs(dy))} ${r1(route.hy + 0.3 * Math.abs(dy))} ${route.hx} ${route.hy}`;
-  }
+  const d = route ? routePath([route.mx, route.my], [route.tx, route.ty], route.s) : '';
   const routeDelay = `${r1(MOTH_DRAW_SECONDS + 0.1)}s`;
 
   return (
