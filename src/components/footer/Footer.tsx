@@ -118,7 +118,7 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <MothMark size={28} />
             <p className="text-[13px] text-muted">
-              © {YEAR} {personal.name} · Leesburg, VA
+              © {YEAR} {personal.name} · {personal.location}
             </p>
           </div>
           <nav aria-label="Footer" className="mono flex flex-wrap justify-center gap-x-4 gap-y-1 text-[12px] text-muted">

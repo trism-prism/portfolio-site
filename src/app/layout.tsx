@@ -42,7 +42,7 @@ const jsonLd = {
       jobTitle: 'Software Engineering & AI Systems Intern',
       url: personal.siteUrl,
       email: `mailto:${personal.email}`,
-      address: { '@type': 'PostalAddress', addressLocality: 'Leesburg', addressRegion: 'VA', addressCountry: 'US' },
+      address: { '@type': 'PostalAddress', addressRegion: 'VA', addressCountry: 'US' },
       alumniOf: [{ '@type': 'CollegeOrUniversity', name: 'Northern Virginia Community College' }],
       sameAs: [personal.links.github, personal.links.linkedin],
     },

@@ -8,7 +8,7 @@ export const personal = {
   firstName: 'Tristan',
   handle: 'tristan',
   role: 'Software engineer',
-  location: 'Leesburg, VA',
+  location: 'Virginia',
   email: 'tristanjmorton@gmail.com',
   siteUrl: 'https://portfolio-site-trism2.vercel.app',
   status: 'SWE & AI Systems Intern @ Formwork',
@@ -60,7 +60,7 @@ export const personal = {
       },
     ],
     facts: [
-      { label: 'Based in', value: 'Leesburg, VA' },
+      { label: 'Based in', value: 'Virginia' },
       { label: 'Studying', value: 'CIS · BSAN minor @ JMU' },
       { label: 'Working on', value: 'AI agents and QA at Formwork' },
       { label: 'Open to', value: ph('Summer 2027 SWE internships') },

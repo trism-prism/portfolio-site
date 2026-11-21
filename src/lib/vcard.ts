@@ -41,7 +41,7 @@ export function buildVCard(p: {
     `N:${esc(p.last)};${esc(p.first)};;;`,
     `EMAIL;TYPE=work:${p.email}`,
     `TITLE:${esc(p.title)}`,
-    `ADR;TYPE=home:;;;${esc(p.location)};;;`,
+    'ADR;TYPE=home:;;;;VA;;US',
     `URL:${p.url}`,
     ...p.links.map((l) => `URL:${l}`),
     `NOTE:${esc(p.note)}`,
