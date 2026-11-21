@@ -16,7 +16,7 @@ import { ARRIVE_AT, INTRO_SECONDS, LANDING_AT, introState } from './timeline';
 
 const FW = 420; // the storyboard's frame space
 const FH = 236;
-const SKIP_MS = 250; // skipping reaches the end state inside 0.35 s, with a margin for the frame that removes the overlay
+const SKIP_MS = 220; // skipping reaches the end state inside 0.35 s: the fade, then one frame to remove the overlay
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const r2 = (v: number) => Math.round(v * 100) / 100;
 const mix = (a: number, b: number, k: number) => a + (b - a) * k;
@@ -32,7 +32,8 @@ type Geo = { iw: number; ih: number; k: number; left: number; top: number };
 function stageGeo(): Geo {
   const iw = window.innerWidth;
   const ih = window.innerHeight;
-  const k = Math.min(iw * 0.92, 760) / FW;
+  // phones (under 640px) get a stage 125vw wide, centred and cropped by the overlay: the frame's empty sides fall off the screen
+  const k = (iw < 640 ? iw * 1.25 : Math.min(iw * 0.92, 760)) / FW;
   return { iw, ih, k, left: (iw - FW * k) / 2, top: (ih - FH * k) / 2 };
 }
 
@@ -98,9 +99,11 @@ export function Intro() {
       seen = sessionStorage.getItem('tm-intro') === '1';
     } catch {}
     const reduced = html.dataset.motion === 'reduced';
-    if (reduced || location.hash || location.search.includes('project=')) return;
-    if (!forced && (seen || navigator.webdriver)) return;
-    if (!Number.isNaN(freeze) && freeze >= INTRO_SECONDS) return; // the finished site
+    // the head boot script (src/lib/boot.ts) may already have set data-intro='on' and put up the cover: lift it if we don't play
+    const bail = () => void delete html.dataset.intro;
+    if (reduced || location.hash || location.search.includes('project=')) return bail();
+    if (!forced && (seen || navigator.webdriver)) return bail();
+    if (!Number.isNaN(freeze) && freeze >= INTRO_SECONDS) return bail(); // the finished site
 
     const phase = (v: 'on' | 'landing' | null) => {
       if (v) html.dataset.intro = v;
@@ -147,11 +150,15 @@ export function Intro() {
     let landed = false;
     let arrived = false;
     let done = false;
+    let tFinish = 0;
+    let tArrive = 0;
     const evs = ['keydown', 'pointerdown', 'wheel', 'touchstart', 'scroll'] as const;
     const finish = () => {
       if (done) return;
       done = true;
       clearTimeout(tl);
+      clearTimeout(tFinish);
+      clearTimeout(tArrive);
       cancelAnimationFrame(raf);
       evs.forEach((e) => window.removeEventListener(e, skip));
       window.removeEventListener('resize', resize);
@@ -168,6 +175,12 @@ export function Intro() {
       if (skipAt || done) return;
       skipAt = performance.now();
       land();
+      // timers, not frames: a busy frame (a key press can start a scroll) must not stretch the skip
+      tArrive = window.setTimeout(() => {
+        arrived = true;
+        arrive(true);
+      }, SKIP_MS * 0.6);
+      tFinish = window.setTimeout(finish, SKIP_MS);
     };
     evs.forEach((e) => window.addEventListener(e, skip, { passive: true }));
     skipRef.current = skip;
@@ -177,11 +190,7 @@ export function Intro() {
       if (skipAt) {
         const k = Math.min(1, Math.max(0, (now - skipAt) / SKIP_MS));
         setFade(r2(1 - k));
-        if (k >= 0.7 && !arrived) {
-          arrived = true;
-          arrive(true);
-        }
-        if (k >= 1) return finish();
+        if (k >= 1) return;
       } else {
         const tt = Math.min(INTRO_SECONDS, (now - t0) / 1000);
         setT(tt);
@@ -198,6 +207,8 @@ export function Intro() {
     return () => {
       done = true;
       clearTimeout(tl);
+      clearTimeout(tFinish);
+      clearTimeout(tArrive);
       cancelAnimationFrame(raf);
       evs.forEach((e) => window.removeEventListener(e, skip));
       window.removeEventListener('resize', resize);
