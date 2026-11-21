@@ -26,6 +26,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Name in the hero | **Sacramento** (handwritten monoline script, SIL OFL), chosen over Pinyon Script, Herr Von Muellerhoff, Caveat and Yellowtail (`docs/design/mockups/name-01-scripts.png`). Used for the name and signature only; small chart labels such as constellation names stay in Instrument Serif italic. Yellowtail is retired. |
 | Skills | **Keep the moving marquee rails**, restyled to the motif. Not constellation cells. |
 | Footer scenes | **Recast all four into the night-sky world** as a switchable set. |
+| Footer scene set (2026-11-20) | **Approved:** the four scenes recast around the moth alone, as framed in `docs/design/mockups/footer-*` and specified (interaction, response, idle, Reduced motion) in `src/components/lab/FooterMoth.tsx`: **Lantern** (pointer carries a lantern; real visibility polygon; the moth circles the light; lit stones show carved constellations), **Star trails** (scroll speed is a long exposure; the moth sits on an old survey pillar and looks up), **Name the constellation** (pick the project a figure charts; the moth flies to its brightest star; a shooting star falls to the email button), **Orbit** (the moth circles an armillary sphere; holding the email button speeds it up and streaks the stars). Footer ground `#0b0e20`. |
 | Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. **Values approved** as shown in `docs/design/mockups/theme-*` (token table in section 3). |
 | Cards | **Keep rounded cards**, restyled to the new palette. No square plates or corner registration ticks. |
 | Experience + education | **Merged into one "route" section**: route map across both, detail cards below. |
@@ -122,20 +123,14 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 | Achievements, Focus areas, Stats | Not mocked yet. | Open |
 | Activity | Plain dates and type labels on the timeline; no entry numbers or hashes. | Decided |
 | Contact + footer | Contact plates and form; footer horizon with the Prism constellation and the seated character. | Mocked |
-| Footer scenes | Four scenes recast into the night sky; scene concepts still to design. | Decided, design open |
+| Footer scenes | Four scenes recast around the moth (section 1). | Decided |
 
 ## 6. Open decisions
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Footer scene concepts.** **Proposed (revised):** all four recast around the moth alone, frames re-captured in `docs/design/mockups/footer-*` from `src/components/lab/FooterMoth.tsx` (the old cast version in `FooterLab.tsx` is superseded). Lantern: the moth circles a pointer-carried lantern and lit stones show carved constellations. Star trails: the moth sits on an old survey pillar and looks up. Name the constellation: the moth flies up to the figure's brightest star. Orbit: the moth circles an armillary sphere. Earlier notes: Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
-   - **Lantern** (replaces Lightroom): pointer moves the prism's lantern among standing stones; real visibility polygon; lit people wave, shadowed people doze.
-   - **Star trails** (replaces Game day): scroll speed is a long exposure turning the sky around the pole star; scrolling back rewinds.
-   - **Name the constellation** (replaces Trivia): stars form a figure from one project; the right guess sends a shooting star to the email button.
-   - **Orbit** (recast): the cast circle the prism on a hilltop; holding the email button speeds them up and the stars streak.
-   All four keep the interaction of the scene they replace, stay on a night sky in both themes, and have a defined Reduced-motion frame.
-2. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
-3. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+1. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
+2. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules
 
