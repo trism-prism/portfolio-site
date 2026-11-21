@@ -1,7 +1,6 @@
 export type SectionId =
   | 'about'
   | 'experience'
-  | 'education'
   | 'skills'
   | 'projects'
   | 'achievements'
@@ -21,8 +20,7 @@ export type SectionDef = {
 
 export const sections: SectionDef[] = [
   { id: 'about', nav: 'About', kicker: 'Software engineer, full stack and AI', title: 'About', accent: 'me', primary: true },
-  { id: 'experience', nav: 'Experience', kicker: 'Where I work', title: 'Experience', primary: true },
-  { id: 'education', nav: 'Education', kicker: 'Where I study', title: 'Education' },
+  { id: 'experience', nav: 'Experience', kicker: 'Where I work and study', title: 'Experience &', accent: 'education', primary: true },
   { id: 'skills', nav: 'Skills', kicker: 'What I build with', title: 'Skills &', accent: 'tools', primary: true },
   { id: 'projects', nav: 'Projects', kicker: 'Projects and studies', title: "Things I've", accent: 'built', primary: true },
   { id: 'achievements', nav: 'Achievements', kicker: 'Honors and credentials', title: 'Achievements' },
