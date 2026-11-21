@@ -3,7 +3,7 @@ import { Bricolage_Grotesque, Instrument_Serif, Inter, JetBrains_Mono, Sacrament
 import { personal } from '@/data/personal';
 import { hasPlaceholders } from '@/data/audit';
 import { MotionProvider } from '@/lib/motion';
-import { motionBootScript, themeBootScript } from '@/lib/boot';
+import { introBootScript, motionBootScript, themeBootScript } from '@/lib/boot';
 import { ThemeController } from '@/components/shell/Theme';
 import { Nav } from '@/components/shell/Nav';
 import { AmbientBackground, ProgressBar, TechField } from '@/components/shell/Ambient';
@@ -60,7 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeBootScript + motionBootScript }} />
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript + motionBootScript + introBootScript }} />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       </head>
       <body>
