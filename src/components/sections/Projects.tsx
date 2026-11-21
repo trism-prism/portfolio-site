@@ -126,7 +126,7 @@ export function Projects() {
           <ul className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3" data-annotate="covers">
             {list.map((p) => (
               <li key={p.slug} className={p.spotlight && !q ? 'md:col-span-2 lg:col-span-3' : ''}>
-                <ProjectCard p={p} wide={!!p.spotlight && !q} onOpen={() => openSlug(p.slug)} />
+                {p.spotlight && !q ? <SpotlightCard p={p} onOpen={() => openSlug(p.slug)} /> : <ProjectCard p={p} onOpen={() => openSlug(p.slug)} />}
               </li>
             ))}
           </ul>
@@ -203,53 +203,97 @@ function Meta({ p }: { p: Project }) {
   );
 }
 
-function ProjectCard({ p, wide, onOpen }: { p: Project; wide: boolean; onOpen: () => void }) {
+function Cover({ p, onOpen, className }: { p: Project; onOpen: () => void; className: string }) {
   const cover = covers[p.cover];
-  const shown = p.tech.slice(0, wide ? 6 : 4);
+  return (
+    <button type="button" onClick={onOpen} className={`block bg-[var(--sc-panel)] text-left ${className}`} aria-label={`Open ${p.title} details`} tabIndex={-1}>
+      <SceneHost Scene={cover.Scene} frozenAt={cover.frozenAt} label={cover.label} className="aspect-[16/10] w-full lg:h-full" />
+    </button>
+  );
+}
+
+const tone = (p: Project) => ({ ['--tone' as string]: kindColor(p.kind) }) as React.CSSProperties;
+
+/** The wide card: cover on the left, text and measurements on the right (stacked below 1024px). */
+function SpotlightCard({ p, onOpen }: { p: Project; onOpen: () => void }) {
   return (
     <article
+      data-tone
+      style={tone(p)}
       onPointerMove={trackPointer}
-      className={`panel glow-card liftable flex h-full flex-col overflow-hidden ${wide ? 'md:grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]' : ''}`}
+      className="panel glow-card liftable flex h-full flex-col overflow-hidden lg:grid lg:min-h-[520px] lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]"
     >
-      <button type="button" onClick={onOpen} className="block border-b border-line bg-[var(--sc-panel)] text-left md:border-b-0" aria-label={`Open ${p.title} details`} tabIndex={-1}>
-        <SceneHost Scene={cover.Scene} frozenAt={cover.frozenAt} label={cover.label} className={`aspect-[16/10] w-full ${wide ? 'md:h-full' : ''}`} />
-      </button>
-      <div className={`flex flex-1 flex-col p-5 ${wide ? 'md:border-l md:border-line md:p-7' : ''}`}>
-        <div className="flex items-start justify-between gap-3">
-          <Meta p={p} />
-          <span className="mono shrink-0 text-[11.5px] text-muted">{p.period}</span>
-        </div>
-        <h3 className={`display mt-3 leading-tight text-fg ${wide ? 'text-[30px]' : 'text-[21px]'}`}>
+      <Cover p={p} onOpen={onOpen} className="border-b border-line lg:border-b-0 lg:border-r" />
+      <div className="flex flex-col p-6 md:p-8">
+        <p className="flex items-center gap-2 text-[13px] text-fg-2">
+          <StarGlyph color={kindColor(p.kind)} />
+          Spotlight · {kindLabels[p.kind]} · {p.period}
+        </p>
+        <h3 className="display mt-4 text-[34px] leading-[1.05] text-fg">
           <button type="button" onClick={onOpen} className="text-left hover:text-accent">
             {p.title}
           </button>
         </h3>
-        <p className={`mt-2 text-[14.5px] leading-relaxed text-fg-2 ${wide ? 'line-clamp-4' : 'line-clamp-3'}`}>{p.summary}</p>
-        <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Technologies">
-          {shown.map((t) => (
-            <li key={t} className="mono rounded-md border border-line-2 px-2 py-0.5 text-[11.5px] text-fg-2">
-              {t}
-            </li>
-          ))}
-          {p.tech.length > shown.length && <li className="mono px-1 py-0.5 text-[11.5px] text-accent">+{p.tech.length - shown.length}</li>}
-        </ul>
-        <div className="flex-1" />
-        <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-line pt-4">
-          <button type="button" onClick={onOpen} className="btn h-10 min-h-0 px-4 text-sm">
+        <p className="mt-3 text-[15.5px] leading-relaxed text-fg-2">{p.summary}</p>
+        {p.badge && <span className="chip mt-4 self-start">{p.badge}</span>}
+        {p.measures && p.measures.length > 0 && (
+          <ul className="mt-6 grid gap-3 sm:grid-cols-3" aria-label="Measurements">
+            {p.measures.map((m) => (
+              <li key={m.label} className="rounded-xl border border-line p-3">
+                <p className="display text-[22px] leading-tight text-fg">{m.value}</p>
+                <p className="mt-0.5 text-[12.5px] leading-snug text-muted">{m.label}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="mt-auto flex flex-wrap items-center gap-3 pt-6">
+          <button type="button" onClick={onOpen} className="btn btn-solid h-11 min-h-0 px-5 text-sm">
             Details <Icon name="arrowRight" size={15} />
           </button>
           {p.links.repo && (
-            <a href={p.links.repo} target="_blank" rel="noopener noreferrer" className="btn btn-ghost h-10 min-h-0 px-3 text-sm" aria-label={`${p.title} source (new tab)`}>
-              <Icon name="github" size={16} /> Source
+            <a href={p.links.repo} target="_blank" rel="noopener noreferrer" className="btn h-11 min-h-0 px-5 text-sm" aria-label={`${p.title} source (new tab)`}>
+              <Icon name="github" size={15} /> Source
             </a>
           )}
           {p.links.live && (
-            <a href={p.links.live} target="_blank" rel="noopener noreferrer" className="btn btn-ghost h-10 min-h-0 px-3 text-sm" aria-label={`${p.title} live site (new tab)`}>
+            <a href={p.links.live} target="_blank" rel="noopener noreferrer" className="btn h-11 min-h-0 px-5 text-sm" aria-label={`${p.title} live site (new tab)`}>
               <Icon name="external" size={15} /> Live
             </a>
           )}
-          {!p.links.repo && <span className="mono text-[11.5px] text-muted">Private repository</span>}
+          {!p.links.repo && <span className="mono text-[12px] text-muted">Private repository</span>}
         </div>
+      </div>
+    </article>
+  );
+}
+
+function ProjectCard({ p, onOpen }: { p: Project; onOpen: () => void }) {
+  const shown = p.tech.slice(0, 4);
+  const more = p.tech.length - shown.length;
+  const suffix = p.status === 'live' ? ' · Live' : p.status === 'in-progress' ? ' · In progress' : '';
+  return (
+    <article data-tone style={tone(p)} onPointerMove={trackPointer} className="panel glow-card liftable flex h-full flex-col overflow-hidden">
+      <Cover p={p} onOpen={onOpen} className="border-b border-line" />
+      <div className="flex flex-1 flex-col p-5">
+        <p className="flex items-center gap-2 text-[12.5px] text-fg-2">
+          <StarGlyph color={kindColor(p.kind)} size={9} />
+          <span>
+            {kindLabels[p.kind]}
+            {suffix}
+          </span>
+          <span className="ml-auto shrink-0 text-muted">{p.period}</span>
+        </p>
+        <h3 className="display mt-2.5 text-[22px] leading-tight text-fg">
+          <button type="button" onClick={onOpen} className="text-left hover:text-accent">
+            {p.title}
+          </button>
+        </h3>
+        <p className="mt-2 line-clamp-2 text-[14px] leading-relaxed text-fg-2">{p.summary}</p>
+        <div className="flex-1" />
+        <p className="mono mt-3 flex text-[11.5px] text-muted">
+          <span className="truncate">{shown.join(' · ')}</span>
+          {more > 0 && <span className="shrink-0 pl-1.5">+{more}</span>}
+        </p>
       </div>
     </article>
   );
