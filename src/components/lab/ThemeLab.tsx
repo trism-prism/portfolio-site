@@ -161,7 +161,7 @@ export function ThemeHero({ t, sigFamily }: { t: Tokens; sigFamily: string }) {
           <circle r="6" fill="none" stroke={t.route} />
           <circle r="2" fill={t.route} />
           <text x="14" y="4" fontFamily={mono} fontSize="10.5" letterSpacing=".14em" fill={t.route}>
-            YOU ARE HERE · LEESBURG, VA
+            YOU ARE HERE · VIRGINIA
           </text>
         </g>
       </svg>

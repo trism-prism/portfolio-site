@@ -81,7 +81,7 @@ export function AboutSheet({ t }: { t: Tokens }) {
   const names = ['Work', 'Study', 'Projects', 'Outside of code'];
   return (
     <Shell t={t} id="about" seed={31}>
-      <Header t={t} n="01" label="About" title="About" accent="me" aside="Leesburg, VA" />
+      <Header t={t} n="01" label="About" title="About" accent="me" aside="Virginia" />
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-7">
           <p className="font-display text-[34px] font-bold tracking-[-0.03em]">{personal.about.greeting}</p>

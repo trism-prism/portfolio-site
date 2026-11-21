@@ -576,7 +576,7 @@ export function RContactSheet() {
         </div>
         <div className="absolute inset-x-0 bottom-0 mx-auto flex max-w-[1152px] items-center justify-between px-6 pb-6 text-[13px]" style={{ color: R_DIM }}>
           <span>© 2026 {personal.name}</span>
-          <span>Built by hand in Leesburg, VA</span>
+          <span>Built by hand in Virginia</span>
           <span>Back to top ↑</span>
         </div>
       </div>
