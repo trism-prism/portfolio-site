@@ -143,4 +143,5 @@ are shared by almost everything. The advisor reviews each result in the browser 
 
 **Handoffs written:**
 1. [Approved tokens, twilight theme, Sacramento](design/handoffs/01-tokens-theme-sacramento.md): done (`6fb3d5d..16671e7`), reviewed by the advisor.
-2. [The moth replaces the prism](design/handoffs/02-moth-character.md): ready; not started. Leaves the old footer scenes for handoff 3.
+2. [The moth replaces the prism](design/handoffs/02-moth-character.md): done (`26a4527..0c54d6b`), reviewed; favicon redrawn by the advisor for 16px (`f72bfb5`).
+3. [The four footer scenes, rebuilt around the moth](design/handoffs/03-footer-scenes.md): ready; not started. Adds the Sacramento footer signature and retires the prism and cast to `src/components/lab/legacy/`.
