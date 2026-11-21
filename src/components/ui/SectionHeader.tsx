@@ -22,12 +22,13 @@ export function SectionHeader({ id }: { id: SectionId }) {
         <span className="text-fg">{sectionNumber(id)}</span> {s.nav}
         <span className="ml-auto hidden normal-case tracking-[.08em] md:inline">{s.kicker}</span>
       </p>
-      <div className="flex items-end gap-5">
-        <h2 id={`${id}-title`} tabIndex={-1} className="display shrink-0 text-[40px] leading-[1.05] text-fg md:text-[52px]">
+      {/* Phones: the title wraps and the ruler runs full width beneath it. */}
+      <div className="flex flex-col items-stretch gap-4 md:flex-row md:items-end md:gap-5">
+        <h2 id={`${id}-title`} tabIndex={-1} className="display text-[36px] leading-[1.05] text-fg md:shrink-0 md:text-[52px]">
           {s.title}
           {s.accent && <> <span className="serif-accent text-[1.05em] text-accent-serif">{s.accent}</span></>}
         </h2>
-        <div className="relative mb-2 h-[10px] flex-1">
+        <div className="relative mb-2 h-[10px] w-full md:w-auto md:flex-1">
           <span className="absolute inset-x-0 bottom-0 h-px bg-line" aria-hidden="true" />
           <Ticks count={41} className="hidden md:flex" />
           <Ticks count={21} className="flex md:hidden" />

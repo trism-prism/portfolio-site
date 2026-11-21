@@ -272,6 +272,18 @@ export function Experience() {
                   </p>
                   <h3 className="display mt-1.5 text-[20px] leading-snug text-fg">{e.school}</h3>
                   <p className="text-[14.5px] text-fg-2">{e.credential}</p>
+                  {e.extras?.map((g) => (
+                    <div key={g.label} className="mt-4">
+                      <p className="mono mb-2 text-[11px] uppercase tracking-[.18em] text-muted">{g.label}</p>
+                      <ul className="flex flex-wrap gap-1.5">
+                        {g.items.map((it) => (
+                          <li key={it} className="skill-pill">
+                            <Text v={it} badge={false} />
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
                   {e.links && (
                     <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px]">
                       {e.links.map((l) => (
