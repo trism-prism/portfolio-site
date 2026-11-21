@@ -28,7 +28,7 @@ export const sections: SectionDef[] = [
   { id: 'achievements', nav: 'Achievements', kicker: 'Honors and credentials', title: 'Achievements' },
   { id: 'focus', nav: 'Focus areas', kicker: 'What I work on', title: 'Focus', accent: 'areas' },
   { id: 'stats', nav: 'Stats', kicker: 'Numbers, with their conditions', title: 'By the', accent: 'numbers' },
-  { id: 'news', nav: 'Activity', kicker: 'git log --all', title: 'Recent', accent: 'activity' },
+  { id: 'news', nav: 'Activity', kicker: "What I've been up to", title: 'Recent', accent: 'activity' },
   { id: 'contact', nav: 'Contact', kicker: 'Say hello', title: "Let's", accent: 'talk' },
 ];
 

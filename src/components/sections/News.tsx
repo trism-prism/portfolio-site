@@ -2,7 +2,6 @@
 
 import { useMemo, useRef, useState } from 'react';
 import { news, newsTypeLabels, type NewsType } from '@/data/news';
-import { fnv1a } from '@/lib/fnv';
 import { SectionHeader } from '@/components/ui/SectionHeader';
 import { Text, PhRibbon } from '@/components/ui/Text';
 import { Icon } from '@/components/ui/Icon';
@@ -85,9 +84,6 @@ export function News() {
                       <span className="news-node absolute left-[3px] top-[18px] h-[9px] w-[9px] rounded-full" style={{ background: typeColor[n.type], animationDelay: `${Math.min(0.5, i * 0.06)}s` }} aria-hidden="true" />
                       <article className={`panel relative flex flex-wrap items-start gap-x-4 gap-y-1 p-3.5 md:p-4 ${n.placeholder ? 'ph-card' : ''}`}>
                         {n.placeholder && <PhRibbon />}
-                        <span className="mono text-[12px] text-accent" title="FNV-1a label, not a commit ID">
-                          {fnv1a(n.id + n.date)}
-                        </span>
                         <span className="mono text-[12px] text-muted">{fmt(n.date)}</span>
                         <span className="mono rounded px-1.5 text-[11px]" style={{ color: typeColor[n.type], background: 'var(--panel-2)' }}>
                           {newsTypeLabels[n.type]}
