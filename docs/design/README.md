@@ -18,7 +18,7 @@ Design work happens in private lab pages under `src/app/lab/` and is captured as
 | `/lab/scripts` | Script faces for the name (Sacramento chosen) |
 | `/lab/theme` | Dark vs twilight from `src/components/lab/themeTokens.ts` (approved), rounded cards, Sacramento: the best current reference |
 | `/lab/mascots` | Six non-human mascot concepts in hero, logo, section-rule and footer poses (`mascot-*`) |
-| `/lab/footer-scenes` | Four night-sky footer scene frames + specs (concepts liked; characters to be replaced) |
+| `/lab/footer-scenes` | Four night-sky footer scene frames + specs, recast around the moth (`src/components/lab/FooterMoth.tsx`) |
 
 ## Gotchas found so far
 

@@ -128,7 +128,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Footer scene concepts.** Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
+1. **Footer scene concepts.** **Proposed (revised):** all four recast around the moth alone, frames re-captured in `docs/design/mockups/footer-*` from `src/components/lab/FooterMoth.tsx` (the old cast version in `FooterLab.tsx` is superseded). Lantern: the moth circles a pointer-carried lantern and lit stones show carved constellations. Star trails: the moth sits on an old survey pillar and looks up. Name the constellation: the moth flies up to the figure's brightest star. Orbit: the moth circles an armillary sphere. Earlier notes: Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
    - **Lantern** (replaces Lightroom): pointer moves the prism's lantern among standing stones; real visibility polygon; lit people wave, shadowed people doze.
    - **Star trails** (replaces Game day): scroll speed is a long exposure turning the sky around the pole star; scrolling back rewinds.
    - **Name the constellation** (replaces Trivia): stars form a figure from one project; the right guess sends a shooting star to the email button.

@@ -19,7 +19,7 @@ const r1 = (v: number) => Math.round(v * 10) / 10;
 
 type Draw = { w: number; x?: number; y?: number };
 
-function Eyes({ cx, cy, gap, rx = 2.6, ry = 3.6, closed = false }: { cx: number; cy: number; gap: number; rx?: number; ry?: number; closed?: boolean }) {
+function Eyes({ cx, cy, gap, rx = 2.6, ry = 3.6, closed = false, look = 0 }: { cx: number; cy: number; gap: number; rx?: number; ry?: number; closed?: boolean; look?: number }) {
   return (
     <g>
       {[cx - gap / 2, cx + gap / 2].map((x) =>
@@ -27,8 +27,8 @@ function Eyes({ cx, cy, gap, rx = 2.6, ry = 3.6, closed = false }: { cx: number;
           <path key={x} d={`M${x - rx - 0.6} ${cy} Q${x} ${cy + ry * 0.9} ${x + rx + 0.6} ${cy}`} fill="none" stroke={DEEP} strokeWidth="1.8" strokeLinecap="round" />
         ) : (
           <g key={x}>
-            <ellipse cx={x} cy={cy} rx={rx} ry={ry} fill={DEEP} />
-            <circle cx={r1(x - rx * 0.35)} cy={r1(cy - ry * 0.4)} r={r1(rx * 0.38)} fill="#fff" />
+            <ellipse cx={x} cy={cy - look} rx={rx} ry={ry} fill={DEEP} />
+            <circle cx={r1(x - rx * 0.35)} cy={r1(cy - look - ry * 0.4)} r={r1(rx * 0.38)} fill="#fff" />
           </g>
         ),
       )}
@@ -135,7 +135,7 @@ function Antennae({ cx, top, spread }: { cx: number; top: number; spread: number
   );
 }
 
-function MothSpread() {
+function MothSpread({ eyes = 'open' }: { eyes?: MothEyes }) {
   return (
     <g>
       {[false, true].map((m) => (
@@ -161,12 +161,14 @@ function MothSpread() {
       <ellipse cx="80" cy="55" rx="12.5" ry="5.5" fill={PALE} />
       <Antennae cx={80} top={14} spread={22} />
       <circle cx="80" cy="44" r="10" fill={PALE} stroke={OUT} strokeWidth="1.2" />
-      <Eyes cx={80} cy={45} gap={9} rx={3} ry={4.2} />
+      <Eyes cx={80} cy={45} gap={9} rx={3} ry={4.2} closed={eyes === 'closed'} look={eyes === 'up' ? 1.6 : 0} />
     </g>
   );
 }
 
-export function Moth({ pose, w, x, y }: { pose: Pose } & Draw) {
+export type MothEyes = 'open' | 'closed' | 'up';
+
+export function Moth({ pose, w, x, y, eyes = 'open' }: { pose: Pose; eyes?: MothEyes } & Draw) {
   if (pose === 'mark')
     return (
       <svg width={w} height={w} viewBox="0 0 32 32" x={x} y={y} aria-hidden>
@@ -207,12 +209,12 @@ export function Moth({ pose, w, x, y }: { pose: Pose } & Draw) {
         <ellipse cx="60" cy="66" rx="13" ry="5.5" fill={PALE} />
         <Antennae cx={60} top={22} spread={20} />
         <circle cx="60" cy="55" r="10" fill={PALE} stroke={OUT} strokeWidth="1.2" />
-        <Eyes cx={60} cy={56} gap={9} rx={3} ry={4.2} />
+        <Eyes cx={60} cy={56} gap={9} rx={3} ry={4.2} closed={eyes === 'closed'} look={eyes === 'up' ? 1.6 : 0} />
       </svg>
     );
   return (
     <svg width={w} height={(w * 120) / 160} viewBox="0 0 160 120" x={x} y={y} aria-hidden>
-      <MothSpread />
+      <MothSpread eyes={eyes} />
     </svg>
   );
 }
