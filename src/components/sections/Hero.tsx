@@ -165,6 +165,7 @@ export function Hero() {
         @keyframes hero-in { from { opacity: 0; transform: translateY(16px); filter: blur(4px); } }
         .scroll-cue { animation: cue 1.8s ease-in-out infinite; }
         @keyframes cue { 50% { transform: translateY(5px); } }
+        [data-intro='on'] .hero-in { animation-play-state: paused; }
         [data-motion='reduced'] .hero-in, [data-motion='reduced'] .scroll-cue { animation: none; }
       `}</style>
     </section>
