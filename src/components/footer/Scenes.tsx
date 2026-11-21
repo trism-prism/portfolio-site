@@ -496,6 +496,129 @@ export function NameTheConstellation({ t, reduced, idle }: FooterSceneProps) {
   );
 }
 
+/* ---------------- 4. Orbit ----------------
+   The moth circles an armillary sphere on the hill crest, scaled and layered by depth as it passes behind and in
+   front. Holding the email button speeds it up and streaks the stars; releasing settles both. After 30 s idle it
+   lands on the sphere and dozes; any input wakes it with a cheer. */
+const OC = { x: 360, y: 136 };
+const ORBIT = { rx: 150, ry: 42, tilt: -7 };
+const ORBIT_NEAR = 'M0 352 Q 300 342 552 302 Q 800 342 1104 350 V400 H0Z';
+/** Radians per second at rest (one lap in about 16 s); up to 4× with the button held. */
+const ORBIT_W = (Math.PI * 2) / 16;
+const SPHERE_TOP = OC.y - 24;
+const toRad = (d: number) => (d * Math.PI) / 180;
+
+/** A point on the tilted orbit at angle a (screen y grows downward, so sin a > 0 is the front half). */
+function orbitAt(a: number) {
+  const ex = ORBIT.rx * Math.cos(a);
+  const ey = ORBIT.ry * Math.sin(a);
+  const k = toRad(ORBIT.tilt);
+  return { x: OC.x + ex * Math.cos(k) - ey * Math.sin(k), y: OC.y + 4 + ex * Math.sin(k) + ey * Math.cos(k) };
+}
+
+type Landing = { idle: boolean; at: number; l0: number };
+const landOf = (s: Landing, t: number) => {
+  if (s.idle) return lerp(s.l0, 1, easeInOut(seg(t, s.at, s.at + 2)));
+  const delay = s.l0 > 0.5 ? 0.9 : 0; // a cheer first, then take off
+  return lerp(s.l0, 0, easeInOut(seg(t, s.at + delay, s.at + delay + 0.8)));
+};
+
+export function Orbit({ t, reduced, hold, idle }: FooterSceneProps) {
+  const [st, setSt] = useState({ a: 0.6, boost: 0 });
+  const [landing, setLanding] = useState<Landing>({ idle: false, at: -99, l0: 0 });
+  const lastT = useRef(t);
+
+  // Angle and the eased hold, integrated on the scene clock; releasing the button settles over about 0.8 s.
+  useEffect(() => {
+    const dt = clamp(t - lastT.current, 0, 0.1);
+    lastT.current = t;
+    if (!dt || reduced) return;
+    setSt((s) => {
+      const boost = s.boost + (hold - s.boost) * (1 - Math.exp(-dt / 0.25));
+      return { boost, a: s.a - (idle ? 0 : dt * ORBIT_W * (1 + 3 * boost)) };
+    });
+  }, [t, hold, idle, reduced]);
+
+  if (!reduced && landing.idle !== idle) setLanding({ idle, at: t, l0: landOf(landing, t) });
+
+  const land = reduced ? 1 : landOf(landing, t);
+  const { a, boost } = st;
+  const sinA = Math.sin(a);
+  const depth = (sinA + 1) / 2;
+  const orbit = orbitAt(a);
+  const e = easeInOut(land);
+  const wakeCheer = !reduced && !idle && landing.l0 > 0.5 && t - landing.at < 0.9;
+  const flyW = (64 * (0.8 + 0.3 * depth)) * (1 - e) + 64 * e;
+  const mx = lerp(orbit.x, OC.x, e);
+  const my = lerp(orbit.y - 6, SPHERE_TOP - 16, e);
+  const landedFor = idle && landing.idle ? t - landing.at - 2 : 0;
+  const seated = reduced || (idle && land >= 1);
+  const moth = seated ? (
+    <Seated cx={OC.x} base={r1(SPHERE_TOP + 1)} size={36} pose={reduced || landedFor < 1.2 ? 'sit' : 'sleep'} />
+  ) : wakeCheer ? (
+    <Flying cx={OC.x} cy={r1(SPHERE_TOP - 16)} w={64} pose="cheer" />
+  ) : (
+    <Flying cx={r1(mx)} cy={r1(my)} w={r1(flyW)} rot={r1(sinA > 0 ? 14 : -14) * (1 - e)} flip={sinA > 0} />
+  );
+  const mothBack = !seated && !wakeCheer && sinA <= 0;
+
+  // The stars: dots at rest, short arcs around the top of the frame while the button is held.
+  const stars = useMemo(() => makeStars(19, 120), []);
+  const streak = reduced ? 0 : Math.round(boost * 50) / 50;
+  const sky = useMemo(
+    () =>
+      stars.map(([x, y, s, o], i) => {
+        if (streak * 22 < 0.6) return <circle key={i} cx={x} cy={y} r={s} fill="#fff" opacity={o} />;
+        const px = FW / 2, py = 8;
+        const rad = Math.max(Math.hypot(x - px, y - py), 40);
+        const a0 = Math.atan2(y - py, x - px);
+        const a1 = a0 + (streak * 22) / rad;
+        return (
+          <path key={i} d={`M${r1(px + rad * Math.cos(a0))} ${r1(py + rad * Math.sin(a0))} A${r1(rad)} ${r1(rad)} 0 0 1 ${r1(px + rad * Math.cos(a1))} ${r1(py + rad * Math.sin(a1))}`} stroke="#fff" strokeWidth={r1(s * 1.6)} strokeLinecap="round" fill="none" opacity={o} />
+        );
+      }),
+    [stars, streak],
+  );
+
+  // A fading trail of lavender dots behind the moth, drawn on each half of the orbit in its own layer.
+  const trail = reduced || seated || wakeCheer
+    ? []
+    : Array.from({ length: 20 }, (_, i) => {
+        const aa = a + toRad(5 + i * 4);
+        const p = orbitAt(aa);
+        return { x: r1(p.x), y: r1(p.y - 6), o: r1(0.7 - i * 0.032) * (1 - e), s: r1(1.8 - i * 0.05), front: Math.sin(aa) > 0 };
+      });
+  const dots = (front: boolean) => trail.filter((d) => d.front === front).map((d, i) => <circle key={i} cx={d.x} cy={d.y} r={d.s} fill={LAV} opacity={r1(d.o)} />);
+
+  const ringTilt = r1(-22 + (reduced ? 0 : (a * 180) / Math.PI) * 0.3);
+  return (
+    <g>
+      <Sky seed={19} stars={false} />
+      {sky}
+      <Hills near={ORBIT_NEAR} />
+      <ellipse cx={OC.x} cy={OC.y + 4} rx={ORBIT.rx} ry={ORBIT.ry} transform={`rotate(${ORBIT.tilt} ${OC.x} ${OC.y + 4})`} fill="none" stroke={LAV} strokeOpacity=".3" strokeDasharray="2 6" />
+      {dots(false)}
+      {mothBack && moth}
+      {/* armillary sphere on a stone plinth */}
+      <path d={`M${OC.x - 16} 183 L${OC.x + 16} 183 L${OC.x + 12} ${OC.y + 30} L${OC.x - 12} ${OC.y + 30}Z`} fill={STONE} stroke={OUT} strokeWidth="1" />
+      <rect x={OC.x - 17} y={OC.y + 26} width="34" height="6" rx="1.5" fill="#2f3762" stroke={OUT} strokeWidth=".8" />
+      <g transform={`translate(${OC.x} ${OC.y}) scale(${LAB})`}>
+        <circle r="22" fill={GOLD} opacity=".25" />
+        <Spark x={0} y={0} s={9} c="#fff" />
+        <g fill="none" strokeWidth="2">
+          <circle r="36" stroke={GOLD} />
+          <ellipse rx="36" ry="11" stroke={GOLD} transform={`rotate(${ringTilt})`} />
+          <ellipse rx="12" ry="36" stroke={LAV} transform={`rotate(${ringTilt})`} />
+          <line x1="-18" y1="-46" x2="18" y2="46" stroke={GOLD} strokeOpacity=".7" strokeWidth="1.4" />
+        </g>
+      </g>
+      {!mothBack && moth}
+      {dots(true)}
+      <Note>{reduced ? 'THE MOTH RESTS ON THE SPHERE' : boost > 0.05 || hold > 0.05 ? 'HOLDING THE EMAIL BUTTON · FASTER' : idle ? 'RESTING · MOVE TO WAKE' : 'HOLD THE EMAIL BUTTON TO SPEED UP'}</Note>
+    </g>
+  );
+}
+
 export const footerScenes = [
   {
     id: 'lantern',
@@ -514,5 +637,11 @@ export const footerScenes = [
     name: 'Name the constellation',
     Scene: NameTheConstellation,
     label: 'Stars join into a figure drawn from one project; pick which project it charts. A right answer lights the figure and a shooting star falls toward the email button.',
+  },
+  {
+    id: 'orbit',
+    name: 'Orbit',
+    Scene: Orbit,
+    label: 'The moth circles an old armillary sphere on the hilltop; holding the email button speeds it up and streaks the stars.',
   },
 ] as const;
