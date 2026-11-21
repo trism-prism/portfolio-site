@@ -145,6 +145,7 @@ for (const [label, url, init] of [
         window.__samples.push({
           now,
           intro: html().dataset.intro ?? null,
+          ov: !!ov,
           logo: +getComputedStyle(logo).opacity,
           moth: moth && ov && moth.childElementCount ? +moth.getAttribute('opacity') * +(getComputedStyle(ov).opacity) : 0,
           line: line ? getComputedStyle(line).animationPlayState : null,
@@ -160,7 +161,7 @@ for (const [label, url, init] of [
   await page.waitForTimeout(500);
   const r = await page.evaluate(() => {
     const S = window.__samples;
-    const first = S.find((s) => s.intro)?.now ?? S[0].now; // the overlay's first frame
+    const first = S.find((s) => s.ov)?.now ?? S[0].now; // the overlay's first frame (the cover is up before it, from the head script)
     const run = S.filter((s) => s.now >= first);
     const frames = window.__frames.filter((f) => f >= first);
     const end = run.find((s) => s.intro === null && s.now > first + 1000)?.now ?? frames.at(-1);

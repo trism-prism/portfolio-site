@@ -33,7 +33,11 @@ async function shot(theme, w, h, t, file) {
 
 const key = [0.2, 0.8, 1.3, 1.7, 2.1, 2.6, 3.1, 3.5, 3.9];
 for (const t of key) await shot('dark', 1440, 900, t, `intro-dark-1440-${t.toFixed(1)}s.png`);
-await shot('light', 1440, 900, 3.9, 'intro-twilight-1440-3.9s.png');
+// the ring does the reveal: outside it stays night until about 85% of beat 9
+for (const t of [3.75, 4.05]) await shot('dark', 1440, 900, t, `intro-dark-1440-${t.toFixed(2)}s.png`);
+for (const t of [3.75, 3.9, 4.05]) await shot('light', 1440, 900, t, `intro-twilight-1440-${t.toFixed(2)}s.png`);
 await shot('light', 1440, 900, 4.3, 'intro-twilight-1440-4.3s-finished.png');
+// phones: the stage is 125vw wide
 for (const t of [0.8, 2.6, 3.5]) await shot('dark', 375, 812, t, `intro-dark-375-${t.toFixed(1)}s.png`);
+for (const t of [2.6, 3.5]) await shot('dark', 390, 844, t, `intro-dark-390-${t.toFixed(1)}s.png`);
 await browser.close();
