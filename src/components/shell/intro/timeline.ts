@@ -20,6 +20,8 @@ export const BEATS: readonly (readonly [number, number])[] = [
 export const BEAT_LEAD = 0.15;
 /** The page behind switches from data-intro='on' to 'landing' here (the start of beat 9). */
 export const LANDING_AT = 3.6;
+/** The night sky starts to fade here: 85% of beat 9, by when the ring has passed every corner of a viewport. */
+export const NIGHT_FADE_AT = 3.6 + 0.85 * 0.6;
 /** The nav logo fades in over the last 0.1 s, as the flying moth arrives. */
 export const ARRIVE_AT = 4.1;
 /** The eight wing stars light from the body outward; `wingStars` is the fraction lit. */
@@ -48,6 +50,8 @@ export type IntroState = {
   anchor: number;
   /** The thread from the anchor down to the first chrysalis point, 0..1. */
   thread: number;
+  /** The anchor star and its thread hang from the chrysalis: opaque until it pulls free, gone from beat 7 on. */
+  hang: number;
   /** Chrysalis points drawn, 0..8: point k is lit as `drawn` goes k..k+1 and the line reaches it at k; 8 closes the outline. */
   drawn: number;
   /** Facet fill and white outline, 0..1. */
@@ -87,7 +91,7 @@ export type IntroState = {
   stage: number;
   /** The ring of light's radius as a fraction of its final radius. */
   ring: number;
-  /** The night sky's opacity. */
+  /** The night sky's opacity: fully opaque outside the ring until it has swept past the viewport's corners (about 85% of beat 9), then the sliver left fades. */
   night: number;
   /** Flight to the nav logo, 0..1. */
   flight: number;
@@ -105,6 +109,7 @@ export function introState(time: number): IntroState {
     stars: p1,
     anchor: 0.6 * p1 + 0.4 * ease(t, 0.4, 0.7),
     thread: ease(t, 0.4, 0.62),
+    hang: 1 - p6,
     drawn: CHRYSALIS_POINTS * easeOutQuad(seg(t, 0.5, 1.15)),
     facets: ease(t, 0.9, 1.5),
     glow: (0.08 * ease(t, 0.95, 1.4) + 0.04 * glowBreath) * (1 - ease(t, 2.35, 2.9)),
@@ -128,7 +133,7 @@ export function introState(time: number): IntroState {
     goldGlow: ease(t, 3.2, 3.6) * (1 - ease(t, 3.7, 4.2)),
     stage: 1 - ease(t, 3.65, 4.0),
     ring: ease(t, 3.62, INTRO_SECONDS),
-    night: 1 - ease(t, LANDING_AT, INTRO_SECONDS),
+    night: 1 - ease(t, NIGHT_FADE_AT, INTRO_SECONDS),
     flight: ease(t, 3.78, INTRO_SECONDS),
     mothOpacity: 1 - seg(t, ARRIVE_AT, INTRO_SECONDS),
   };

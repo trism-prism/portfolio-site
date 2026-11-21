@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ARRIVE_AT, BEATS, INTRO_SECONDS, LANDING_AT, beatProgress, introState, type IntroState } from './timeline';
+import { ARRIVE_AT, BEATS, NIGHT_FADE_AT, INTRO_SECONDS, LANDING_AT, beatProgress, introState, type IntroState } from './timeline';
 
 const s = introState;
 const keys = Object.keys(s(0)) as (keyof IntroState)[];
@@ -103,8 +103,29 @@ describe('values at the nine key moments', () => {
     expect(v.wings).toBeLessThan(1);
     expect(v.flight).toBeGreaterThan(0);
     expect(v.flight).toBeLessThan(1);
-    expect(v.night).toBeLessThanOrEqual(0.5 + 1e-9);
+    expect(v.night).toBe(1); // still night outside the ring
     expect(v.stage).toBeLessThan(0.5);
+  });
+});
+
+describe('the thread and the ring', () => {
+  it('the anchor and thread hang until the chrysalis pulls free, then fade with the falling halves, gone from beat 7', () => {
+    expect(s(1.7).hang).toBe(1);
+    expect(s(2.1).hang).toBe(1);
+    const mid = s(2.5).hang;
+    expect(mid).toBeGreaterThan(0.05);
+    expect(mid).toBeLessThan(0.95);
+    expect(s(2.8).hang).toBe(0);
+    expect(s(3.1).hang).toBe(0);
+    expect(s(3.5).hang).toBe(0);
+  });
+  it('the night stays fully opaque outside the ring until about 85% of beat 9, then only the leftover fades', () => {
+    expect(NIGHT_FADE_AT).toBeCloseTo(4.11, 5);
+    for (const t of [3.6, 3.75, 3.9, 4.05, 4.11]) expect(s(t).night, `night at ${t}`).toBe(1);
+    expect(s(4.15).night).toBeLessThan(1);
+    expect(s(4.15).night).toBeGreaterThan(0);
+    // by then the ring has swept almost the whole way out
+    expect(s(NIGHT_FADE_AT).ring).toBeGreaterThan(0.97);
   });
 });
 

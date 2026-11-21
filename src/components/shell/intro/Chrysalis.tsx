@@ -64,8 +64,12 @@ export function Chrysalis({ s }: { s: IntroState }) {
   return (
     <g>
       {/* the thread and its anchor */}
-      <line x1="210" y1="26" x2="210" y2="66" pathLength={1} strokeDasharray="1" strokeDashoffset={r2(1 - s.thread)} style={{ stroke: 'var(--constellation)' }} />
-      <circle cx="210" cy="26" r={r2(2.6 + 0.4 * s.thread)} fill="#fff" opacity={r2(s.anchor)} />
+      {s.hang > 0.001 && (
+        <g opacity={r2(s.hang)}>
+          <line x1="210" y1="26" x2="210" y2="66" pathLength={1} strokeDasharray="1" strokeDashoffset={r2(1 - s.thread)} style={{ stroke: 'var(--constellation)' }} />
+          <circle cx="210" cy="26" r={r2(2.6 + 0.4 * s.thread)} fill="#fff" opacity={r2(s.anchor)} />
+        </g>
+      )}
 
       {s.glow > 0.001 && <circle cx={C[0]} cy={C[1]} r="70" fill={LAV} opacity={r2(s.glow)} transform={sc(s.glowScale, C[0], C[1])} />}
       {s.bloom > 0.001 && <circle cx={C[0]} cy={C[1] - 2} r="80" fill={LAV} opacity={r2(0.06 * s.bloom)} />}
