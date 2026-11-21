@@ -97,7 +97,7 @@ export function CommandPalette() {
         ? []
         : [{ id: 'cal', group: 'Actions', label: 'schedule call', hint: 'Book time', icon: 'calendar', run: () => window.open(personal.links.schedule, '_blank', 'noopener') }]),
       { id: 'motion', group: 'Settings', label: `motion ${mode === 'full' ? '--reduced' : '--full'}`, hint: `Currently ${mode}`, icon: 'motion', run: toggle },
-      { id: 'theme', group: 'Settings', label: 'theme --toggle', hint: 'Light / dark', icon: 'sun', run: () => emit({ type: 'theme' }) },
+      { id: 'theme', group: 'Settings', label: 'Switch theme', hint: 'Dark / twilight', icon: 'sun', run: () => emit({ type: 'theme' }) },
       { id: 'annot', group: 'Settings', label: 'man site', hint: "How it's built", icon: 'info', run: () => emit({ type: 'annotations' }) },
       { id: 'gh', group: 'Links', label: 'open github', hint: personal.links.githubUser, icon: 'github', run: () => window.open(personal.links.github, '_blank', 'noopener') },
       { id: 'li', group: 'Links', label: 'open linkedin', hint: personal.links.linkedinHandle, icon: 'linkedin', run: () => window.open(personal.links.linkedin, '_blank', 'noopener') },

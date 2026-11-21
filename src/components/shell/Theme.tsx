@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { emit, onUi } from '@/lib/nav';
 import { Icon } from '@/components/ui/Icon';
 import { THEME_KEY } from '@/lib/boot';
@@ -23,7 +23,7 @@ export function ThemeController() {
       onUi((e) => {
         if (e.type === 'theme') {
           const n = toggleTheme();
-          emit({ type: 'toast', text: `Theme: ${n}` });
+          emit({ type: 'toast', text: `Theme: ${n === 'light' ? 'twilight' : 'dark'}` });
         }
       }),
     [],
@@ -31,9 +31,22 @@ export function ThemeController() {
   return null;
 }
 
+function subscribeTheme(onChange: () => void) {
+  const mo = new MutationObserver(onChange);
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  return () => mo.disconnect();
+}
+const currentTheme = () => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark');
+
 export function ThemeButton() {
+  const theme = useSyncExternalStore(subscribeTheme, currentTheme, () => 'dark');
   return (
-    <button type="button" className="icon-btn" aria-label="Toggle light and dark theme" onClick={() => emit({ type: 'theme' })}>
+    <button
+      type="button"
+      className="icon-btn"
+      aria-label={theme === 'light' ? 'Switch to the night sky' : 'Switch to the twilight sky'}
+      onClick={() => emit({ type: 'theme' })}
+    >
       <Icon name="sun" />
     </button>
   );
