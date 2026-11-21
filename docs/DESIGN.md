@@ -127,7 +127,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Mascot / character** (top priority): explore non-human alternatives to the prism, staying open beyond the prism (it remains one option). Present several concepts side by side before any scene work.
+1. **Mascot / character** (top priority): explore non-human alternatives to the prism, staying open beyond the prism (it remains one option). Present several concepts side by side before any scene work. **Proposed:** six concepts at `/lab/mascots` (`docs/design/mockups/mascot-*`): Prism (current), Mote (a fallen star), Moth (wings carry a star chart), Surveyor (a snail carrying its map), Sky whale, Compass (a guide that points the way).
 2. **Footer scene concepts.** Tristan likes the four concepts in general but wants better character work and overall design. Lantern looks "a little iffy" and should be revisited later. All human figures must go. Frames in `docs/design/mockups/footer-*`, specs in `src/components/lab/FooterLab.tsx`:
    - **Lantern** (replaces Lightroom): pointer moves the prism's lantern among standing stones; real visibility polygon; lit people wave, shadowed people doze.
    - **Star trails** (replaces Game day): scroll speed is a long exposure turning the sky around the pole star; scrolling back rewinds.

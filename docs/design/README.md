@@ -17,6 +17,7 @@ Design work happens in private lab pages under `src/app/lab/` and is captured as
 | `/lab/sheets`, `/lab/sheets-refraction` | Six sections in each motif (superseded details: plates, themed labels) |
 | `/lab/scripts` | Script faces for the name (Sacramento chosen) |
 | `/lab/theme` | Dark vs twilight from `src/components/lab/themeTokens.ts` (approved), rounded cards, Sacramento: the best current reference |
+| `/lab/mascots` | Six non-human mascot concepts in hero, logo, section-rule and footer poses (`mascot-*`) |
 | `/lab/footer-scenes` | Four night-sky footer scene frames + specs (concepts liked; characters to be replaced) |
 
 ## Gotchas found so far
@@ -27,4 +28,5 @@ Design work happens in private lab pages under `src/app/lab/` and is captured as
   `gradientUnits="userSpaceOnUse"`.
 - Rounding SVG coordinates avoids hydration warnings caused by tiny float differences between server and browser.
 - The in-app browser pane pauses animation while hidden; show it before taking screenshots there, or use the capture script.
+- Another session's `next dev` may already hold port 3217 for this folder; a second one exits. Capture from 3217.
 - `src/components/lab/tokens.test.ts` checks WCAG contrast for both token sets; keep it passing when tokens change.
