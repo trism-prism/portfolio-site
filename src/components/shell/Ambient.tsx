@@ -115,22 +115,24 @@ export function ProgressBar() {
   );
 }
 
-// Floating technology tiles in the page margins. Abbreviations rather than brand logos.
-type Tile = { label: string; color: string; side: 'l' | 'r'; x: number; y: number };
+// Floating technology tiles in the page margins, drawn as chart markers. Abbreviations rather than brand logos.
+// Each tile takes its colour from the spectrum tokens by index, so twilight uses its darker set.
+type Tile = { label: string; side: 'l' | 'r'; x: number; y: number };
 const TILES: Tile[] = [
-  { label: 'TS', color: '#60a5fa', side: 'l', x: 22, y: 18 },
-  { label: 'Py', color: '#facc15', side: 'l', x: 58, y: 30 },
-  { label: 'C++', color: '#93c5fd', side: 'l', x: 18, y: 43 },
-  { label: '⚛', color: '#67e8f9', side: 'l', x: 60, y: 56 },
-  { label: 'pg', color: '#7dd3fc', side: 'l', x: 26, y: 70 },
-  { label: 'C#', color: '#c4b5fd', side: 'l', x: 54, y: 84 },
-  { label: 'N', color: '#e5e7eb', side: 'r', x: 30, y: 16 },
-  { label: '{ }', color: '#5eead4', side: 'r', x: 62, y: 29 },
-  { label: 'K', color: '#fca5a5', side: 'r', x: 22, y: 42 },
-  { label: '◈', color: '#a78bfa', side: 'r', x: 58, y: 57 },
-  { label: '▲', color: '#e5e7eb', side: 'r', x: 26, y: 71 },
-  { label: '⎇', color: '#fb923c', side: 'r', x: 60, y: 85 },
+  { label: 'TS', side: 'l', x: 22, y: 18 },
+  { label: 'Py', side: 'l', x: 58, y: 30 },
+  { label: 'C++', side: 'l', x: 18, y: 43 },
+  { label: '⚛', side: 'l', x: 60, y: 56 },
+  { label: 'pg', side: 'l', x: 26, y: 70 },
+  { label: 'C#', side: 'l', x: 54, y: 84 },
+  { label: 'N', side: 'r', x: 30, y: 16 },
+  { label: '{ }', side: 'r', x: 62, y: 29 },
+  { label: 'K', side: 'r', x: 22, y: 42 },
+  { label: '◈', side: 'r', x: 58, y: 57 },
+  { label: '▲', side: 'r', x: 26, y: 71 },
+  { label: '⎇', side: 'r', x: 60, y: 85 },
 ];
+const SPECTRUM = ['--kind-software', '--kind-systems', '--kind-ai', '--rose', '--route'] as const;
 
 export function TechField() {
   const wide = useMedia('(min-width: 1280px)');
@@ -194,16 +196,20 @@ export function TechField() {
                   style={{
                     width: size,
                     height: size,
-                    borderRadius: wide ? 12 : 9,
                     fontSize: wide ? 15 : 12,
-                    color: t.color,
+                    ['--tc' as string]: `var(${SPECTRUM[TILES.indexOf(t) % SPECTRUM.length]})`,
                     left: wide ? `${t.x}%` : 12,
                     top: `${(t.y + rep * 100) / 2}%`,
                     animationDelay: `${Math.min(0.3, i * 0.05) + 1}s, ${i * -1.7}s`,
                     ['--dur' as string]: `${9 + ((i * 7) % 6)}s`,
                   }}
                 >
-                  {t.label}
+                  <svg viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                    <circle className="tm-disc" cx="50" cy="50" r="38" />
+                    <circle className="tm-ring" cx="50" cy="50" r="45.6" />
+                    <path className="tm-ticks" d="M50 2v10M50 88v10M2 50h10M88 50h10" />
+                  </svg>
+                  <span>{t.label}</span>
                 </div>
               )),
           )}
