@@ -320,6 +320,13 @@ body {
 .hero-route-here { animation: moth-fade .5s ease-out var(--rd, 1.8s) both; }
 @keyframes route-draw { from { stroke-dashoffset: 1; } }
 [data-motion='reduced'] .hero-route-line, [data-motion='reduced'] .hero-route-here { animation: none; }
+/* First visit: hold the hero entrance and the Moth draw while the intro splash covers the page; they start as it lifts. */
+[data-intro='on'] .hero-in,
+[data-intro='on'] .moth-draw .moth-line,
+[data-intro='on'] .moth-draw .moth-star,
+[data-intro='on'] .moth-draw .moth-name,
+[data-intro='on'] .hero-route-line,
+[data-intro='on'] .hero-route-here { animation-play-state: paused; }
 
 /* ---------- Marquee rails ---------- */
 .rail { overflow: hidden; contain: inline-size; mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }

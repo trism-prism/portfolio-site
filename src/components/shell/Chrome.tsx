@@ -72,6 +72,8 @@ export function IntroSplash() {
     const reduced = document.documentElement.dataset.motion === 'reduced';
     if (seen || reduced || location.hash || location.search.includes('project=') || navigator.webdriver) return;
     setShow(true);
+    // lets the hero hold its entrance and the Moth draw until the splash lifts (see [data-intro='on'] in globals.css)
+    document.documentElement.dataset.intro = 'on';
     try {
       sessionStorage.setItem('tm-intro', '1');
     } catch {}
@@ -79,6 +81,7 @@ export function IntroSplash() {
     const leave = () => {
       if (done) return;
       done = true;
+      delete document.documentElement.dataset.intro;
       setLeaving(true);
       window.setTimeout(() => setShow(false), 800);
     };
@@ -90,6 +93,7 @@ export function IntroSplash() {
     evs.forEach((e) => window.addEventListener(e, skip, { once: true, passive: true }));
     return () => {
       clearTimeout(t);
+      delete document.documentElement.dataset.intro;
       evs.forEach((e) => window.removeEventListener(e, skip));
     };
   }, []);
