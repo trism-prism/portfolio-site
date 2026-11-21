@@ -118,7 +118,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 | Star glyph | Four-point star in a kind colour; used as bullet, legend mark and timeline node. | all |
 | Legend chip | Filter control with star glyph and count (shape follows the rounded card language). | projects |
 | Chart marker | Ringed plate with tick marks; replaces the floating tech tiles' style. | hero |
-| Route | Dashed gold path with waypoints; hollow waypoint = ahead. | hero, journey |
+| Route | Dashed gold path with waypoints; hollow waypoint = ahead. In the hero it ends on the Moth's gold tail star and crosses no constellation line (`heroRoute.test.ts`). | hero, journey |
 
 ## 5. Section map (proposed)
 
@@ -155,4 +155,8 @@ are shared by almost everything. The advisor reviews each result in the browser 
 4. [Shared section styling](design/handoffs/04-section-styling.md): done (`d4c7571..5635d1a`), reviewed; advisor fixed a lab type error (`ae456b4`).
 5. [About, Achievements, Focus areas, Stats](design/handoffs/05-about-achievements-focus-stats.md): done (`6bdcb2c..498577e`), reviewed against the mockups.
 6. [Experience & education as one route, Skills rails restyled](design/handoffs/06-route-and-skills.md): done (`3efbae0..8d2d804`), reviewed; advisor follow-up `c1d7db2` wraps section titles on phones and restores education coursework and activities. Skills as built **approved by Tristan** (2026-11-21).
-7. [The hero with the Moth constellation, chart-marker tech tiles](design/handoffs/07-hero.md): ready; not started. Follows the approved hero frames; per the projects rule it drops the hero's "Latest" project links (still in Activity), and the hero moth mark goes because the moth lives in the nav logo.
+7. [The hero with the Moth constellation, chart-marker tech tiles](design/handoffs/07-hero.md): done (`fc9432f..2b0c7da`), reviewed in two rounds. The "Latest" links and the hero moth mark are gone. Changes from the handoff made at review:
+   - The route ends at the **tail** star (gold, in `--route`) instead of the head, because reaching the head crossed the left wing. `MOTH_HEAD` stays exported for the intro.
+   - `IntroSplash` sets `data-intro="on"` on `<html>` while it covers the page, which pauses the hero entrance, the Moth draw and the route until the splash lifts. The intro handoff should keep that signal.
+   - The dev double-mount no longer drops a stored Reduced motion setting (`e8390b2`).
+   - Not done: `public/resume.pdf` and `public/cv.pdf` still contain the home town. Tristan regenerates them from the source résumé.
