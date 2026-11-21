@@ -36,7 +36,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Projects rule scope (2026-11-21) | The rule covers **decoration and structure** (constellations, figures). **Plain text that cites or links a project as evidence stays**: Focus "Backed by" chips and Stats notes as mocked. The small star figure on each Focus card goes. |
 | Stats extras (2026-11-21) | Keep the **GitHub contribution heatmap**, restyled below the lists as a quiet grid of stars by day. **Drop the coding-profile cards** until real profiles exist (data stays). |
 | About photo (2026-11-21) | **No photo.** About is exactly the mockup; the photo placeholder and its orbit of tech tiles go. |
-| No home town (2026-11-21, narrowed) | **The site never shows Tristan's home town** (Leesburg) anywhere: hero, About facts, footer, CV viewer, vCard, `llms.txt`, structured data. **"Virginia" or "VA" is fine** and replaces it. Other places tied to work or school (e.g. Harrisonburg for JMU, Remote for Formwork) stay. The hero's marker reads "You are here · Virginia". |
+| No home town (2026-11-21, narrowed) | **The site never shows Tristan's home town** (Leesburg) anywhere: hero, About facts, footer, CV viewer, vCard, `llms.txt`, structured data. **"Virginia" or "VA" is fine** and replaces it. Other places tied to work or school (e.g. Harrisonburg for JMU, Remote for Formwork) stay. The hero's marker reads "You are here · Virginia". **Exception (2026-11-21):** the downloadable `resume.pdf` and `cv.pdf` may keep the town. |
 | Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. **Values approved** as shown in `docs/design/mockups/theme-*` (token table in section 3). |
 | Cards | **Keep rounded cards**, restyled to the new palette. No square plates or corner registration ticks. |
 | Experience + education | **Merged into one "route" section**: route map across both, detail cards below. |
@@ -159,4 +159,5 @@ are shared by almost everything. The advisor reviews each result in the browser 
    - The route ends at the **tail** star (gold, in `--route`) instead of the head, because reaching the head crossed the left wing. `MOTH_HEAD` stays exported for the intro.
    - `IntroSplash` sets `data-intro="on"` on `<html>` while it covers the page, which pauses the hero entrance, the Moth draw and the route until the splash lifts. The intro handoff should keep that signal.
    - The dev double-mount no longer drops a stored Reduced motion setting (`e8390b2`).
-   - Not done: `public/resume.pdf` and `public/cv.pdf` still contain the home town. Tristan regenerates them from the source résumé.
+   - `public/resume.pdf` and `public/cv.pdf` keep the town, which Tristan approved (see **No home town**).
+8. [Projects as a sky map whose legend is the filter](design/handoffs/08-projects-sky-map.md): ready. A data-driven map with one constellation per kind (lines join each kind's projects in date order), legend chips, a spotlight with measurements from data, and simplified cards. Covers unchanged.
