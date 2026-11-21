@@ -180,12 +180,19 @@ body {
 
 .section { position: relative; padding-block: 64px; }
 @media (min-width: 768px) { .section { padding-block: 96px; } }
-.section:nth-of-type(even) { background: color-mix(in srgb, var(--bg-alt) 80%, transparent); }
 
 .panel {
-  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  background: var(--panel);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
   border: 1px solid var(--line);
   border-radius: 16px;
+}
+:root[data-theme='light'] .panel { box-shadow: var(--shadow); }
+/* Optional tone accent: set data-tone and --tone (inline) for a small bar on the card's top edge. */
+.panel[data-tone] { position: relative; }
+.panel[data-tone]::after {
+  content: ''; position: absolute; top: 0; left: 20px; width: 40px; height: 2px;
+  border-radius: 0 0 2px 2px; background: var(--tone, var(--accent)); pointer-events: none;
 }
 .chip {
   display: inline-flex; align-items: center; gap: 6px;
@@ -251,37 +258,16 @@ body {
   color: #1a1200; background: var(--ph); border-radius: 999px; padding: 1px 8px;
 }
 
-/* ---------- Ambient background ---------- */
+/* ---------- Sky backdrop ---------- */
+/* Stars and graticule arcs are drawn once (see AmbientBackground); only the few twinkling stars animate. */
 .ambient { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.ambient .dots {
-  position: absolute; inset: 0;
-  background-image: radial-gradient(var(--sc-faint) 1px, transparent 1px);
-  background-size: 28px 28px;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 35%, #000 20%, transparent 75%);
-}
-.ambient .glow { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .55; will-change: transform; }
-.ambient .g1 { width: 46vw; height: 46vw; left: 4vw; top: -12vw; background: radial-gradient(circle, rgb(20 184 166 / .28), transparent 65%); animation: drift1 26s ease-in-out infinite; }
-.ambient .g2 { width: 40vw; height: 40vw; right: -6vw; top: 10vh; background: radial-gradient(circle, rgb(139 92 246 / .18), transparent 65%); animation: drift2 32s ease-in-out infinite; }
-.ambient .g3 { width: 36vw; height: 36vw; left: 30vw; bottom: -18vw; background: radial-gradient(circle, rgb(56 189 248 / .16), transparent 65%); animation: drift3 40s ease-in-out infinite; }
-:root[data-theme='light'] .ambient .glow { opacity: .35; }
-.ambient .beam {
-  position: absolute; left: -20vw; width: 140vw; height: 1px; top: 30%;
-  background: linear-gradient(90deg, transparent, rgb(94 234 212 / .5), rgb(167 139 250 / .4), transparent);
-  transform: rotate(24deg) translateX(-100%); opacity: 0;
-  animation: beam 14s linear infinite;
-}
-.ambient .beam.b2 { top: 60%; animation-duration: 21s; animation-delay: 7s; }
-.ambient .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 40%, transparent 50%, rgb(0 0 0 / .35)); }
-:root[data-theme='light'] .ambient .vignette { display: none; }
-@keyframes drift1 { 50% { transform: translate(6vw, 4vh) scale(1.08); } }
-@keyframes drift2 { 50% { transform: translate(-5vw, 6vh) scale(.94); } }
-@keyframes drift3 { 50% { transform: translate(4vw, -5vh) scale(1.1); } }
-@keyframes beam {
-  0% { transform: rotate(24deg) translateX(-60%); opacity: 0; }
-  10% { opacity: .9; }
-  45% { opacity: .9; }
-  55%, 100% { transform: rotate(24deg) translateX(60%); opacity: 0; }
-}
+.ambient svg { display: block; width: 100%; height: 100%; }
+.sky-star { fill: var(--star); stroke: var(--star-halo); stroke-width: 1.8; paint-order: stroke; }
+.sky-graticule { fill: none; stroke: var(--graticule); }
+/* twilight shows about two thirds of the stars the dark sky has */
+:root[data-theme='light'] .sky-extra { display: none; }
+.sky-tw { animation: twinkle var(--d, 5s) ease-in-out var(--delay, 0s) infinite; }
+@keyframes twinkle { 0%, 100% { opacity: var(--o, .6); } 50% { opacity: calc(var(--o, .6) * .3); } }
 
 /* ---------- Tech field ---------- */
 .field-tile {
@@ -351,12 +337,10 @@ body {
 @keyframes konami { from { opacity: 0; transform: translate(-50%, 20px) scale(.9); } }
 
 /* ---------- Reduced motion policy ---------- */
-[data-motion='reduced'] .ambient .glow,
-[data-motion='reduced'] .ambient .beam,
+[data-motion='reduced'] .sky-tw,
 [data-motion='reduced'] .field-tile,
 [data-motion='reduced'] .mark-eyes,
 [data-motion='reduced'] .rail-track { animation: none !important; }
-[data-motion='reduced'] .ambient .beam { display: none; }
 [data-motion='reduced'] .reveal { opacity: 1; transform: none; transition: none; }
 [data-motion='reduced'] .cr-char { opacity: 1; transform: none; transition: none; }
 [data-motion='reduced'] .anim-pop, [data-motion='reduced'] .sheet-mobile { animation-duration: .01s; }

@@ -1,19 +1,81 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { mulberry32 } from '@/lib/kit';
 import { useMedia } from '@/lib/hooks';
 import { useMotion } from '@/lib/motion';
 
+// The night sky behind the page: a seeded star field and four faint graticule arcs, drawn once into an
+// SVG and redrawn only when the viewport size changes. About 8% of the stars twinkle slowly (CSS only);
+// Reduced motion turns that off. The sky gradient itself lives on <body>.
+type SkyStar = { x: number; y: number; r: number; o: number; tw: number; d: number; delay: number };
+
+const DARK_PER_STAR = 6000; // px² of viewport per star in dark
+const TWILIGHT_SHARE = DARK_PER_STAR / 9000; // twilight shows this share of the dark stars
+const round1 = (n: number) => Math.round(n * 10) / 10;
+
+function makeSky(w: number, h: number) {
+  const rnd = mulberry32(2026);
+  const count = Math.round((w * h) / DARK_PER_STAR);
+  const stars: SkyStar[] = Array.from({ length: count }, () => {
+    const x = Math.round(rnd() * w);
+    const y = Math.round(rnd() * h);
+    const r = rnd() < 0.07 ? 1.6 : round1(0.6 + rnd() * 0.7);
+    const o = round1(0.25 + rnd() * 0.55);
+    const tw = rnd() < 0.08 ? 1 : 0;
+    const d = round1(4 + rnd() * 3);
+    const delay = -round1(rnd() * 7);
+    return { x, y, r, o, tw, d, delay };
+  });
+  return { stars, shown: Math.round(count * TWILIGHT_SHARE) };
+}
+
 export function AmbientBackground() {
+  const [size, setSize] = useState<{ w: number; h: number } | null>(null);
+
+  useEffect(() => {
+    let timer = 0;
+    const measure = () => {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      // Ignore small height-only changes (a mobile browser bar sliding away) so the stars do not reshuffle.
+      setSize((prev) => (prev && prev.w === w && Math.abs(prev.h - h) < 150 ? prev : { w, h }));
+    };
+    const onResize = () => {
+      clearTimeout(timer);
+      timer = window.setTimeout(measure, 150);
+    };
+    measure();
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  const sky = useMemo(() => (size ? makeSky(size.w, size.h) : null), [size]);
+
   return (
     <div className="ambient" aria-hidden="true">
-      <div className="dots" />
-      <div className="glow g1" />
-      <div className="glow g2" />
-      <div className="glow g3" />
-      <div className="beam" />
-      <div className="beam b2" />
-      <div className="vignette" />
+      {size && sky && (
+        <svg viewBox={`0 0 ${size.w} ${size.h}`} preserveAspectRatio="none" focusable="false">
+          <g className="sky-graticule">
+            {[0.6, 0.85, 1.1, 1.35].map((k) => (
+              <circle key={k} cx={Math.round(size.w * 0.87)} cy={Math.round(size.h * 1.28)} r={Math.round(size.h * k)} />
+            ))}
+          </g>
+          {sky.stars.map((st, i) => (
+            <circle
+              key={i}
+              className={`sky-star${i >= sky.shown ? ' sky-extra' : ''}${st.tw ? ' sky-tw' : ''}`}
+              cx={st.x}
+              cy={st.y}
+              r={st.r}
+              style={st.tw ? ({ '--o': st.o, '--d': `${st.d}s`, '--delay': `${st.delay}s`, opacity: st.o } as React.CSSProperties) : { opacity: st.o }}
+            />
+          ))}
+        </svg>
+      )}
     </div>
   );
 }
