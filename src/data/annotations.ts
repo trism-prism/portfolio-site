@@ -23,7 +23,7 @@ export const annotations = [
   {
     target: 'palette',
     title: 'Command palette',
-    body: 'Ctrl/⌘ K opens it. The shell prompt is styling: each command dispatches a page action; nothing is executed.',
+    body: 'Ctrl/⌘ K opens a plain search and jump list: type to filter, then pick a section, project or action. Each entry runs a page action.',
   },
   {
     target: 'news',

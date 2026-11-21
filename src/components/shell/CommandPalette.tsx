@@ -22,7 +22,7 @@ async function copy(text: string) {
   }
 }
 
-// The shell prompt is styling only: every command dispatches a page action. Nothing is executed.
+// A plain search-and-jump list: each entry dispatches a page action (scroll, open, copy, download or a setting).
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState('');
@@ -67,14 +67,13 @@ export function CommandPalette() {
 
   const cmds: Cmd[] = useMemo(() => {
     const nav: Cmd[] = [
-      { id: 'home', group: 'Navigate', label: 'cd ~', hint: 'Home', icon: 'arrowUp', run: () => goTo('hero') },
-      ...sections.map((s) => ({ id: `nav-${s.id}`, group: 'Navigate', label: `cd ${s.id}`, hint: s.nav, icon: 'arrowRight', run: () => goTo(s.id) })),
+      { id: 'home', group: 'Navigate', label: 'Go to the top', hint: 'Home', icon: 'arrowUp', run: () => goTo('hero') },
+      ...sections.map((s) => ({ id: `nav-${s.id}`, group: 'Navigate', label: `Go to ${s.nav}`, icon: 'arrowRight', run: () => goTo(s.id) })),
     ];
     const proj: Cmd[] = projects.map((p) => ({
       id: `p-${p.slug}`,
       group: 'Projects',
-      label: `open ${p.slug}`,
-      hint: p.title,
+      label: `Open ${p.title}`,
       icon: 'code',
       run: () => emit({ type: 'project', slug: p.slug }),
     }));
@@ -82,7 +81,7 @@ export function CommandPalette() {
       {
         id: 'email',
         group: 'Actions',
-        label: 'copy email',
+        label: 'Copy email address',
         hint: personal.email,
         icon: 'copy',
         run: () => {
@@ -90,21 +89,21 @@ export function CommandPalette() {
           return 'keep';
         },
       },
-      { id: 'cv', group: 'Actions', label: 'cat cv', hint: 'Read the CV in the page', icon: 'file', run: () => emit({ type: 'cv', doc: 'cv' }) },
-      { id: 'resume', group: 'Actions', label: 'cat resume', hint: 'One-page résumé', icon: 'file', run: () => emit({ type: 'cv', doc: 'resume' }) },
-      { id: 'dl', group: 'Actions', label: 'wget resume.pdf', hint: 'Download the PDF', icon: 'download', run: () => window.open(personal.links.resume, '_blank', 'noopener') },
+      { id: 'cv', group: 'Actions', label: 'Read the CV', hint: 'In the page', icon: 'file', run: () => emit({ type: 'cv', doc: 'cv' }) },
+      { id: 'resume', group: 'Actions', label: 'Read the résumé', hint: 'One page', icon: 'file', run: () => emit({ type: 'cv', doc: 'resume' }) },
+      { id: 'dl', group: 'Actions', label: 'Download the résumé (PDF)', hint: 'PDF', icon: 'download', run: () => window.open(personal.links.resume, '_blank', 'noopener') },
       ...(isPh(personal.links.schedule)
         ? []
-        : [{ id: 'cal', group: 'Actions', label: 'schedule call', hint: 'Book time', icon: 'calendar', run: () => window.open(personal.links.schedule, '_blank', 'noopener') }]),
-      { id: 'motion', group: 'Settings', label: `motion ${mode === 'full' ? '--reduced' : '--full'}`, hint: `Currently ${mode}`, icon: 'motion', run: toggle },
+        : [{ id: 'cal', group: 'Actions', label: 'Schedule a call', hint: 'Book time', icon: 'calendar', run: () => window.open(personal.links.schedule, '_blank', 'noopener') }]),
+      { id: 'motion', group: 'Settings', label: mode === 'full' ? 'Reduce motion' : 'Use full motion', hint: `Currently ${mode}`, icon: 'motion', run: toggle },
       { id: 'theme', group: 'Settings', label: 'Switch theme', hint: 'Dark / twilight', icon: 'sun', run: () => emit({ type: 'theme' }) },
-      { id: 'annot', group: 'Settings', label: 'man site', hint: "How it's built", icon: 'info', run: () => emit({ type: 'annotations' }) },
-      { id: 'gh', group: 'Links', label: 'open github', hint: personal.links.githubUser, icon: 'github', run: () => window.open(personal.links.github, '_blank', 'noopener') },
-      { id: 'li', group: 'Links', label: 'open linkedin', hint: personal.links.linkedinHandle, icon: 'linkedin', run: () => window.open(personal.links.linkedin, '_blank', 'noopener') },
-      { id: 'llms', group: 'Machine-readable', label: 'cat llms.txt', hint: 'Plain-text summary', icon: 'file', run: () => window.open('/llms.txt', '_blank', 'noopener') },
-      { id: 'rss', group: 'Machine-readable', label: 'tail rss.xml', hint: 'Activity feed', icon: 'rss', run: () => window.open('/rss.xml', '_blank', 'noopener') },
-      { id: 'json', group: 'Machine-readable', label: 'cat data/projects.json', hint: 'Project data', icon: 'code', run: () => window.open('/data/projects.json', '_blank', 'noopener') },
-      { id: 'vcf', group: 'Machine-readable', label: 'save contact.vcf', hint: 'vCard', icon: 'userPlus', run: () => window.open(personal.links.vcard, '_blank', 'noopener') },
+      { id: 'annot', group: 'Settings', label: 'How this site is built', hint: 'Annotations', icon: 'info', run: () => emit({ type: 'annotations' }) },
+      { id: 'gh', group: 'Links', label: 'Open GitHub', hint: personal.links.githubUser, icon: 'github', run: () => window.open(personal.links.github, '_blank', 'noopener') },
+      { id: 'li', group: 'Links', label: 'Open LinkedIn', hint: personal.links.linkedinHandle, icon: 'linkedin', run: () => window.open(personal.links.linkedin, '_blank', 'noopener') },
+      { id: 'llms', group: 'Machine-readable', label: 'Plain-text summary', hint: 'llms.txt', icon: 'file', run: () => window.open('/llms.txt', '_blank', 'noopener') },
+      { id: 'rss', group: 'Machine-readable', label: 'Activity feed', hint: 'RSS', icon: 'rss', run: () => window.open('/rss.xml', '_blank', 'noopener') },
+      { id: 'json', group: 'Machine-readable', label: 'Project data', hint: 'JSON', icon: 'code', run: () => window.open('/data/projects.json', '_blank', 'noopener') },
+      { id: 'vcf', group: 'Machine-readable', label: 'Save contact card', hint: 'vCard', icon: 'userPlus', run: () => window.open(personal.links.vcard, '_blank', 'noopener') },
     ];
     return [...nav, ...actions, ...proj];
   }, [mode, toggle]);
@@ -173,7 +172,7 @@ export function CommandPalette() {
         style={{ background: 'var(--panel)' }}
       >
         <div className="flex items-center gap-2 border-b border-line px-4">
-          <span className="mono shrink-0 text-[13px] text-accent">~/{personal.handle} $</span>
+          <Icon name="search" size={16} className="shrink-0 text-muted" />
           <input
             ref={input}
             value={q}
@@ -183,14 +182,14 @@ export function CommandPalette() {
             aria-expanded="true"
             aria-controls="palette-list"
             aria-activedescendant={filtered[sel] ? `cmd-${filtered[sel].id}` : undefined}
-            aria-label="Type a command or search"
-            placeholder="type a command…"
-            className="mono h-14 min-w-0 flex-1 bg-transparent text-[14px] text-fg outline-none placeholder:text-muted"
+            aria-label="Search or jump to"
+            placeholder="Search or jump to…"
+            className="h-14 min-w-0 flex-1 bg-transparent text-[15px] text-fg outline-none placeholder:text-muted"
           />
           <kbd className="mono rounded border border-line-2 px-1.5 text-[11px] text-muted">esc</kbd>
         </div>
         <ul id="palette-list" ref={listRef} role="listbox" className="max-h-[52vh] overflow-y-auto p-2" data-lenis-prevent>
-          {filtered.length === 0 && <li className="mono px-3 py-6 text-center text-sm text-muted">command not found: {q}</li>}
+          {filtered.length === 0 && <li className="px-3 py-6 text-center text-sm text-muted">Nothing matches “{q}”</li>}
           {filtered.map((c, i) => {
             const header = c.group !== lastGroup ? c.group : null;
             lastGroup = c.group;
@@ -207,19 +206,19 @@ export function CommandPalette() {
                   className={`flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 ${i === sel ? 'bg-panel-2 text-fg' : 'text-fg-2'}`}
                 >
                   <Icon name={c.icon} size={16} className={i === sel ? 'text-accent' : ''} />
-                  <span className="mono text-[13.5px]">{c.label}</span>
+                  <span className="text-[14px]">{c.label}</span>
                   {c.hint && <span className="ml-auto truncate text-[12.5px] text-muted">{c.hint}</span>}
                 </div>
               </li>
             );
           })}
         </ul>
-        <div className="mono flex items-center gap-4 border-t border-line px-4 py-2 text-[11px] text-muted" aria-live="polite">
+        <div className="flex items-center gap-4 border-t border-line px-4 py-2 text-[11px] text-muted" aria-live="polite">
           {note ?? (
             <>
               <span>↑↓ move</span>
-              <span>↵ run</span>
-              <span className="ml-auto">{filtered.length} commands</span>
+              <span>↵ select</span>
+              <span className="ml-auto">{filtered.length} results</span>
             </>
           )}
         </div>
