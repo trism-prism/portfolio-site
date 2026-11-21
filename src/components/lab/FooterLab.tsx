@@ -1,7 +1,7 @@
 'use client';
 
-import { Person, LOOKS } from '@/components/footer/Cast';
-import { PrismCharacter } from '@/components/ui/Prism';
+import { Person, LOOKS } from '@/components/lab/legacy/Cast';
+import { PrismCharacter } from '@/components/lab/legacy/Prism';
 import { boxWalls, polyPath, raySeg, visibility, type Pt, type Seg } from '@/lib/visibility';
 import { mulberry32 } from '@/lib/kit';
 import { dark } from './themeTokens';

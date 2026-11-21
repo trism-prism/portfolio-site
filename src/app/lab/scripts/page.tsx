@@ -1,6 +1,6 @@
 import { Caveat, Herr_Von_Muellerhoff, Pinyon_Script, Sacramento } from 'next/font/google';
 import { ChartBackdrop } from '@/components/lab/ChartKit';
-import { PrismMark } from '@/components/ui/Prism';
+import { PrismMark } from '@/components/lab/legacy/Prism';
 
 export const metadata = { title: 'Lab: script faces', robots: { index: false } };
 

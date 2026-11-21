@@ -2,7 +2,7 @@
 // Each concept draws four poses from one set of shapes: hero, sit (on a section rule), footer and mark (logo/favicon).
 // Characters keep fixed illustration colours in both themes, inked with a thin dark outline so they read on twilight.
 
-import { PrismCharacter, PrismMark } from '@/components/ui/Prism';
+import { PrismCharacter, PrismMark } from '@/components/lab/legacy/Prism';
 import { mulberry32 } from '@/lib/kit';
 import { dark, type Tokens } from './themeTokens';
 

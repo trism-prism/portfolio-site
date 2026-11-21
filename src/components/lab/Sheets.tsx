@@ -11,7 +11,7 @@ import { mulberry32 } from '@/lib/kit';
 import { covers } from '@/components/scenes/covers/registry';
 import { Stage } from '@/components/scenes/Stage';
 import { Icon } from '@/components/ui/Icon';
-import { PrismCharacter } from '@/components/ui/Prism';
+import { PrismCharacter } from '@/components/lab/legacy/Prism';
 import { BG, ChartBackdrop, ChartHeader, Corners, DIM, GOLD, INK, KIND, LINE, MUTED, ROSE, StarGlyph, designation, mono } from './ChartKit';
 
 // Static constellation-motif mockups of the sections after the hero. Exploration only: every choice

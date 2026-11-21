@@ -1,5 +1,5 @@
 import { mulberry32 } from '@/lib/kit';
-import { PrismCharacter } from '@/components/ui/Prism';
+import { PrismCharacter } from '@/components/lab/legacy/Prism';
 
 // Static drawing kit for the constellation mockups. Exploration only (see LabHero.tsx).
 

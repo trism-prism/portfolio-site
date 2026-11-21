@@ -1,289 +1,208 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef, useState } from 'react';
-import { Person, LOOKS } from './Cast';
-import { PrismCharacter } from '@/components/ui/Prism';
-import { boxWalls, polyPath, raySeg, visibility, type Pt, type Seg } from '@/lib/visibility';
-import { clamp, easeOut, lerp, loop, seg } from '@/lib/kit';
-import { emit } from '@/lib/nav';
+// The four night-sky footer scenes, each recast around the moth (the only character):
+//   Lantern             pointer carries a lantern; a real visibility polygon lights carved standing stones
+//   Star trails         scroll speed is a long exposure; the moth sits on a survey pillar looking up
+//   Name the constellation  pick the project a star figure charts; the moth flies to its brightest star
+//   Orbit               the moth circles an armillary sphere; holding the email button speeds it up
+// Drawing and spec text come from the approved lab frames (src/components/lab/FooterMoth.tsx), recomposed at 720 × 240.
 
-export const FW = 720, FH = 240;
+import { useEffect, useId, useRef, useState } from 'react';
+import { boxWalls, polyPath, raySeg, visibility, type Pt, type Seg } from '@/lib/visibility';
+import { clamp, easeInOut, easeOut, lerp, seg } from '@/lib/kit';
+import { FW, FH, GROUND, GOLD, OUT, STONE, LAB, Sky, Hills, Note, Flying, Seated, r1 } from './Night';
+
+export { FW, FH };
 export type FooterSceneProps = { t: number; reduced: boolean; hold: number; idle: boolean };
 
-const mono = 'var(--font-jetbrains), monospace';
-
-/* ---------------- 1. Lightroom ----------------
-   The prism carries a lamp (your pointer steers it); the lit area is a real visibility polygon.
-   Anyone the light reaches waves; people in shadow doze. */
-const sg = (ax: number, ay: number, bx: number, by: number): Seg => ({ a: { x: ax, y: ay }, b: { x: bx, y: by } });
-const ROOM: Seg[] = [
-  ...boxWalls(FW, FH).map((s) => s),
-  sg(150, 0, 150, 90), sg(150, 140, 150, FH), sg(570, 0, 570, 100), sg(570, 150, 570, FH),
-  sg(270, 70, 330, 70), sg(390, 170, 450, 170), sg(250, 150, 290, 190), sg(430, 50, 470, 90),
+/* ---------------- 1. Lantern ----------------
+   The pointer carries a lantern across a hilltop of standing stones. The lit area is a real visibility
+   polygon among the stones' edges; stones the light reaches show their carved constellation in gold.
+   The moth circles the light; with no pointer the lantern settles on the tallest stone and the moth rests. */
+type Stone = { x: number; w: number; h: number; lean: number; glyph: [number, number][] };
+const STONES: Stone[] = [
+  { x: 91, w: 31, h: 64, lean: -3, glyph: [[14, 22], [30, 34], [22, 52], [34, 66]] },
+  { x: 207, w: 26, h: 47, lean: 2, glyph: [[12, 18], [26, 28], [18, 44]] },
+  { x: 424, w: 35, h: 77, lean: -1, glyph: [[14, 20], [36, 30], [26, 50], [40, 70], [18, 86]] },
+  { x: 552, w: 25, h: 43, lean: 3, glyph: [[10, 16], [26, 26], [16, 42]] },
+  { x: 631, w: 30, h: 59, lean: -2, glyph: [[12, 20], [30, 30], [20, 52], [32, 64]] },
 ];
-const SEATS: Pt[] = [{ x: 70, y: 200 }, { x: 95, y: 110 }, { x: 640, y: 200 }, { x: 660, y: 110 }, { x: 360, y: 225 }];
 
-function litBy(light: Pt, p: Pt) {
-  const d = { x: p.x - light.x, y: p.y - light.y };
+function stonePts(s: Stone): Pt[] {
+  const base = GROUND + 2;
+  return [
+    { x: s.x, y: base },
+    { x: s.x + s.w, y: base },
+    { x: r1(s.x + s.w - 3 + s.lean), y: base - s.h },
+    { x: r1(s.x + 4 + s.lean), y: r1(base - s.h - 4.5) },
+  ];
+}
+const STONE_PTS = STONES.map(stonePts);
+const STONE_WALLS: Seg[][] = STONE_PTS.map((p) => p.map((a, i) => ({ a, b: p[(i + 1) % p.length] })));
+const ROOM: Seg[] = [...boxWalls(FW, FH), ...STONE_WALLS.flat()];
+const STONE_CENTRES: Pt[] = STONE_PTS.map((p) => ({ x: p.reduce((s, q) => s + q.x, 0) / 4, y: p.reduce((s, q) => s + q.y, 0) / 4 }));
+const TALLEST = STONES.reduce((best, s, i) => (s.h > STONES[best].h ? i : best), 0);
+/** How far the lantern's glow reaches a stone's centre (the lab frame lights stones within about 170 units). */
+const LIT_RANGE = 170;
+
+/** The same ray test the visibility polygon uses, from the light to a stone's centre, ignoring the stone's own edges. */
+function litStone(light: Pt, i: number) {
+  const c = STONE_CENTRES[i];
+  const d = { x: c.x - light.x, y: c.y - light.y };
   const len = Math.hypot(d.x, d.y);
+  if (len > LIT_RANGE) return false;
   const dir = { x: d.x / len, y: d.y / len };
-  for (const w of ROOM) {
-    const t = raySeg(light, dir, w);
+  for (let k = 0; k < ROOM.length; k++) {
+    if (k >= 4 + i * 4 && k < 8 + i * 4) continue;
+    const t = raySeg(light, dir, ROOM[k]);
     if (t !== null && t < len - 1) return false;
   }
   return true;
 }
 
-export function Lightroom({ t, reduced, idle }: FooterSceneProps) {
+function inside(poly: Pt[], p: Pt) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i], b = poly[j];
+    if (a.y > p.y !== b.y > p.y && p.x < ((b.x - a.x) * (p.y - a.y)) / (b.y - a.y) + a.x) c = !c;
+  }
+  return c;
+}
+
+/** Keep the lamp on the stage and out of the stones (a light inside a stone would only see the stone). */
+function placeLamp(p: Pt): Pt {
+  const q = { x: clamp(p.x, 6, FW - 6), y: clamp(p.y, 12, GROUND - 6) };
+  for (let i = 0; i < STONE_PTS.length; i++) if (inside(STONE_PTS[i], q)) return { x: q.x, y: Math.min(STONE_PTS[i][3].y, STONE_PTS[i][2].y) - 3 };
+  return q;
+}
+
+const RT = STONE_PTS[TALLEST];
+const TOP_Y = r1((RT[2].y + RT[3].y) / 2);
+const TOP_X = r1((RT[2].x + RT[3].x) / 2);
+/** Resting places: on the tallest stone (live), or mid-hill (Reduced motion). */
+const REST = { lamp: { x: r1(TOP_X - 5), y: r1(TOP_Y - 11) }, moth: { x: r1(TOP_X + 7), base: TOP_Y, size: 30 } };
+const REST_REDUCED = { lamp: { x: 330, y: 191 }, moth: { x: 362, base: 203, size: 30 } };
+
+type Mode = { follow: boolean; at: number; lamp0: Pt; m0: number };
+
+/** Lantern position and how far the moth has landed (0 circling, 1 seated), at time t. */
+function lampState(mode: Mode, pointer: Pt, t: number) {
+  if (mode.follow) {
+    const lamp = { x: lerp(mode.lamp0.x, pointer.x, easeOut(seg(t, mode.at, mode.at + 0.35))), y: lerp(mode.lamp0.y, pointer.y, easeOut(seg(t, mode.at, mode.at + 0.35))) };
+    return { lamp, m: lerp(mode.m0, 0, easeOut(seg(t, mode.at, mode.at + 0.5))) };
+  }
+  const p = easeInOut(seg(t, mode.at, mode.at + 1.2));
+  const lamp = { x: lerp(mode.lamp0.x, REST.lamp.x, p), y: lerp(mode.lamp0.y, REST.lamp.y, p) };
+  return { lamp, m: lerp(mode.m0, 1, easeInOut(seg(t, mode.at + 0.8, mode.at + 1.8))) };
+}
+
+export function Lantern({ t, reduced, idle }: FooterSceneProps) {
   const id = useId().replace(/:/g, '');
-  const svg = useRef<SVGGElement>(null);
-  const [pointer, setPointer] = useState<Pt | null>(null);
+  const root = useRef<SVGGElement>(null);
+  const [ptr, setPtr] = useState<{ p: Pt; in: boolean }>({ p: REST.lamp, in: false });
+  const [mode, setMode] = useState<Mode>({ follow: false, at: -99, lamp0: REST.lamp, m0: 1 });
+
   useEffect(() => {
-    const el = svg.current?.ownerSVGElement;
+    const el = root.current?.ownerSVGElement;
     if (!el) return;
     const move = (e: PointerEvent) => {
       const r = el.getBoundingClientRect();
-      setPointer({ x: ((e.clientX - r.left) / r.width) * FW, y: ((e.clientY - r.top) / r.height) * FH });
+      setPtr({ p: { x: ((e.clientX - r.left) / r.width) * FW, y: ((e.clientY - r.top) / r.height) * FH }, in: true });
     };
-    const leave = () => setPointer(null);
-    el.addEventListener('pointermove', move);
-    el.addEventListener('pointerleave', leave);
+    const leave = () => setPtr((s) => ({ ...s, in: false }));
+    el.addEventListener('pointermove', move, { passive: true });
+    el.addEventListener('pointerleave', leave, { passive: true });
     return () => {
       el.removeEventListener('pointermove', move);
       el.removeEventListener('pointerleave', leave);
     };
   }, []);
-  const auto = { x: 360 + Math.sin(t * 0.35) * 240, y: 120 + Math.sin(t * 0.6) * 60 };
-  const light = pointer && !reduced ? { x: clamp(pointer.x, 4, FW - 4), y: clamp(pointer.y, 4, FH - 4) } : reduced ? { x: 360, y: 120 } : auto;
+
+  // Following the pointer starts and stops as it enters, leaves or the page goes idle; each change restarts the easing
+  // from wherever the lantern and moth are at that moment (derived state, adjusted during render).
+  const follow = ptr.in && !idle && !reduced;
+  if (mode.follow !== follow) {
+    const cur = lampState(mode, placeLamp(ptr.p), t);
+    setMode({ follow, at: t, lamp0: cur.lamp, m0: cur.m });
+  }
+
+  const target = placeLamp(ptr.p);
+  let lamp: Pt;
+  let m: number;
+  if (reduced) {
+    lamp = ptr.in ? target : REST_REDUCED.lamp;
+    m = 1;
+  } else {
+    ({ lamp, m } = lampState(mode, target, t));
+  }
+  const light = { x: r1(lamp.x), y: r1(lamp.y) };
   const vis = visibility(light, ROOM);
+
+  // The moth: a tilted ellipse around the lantern, one lap per 6 s, then down onto its resting place.
+  const a = (t * Math.PI * 2) / 6;
+  const tilt = (-10 * Math.PI) / 180;
+  const ex = 64 * Math.cos(a);
+  const ey = 24 * Math.sin(a);
+  const orbit = { x: light.x + ex * Math.cos(tilt) - ey * Math.sin(tilt), y: light.y - 4 + ex * Math.sin(tilt) + ey * Math.cos(tilt) };
+  const spot = reduced ? REST_REDUCED.moth : REST.moth;
+  const landed = reduced || m >= 1;
+  const e = easeInOut(m);
+  const mothFly = { x: lerp(orbit.x, spot.x, e), y: lerp(orbit.y, spot.base - 16, e) };
+  const goingLeft = Math.sin(a) > 0;
+
   return (
-    <g ref={svg}>
+    <g ref={root}>
       <defs>
-        <radialGradient id={`lr-${id}`} cx={light.x} cy={light.y} r="420" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stopColor="#fde68a" stopOpacity=".55" />
-          <stop offset=".4" stopColor="#f59e0b" stopOpacity=".18" />
-          <stop offset="1" stopColor="#f59e0b" stopOpacity="0" />
+        <radialGradient id={`lan-${id}`} cx={light.x} cy={light.y} r="290" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor={GOLD} stopOpacity=".42" />
+          <stop offset=".4" stopColor={GOLD} stopOpacity=".14" />
+          <stop offset="1" stopColor={GOLD} stopOpacity="0" />
         </radialGradient>
       </defs>
-      <rect width={FW} height={FH} fill="#05080a" opacity=".55" />
-      <path d={polyPath(vis.polygon)} fill={`url(#lr-${id})`} />
-      <g stroke="#fb923c" strokeWidth="3.5" strokeLinecap="round">
-        {ROOM.slice(4).map((w, i) => (
-          <line key={i} x1={w.a.x} y1={w.a.y} x2={w.b.x} y2={w.b.y} />
-        ))}
-      </g>
-      {SEATS.map((s, i) => {
-        const lit = litBy(light, { x: s.x, y: s.y - 40 });
+      <Sky seed={11} />
+      <Hills />
+      <path d={polyPath(vis.polygon)} fill={`url(#lan-${id})`} />
+      {STONES.map((s, i) => {
+        const p = STONE_PTS[i];
+        const lit = litStone(light, i);
+        const pts = p.map((q) => `${q.x},${q.y}`).join(' ');
         return (
-          <g key={i} transform={`translate(${s.x} ${s.y}) scale(.72)`} opacity={lit ? 1 : 0.55}>
-            <Person look={LOOKS[(i + 1) % LOOKS.length]} pose={lit ? 'wave' : 'sit'} phase={t} eyesClosed={!lit && idle} flip={s.x > 360} />
+          <g key={s.x}>
+            <polygon points={pts} fill={STONE} stroke={OUT} strokeWidth="1" />
+            {lit && <polygon points={pts} fill={GOLD} opacity=".1" />}
+            <g transform={`translate(${p[3].x} ${p[3].y}) scale(${LAB})`}>
+              <polyline points={s.glyph.map((g) => g.join(',')).join(' ')} fill="none" stroke={lit ? GOLD : '#343c66'} strokeWidth="1.4" opacity={lit ? 0.9 : 0.8} />
+              {s.glyph.map(([gx, gy]) => (
+                <circle key={gx * gy} cx={gx} cy={gy} r={lit ? 3.2 : 2.4} fill={lit ? '#ffe6a6' : '#343c66'} />
+              ))}
+            </g>
           </g>
         );
       })}
-      <g transform={`translate(${light.x - 17} ${light.y - 8})`}>
-        <PrismCharacter pose={idle ? 'sleep' : 'idle'} size={34} />
+      {/* the lantern */}
+      <g transform={`translate(${light.x} ${light.y}) scale(${LAB})`}>
+        <circle r="30" fill={GOLD} opacity=".22" />
+        <circle cy="-30" r="5" fill="none" stroke="#8a8fb5" strokeWidth="1.6" />
+        <path d="M-13 -18 L13 -18 L8 -25 L-8 -25Z" fill="#3a4170" stroke={OUT} />
+        <rect x="-11" y="-18" width="22" height="30" rx="4" fill={GOLD} stroke={OUT} strokeWidth="1.4" />
+        <ellipse cy="-2" rx="4" ry="7" fill="#fffbe8" />
+        <rect x="-13" y="12" width="26" height="5" rx="2" fill="#3a4170" stroke={OUT} />
       </g>
-      <circle cx={light.x} cy={light.y} r="4" fill="#fde68a" />
-      <text x={FW - 12} y={FH - 10} textAnchor="end" fontFamily={mono} fontSize="10" fill="var(--sc-label)">
-        {pointer ? 'YOUR LIGHT' : 'MOVE YOUR POINTER HERE'} · {vis.rays} RAYS
-      </text>
-    </g>
-  );
-}
-
-/* ---------------- 2. Game day ----------------
-   Scroll velocity drives the play: scroll down and the offense runs toward the end zone, scroll up and
-   the play rewinds. Idle long enough and everyone takes a knee. */
-export function GameDay({ t, reduced, idle }: FooterSceneProps) {
-  const [pos, setPos] = useState(0.15);
-  const [vel, setVel] = useState(0);
-  useEffect(() => {
-    if (reduced) return;
-    let lastY = window.scrollY;
-    let lastT = performance.now();
-    let decay = 0;
-    const on = () => {
-      const now = performance.now();
-      if (now - lastT < 66) return; // throttle like a 15 Hz rate update
-      const dy = window.scrollY - lastY;
-      const v = dy / (now - lastT);
-      lastY = window.scrollY;
-      lastT = now;
-      setVel(v);
-      setPos((p) => clamp(p + v * 0.06, 0.05, 0.95));
-      clearTimeout(decay);
-      decay = window.setTimeout(() => setVel(0), 250);
-    };
-    window.addEventListener('scroll', on, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', on);
-      clearTimeout(decay);
-    };
-  }, [reduced]);
-  const moving = Math.abs(vel) > 0.02;
-  const x0 = 60 + pos * 560;
-  const players = [0, 1, 2, 3, 4];
-  return (
-    <g>
-      <rect x="20" y="40" width="680" height="170" rx="6" fill="#0f3d2e" opacity=".55" />
-      <rect x="20" y="40" width="50" height="170" fill="#14532d" opacity=".5" />
-      <rect x="650" y="40" width="50" height="170" fill="#14532d" opacity=".5" />
-      {Array.from({ length: 11 }, (_, i) => (
-        <g key={i}>
-          <line x1={70 + i * 58} y1="40" x2={70 + i * 58} y2="210" stroke="#e2e8f0" strokeOpacity=".22" />
-          <text x={70 + i * 58} y="58" textAnchor="middle" fontFamily={mono} fontSize="9" fill="#e2e8f0" opacity=".35">
-            {i <= 5 ? i * 10 : (10 - i) * 10}
-          </text>
-        </g>
-      ))}
-      <text x="675" y="130" fontFamily={mono} fontSize="11" fill="#e2e8f0" opacity=".5" transform="rotate(90 675 130)" textAnchor="middle">
-        END ZONE
-      </text>
-      <line x1={x0 + 40} y1="40" x2={x0 + 40} y2="210" stroke="#fbbf24" strokeWidth="2" opacity=".6" />
-      {players.map((i) => (
-        <g key={i} transform={`translate(${x0 + (i % 2) * 18 - i * 6} ${100 + i * 22}) scale(.62)`}>
-          <Person look={{ ...LOOKS[3], shirt: i === 2 ? '#2dd4bf' : '#38bdf8' }} pose={idle ? 'sit' : moving ? 'run' : 'stand'} phase={moving ? t * 1.6 : t * 0.2} flip={vel < -0.02} />
-        </g>
-      ))}
-      <ellipse cx={x0 + 30} cy={150} rx="6" ry="3.6" fill="#92400e" stroke="#fde68a" strokeWidth=".6" />
-      <g transform="translate(110 236) scale(.9)">
-        <Person look={LOOKS[0]} pose={pos > 0.9 ? 'cheer' : 'clipboard'} phase={t} />
-      </g>
-      <text x={FW - 16} y="30" textAnchor="end" fontFamily={mono} fontSize="10" fill="var(--sc-label)">
-        {reduced ? 'SCROLL-DRIVEN PLAY (PAUSED)' : `SCROLL TO RUN THE PLAY · ${Math.round(pos * 100)} YD`}
-      </text>
-      <text x="20" y="30" fontFamily={mono} fontSize="10" fill="var(--sc-label)">
-        SPREAD −3.5 · BRIER 0.177
-      </text>
-    </g>
-  );
-}
-
-/* ---------------- 3. Trivia ----------------
-   The prism hosts a question from the heart-disease project. Wrong answers shake; the right one sets
-   off cheers and an envelope that flies to the email control below. */
-const Q = {
-  q: 'Which model shipped in the heart-disease project?',
-  a: ['Random forest', 'Logistic regression', 'XGBoost'],
-  right: 1,
-  why: 'It won on precision at recall ≥ 0.90, so the simpler model shipped.',
-};
-export function Trivia({ t, reduced }: FooterSceneProps) {
-  const [picked, setPicked] = useState<number | null>(null);
-  const [wrong, setWrong] = useState<number | null>(null);
-  const [solvedAt, setSolvedAt] = useState<number | null>(null);
-  const solved = picked === Q.right;
-  const env = solvedAt !== null && !reduced ? seg(t, solvedAt, solvedAt + 1.4) : solved ? 1 : 0;
-  useEffect(() => {
-    if (solved && env >= 1) emit({ type: 'email-pulse' });
-  }, [solved, env >= 1]); // eslint-disable-line react-hooks/exhaustive-deps
-  const choose = (i: number) => {
-    setPicked(i);
-    if (i === Q.right) setSolvedAt(t);
-    else {
-      setWrong(i);
-      window.setTimeout(() => setWrong(null), 420);
-    }
-  };
-  return (
-    <g>
-      <rect x="150" y="16" width="420" height="120" rx="10" fill="var(--sc-ink)" stroke="var(--sc-line)" />
-      <text x="166" y="38" fontFamily={mono} fontSize="10" fill="var(--sc-label)">TRIVIA · FROM THE PROJECTS</text>
-      <text x="360" y="60" textAnchor="middle" fontFamily="var(--font-inter)" fontSize="15" fontWeight="600" fill="var(--fg)">
-        {Q.q}
-      </text>
-      <text x="360" y="82" textAnchor="middle" fontFamily="var(--font-inter)" fontSize="12" fill={solved ? 'var(--green)' : 'var(--sc-label)'}>
-        {solved ? Q.why : picked !== null ? 'Not quite. Try another.' : 'Pick an answer below.'}
-      </text>
-      <g transform="translate(110 150)">
-        <PrismCharacter pose={solved ? 'cheer' : wrong !== null ? 'crouch' : 'wave'} size={44} />
-      </g>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <g key={i} transform={`translate(${220 + i * 70} 232) scale(.8)`} className={wrong !== null && i === 2 ? 'shake' : undefined}>
-          <Person look={LOOKS[(i + 1) % LOOKS.length]} pose={solved ? 'cheer' : i === 2 && wrong !== null ? 'shrug' : 'think'} phase={t + i * 0.3} />
-        </g>
-      ))}
-      {env > 0 && env < 1 && (
-        <g transform={`translate(${lerp(360, 360, env)} ${lerp(120, 300, easeOut(env))}) rotate(${env * 30})`}>
-          <rect x="-14" y="-10" width="28" height="20" rx="2" fill="var(--sc-ink)" stroke="var(--accent)" />
-          <path d="M-14 -10 L0 2 L14 -10" stroke="var(--accent)" fill="none" />
-        </g>
+      {landed ? (
+        <Seated cx={spot.x} base={spot.base} size={spot.size} pose={idle ? 'sleep' : 'sit'} />
+      ) : (
+        <Flying cx={r1(mothFly.x)} cy={r1(mothFly.y)} w={56} rot={goingLeft ? -12 : 12} flip={goingLeft} />
       )}
-      <foreignObject x="150" y="94" width="420" height="40">
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-          {Q.a.map((a, i) => (
-            <button
-              key={a}
-              type="button"
-              onClick={() => choose(i)}
-              disabled={solved}
-              className={`mono rounded-full border px-3 py-1 text-[11.5px] ${wrong === i ? 'shake border-red-400 text-red-400' : solved && i === Q.right ? 'border-green text-green' : 'border-line-2 text-fg-2 hover:text-fg'}`}
-              style={{ background: 'var(--panel)' }}
-            >
-              {a}
-            </button>
-          ))}
-        </div>
-      </foreignObject>
-      {solved && (
-        <foreignObject x="590" y="110" width="120" height="30">
-          <button type="button" className="mono text-[11px] text-accent underline" onClick={() => { setPicked(null); setSolvedAt(null); }}>
-            play again
-          </button>
-        </foreignObject>
-      )}
-    </g>
-  );
-}
-
-/* ---------------- 4. Orbit ----------------
-   The cast walks a perspective ellipse around a prism, scaled and layered by depth, hopping as they
-   pass the front. Holding the email button speeds them up; after a while without input they slow. */
-export function Orbit({ t, reduced, hold, idle }: FooterSceneProps) {
-  const speed = reduced ? 0 : (idle ? 0.06 : 0.22) + hold * 1.4;
-  const [a0, setA0] = useState(0);
-  const lastT = useRef(t);
-  useEffect(() => {
-    const dt = Math.min(0.1, Math.max(0, t - lastT.current));
-    lastT.current = t;
-    if (dt) setA0((a) => a + dt * speed);
-  }, [t, speed]);
-  const cast = useMemo(() => LOOKS.map((l, i) => ({ l, off: (i / LOOKS.length) * Math.PI * 2 })), []);
-  const placed = cast
-    .map(({ l, off }, i) => {
-      const a = a0 + off;
-      const depth = (Math.sin(a) + 1) / 2; // 0 back, 1 front
-      const x = 360 + Math.cos(a) * 250;
-      const y = 126 + Math.sin(a) * 46;
-      const hop = Math.max(0, Math.cos(a - Math.PI / 2) - 0.92) * 120;
-      return { l, i, x, y: y - hop, depth, front: depth > 0.5 };
-    })
-    .sort((p, q) => p.depth - q.depth);
-  const back = placed.filter((p) => !p.front);
-  const front = placed.filter((p) => p.front);
-  const draw = (p: (typeof placed)[number]) => (
-    <g key={p.i} transform={`translate(${p.x} ${p.y + 52}) scale(${0.55 + p.depth * 0.45})`} opacity={0.55 + p.depth * 0.45}>
-      <Person look={p.l} pose={hold > 0.2 ? 'cheer' : p.depth > 0.85 ? 'wave' : 'run'} phase={t * (0.5 + speed)} flip={Math.cos(a0) > 0 === p.front} />
-    </g>
-  );
-  return (
-    <g>
-      <ellipse cx="360" cy="178" rx="262" ry="50" fill="none" stroke="var(--sc-line)" strokeDasharray="4 6" />
-      {back.map(draw)}
-      <g transform="translate(330 96)">
-        <PrismCharacter pose={hold > 0.2 ? 'cheer' : idle ? 'sleep' : 'idle'} size={60} />
-      </g>
-      {front.map(draw)}
-      <text x="20" y="28" fontFamily={mono} fontSize="10" fill="var(--sc-label)">
-        {hold > 0.05 ? 'FASTER!' : idle ? 'RESTING · MOVE TO WAKE' : 'HOLD THE EMAIL BUTTON TO SPEED UP'}
-      </text>
+      <Note>YOUR POINTER CARRIES THE LANTERN</Note>
     </g>
   );
 }
 
 export const footerScenes = [
-  { id: 'lightroom', name: 'Lightroom', Scene: Lightroom, label: 'A room where the prism carries a lamp; your pointer moves the light and a computed visibility polygon shows what it reaches.' },
-  { id: 'gameday', name: 'Game day', Scene: GameDay, label: 'A football field where scrolling the page runs the play forward or rewinds it.' },
-  { id: 'trivia', name: 'Trivia', Scene: Trivia, label: 'A trivia question from the projects with three answer buttons.' },
-  { id: 'orbit', name: 'Orbit', Scene: Orbit, label: 'The cast walks in a ring around the prism; holding the email button speeds them up.' },
+  {
+    id: 'lantern',
+    name: 'Lantern',
+    Scene: Lantern,
+    label: 'Your pointer carries a lantern across a hilltop of standing stones; the lit area is a real visibility polygon, the idea behind the visibility engine project.',
+  },
 ] as const;

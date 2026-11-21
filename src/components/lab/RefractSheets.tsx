@@ -10,7 +10,7 @@ import { plain, isPh } from '@/data/ph';
 import { covers } from '@/components/scenes/covers/registry';
 import { Stage } from '@/components/scenes/Stage';
 import { Icon } from '@/components/ui/Icon';
-import { PrismCharacter } from '@/components/ui/Prism';
+import { PrismCharacter } from '@/components/lab/legacy/Prism';
 import { BANDS, Glass, LightBackdrop, LightHeader, R_BG, R_DIM, R_INK, R_KIND, R_LINE, R_MUTED, SPEC, Swatch } from './RefractKit';
 
 // Static light & refraction mockups of the sections after the hero, matching the constellation sheets

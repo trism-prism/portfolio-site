@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { personal } from '@/data/personal';
-import { PrismMark } from '@/components/ui/Prism';
+import { PrismMark } from '@/components/lab/legacy/Prism';
 import { Icon } from '@/components/ui/Icon';
 
 // Design lab: two motif explorations for the hero, rendered over the live site so they share real fonts,

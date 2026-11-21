@@ -9,7 +9,7 @@ import { mulberry32 } from '@/lib/kit';
 import { covers } from '@/components/scenes/covers/registry';
 import { Stage } from '@/components/scenes/Stage';
 import { Icon } from '@/components/ui/Icon';
-import { PrismCharacter, PrismMark } from '@/components/ui/Prism';
+import { PrismCharacter, PrismMark } from '@/components/lab/legacy/Prism';
 import type { Tokens } from './themeTokens';
 
 // The chosen direction rendered from one token set, so dark and twilight can be compared like for like.
