@@ -151,4 +151,5 @@ are shared by almost everything. The advisor reviews each result in the browser 
 1. [Approved tokens, twilight theme, Sacramento](design/handoffs/01-tokens-theme-sacramento.md): done (`6fb3d5d..16671e7`), reviewed by the advisor.
 2. [The moth replaces the prism](design/handoffs/02-moth-character.md): done (`26a4527..0c54d6b`), reviewed; favicon redrawn by the advisor for 16px (`f72bfb5`).
 3. [The four footer scenes, rebuilt around the moth](design/handoffs/03-footer-scenes.md): done (`c910adc..ee14da5`), reviewed against the frames.
-4. [Shared section styling](design/handoffs/04-section-styling.md): ready; not started. Heading with star, ruler and seated moth; rounded cards; star-field backdrop; plain words in the command palette and Activity.
+4. [Shared section styling](design/handoffs/04-section-styling.md): done (`d4c7571..5635d1a`), reviewed; advisor fixed a lab type error (`ae456b4`).
+5. [About, Achievements, Focus areas, Stats](design/handoffs/05-about-achievements-focus-stats.md): ready; not started.
