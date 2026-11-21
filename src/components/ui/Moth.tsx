@@ -112,6 +112,88 @@ function MothSpread({ up = false }: { up?: boolean }) {
   );
 }
 
+/* ---------------- emerging (the intro): the spread moth with folded wings, curled antennae and unlit wing stars ---------------- */
+const clamp01 = (x: number) => (x < 0 ? 0 : x > 1 ? 1 : x);
+const mix = (a: number, b: number, k: number) => a + (b - a) * k;
+/** Root of a wing at the body, in the 160 x 120 spread box (left wing; the right one is mirrored). */
+const WING_ROOT: [number, number] = [75, 58];
+/** Wing stars light from the body outward: indices into WING_STARS, nearest the root first. */
+const STAR_ORDER = [2, 3, 1, 0];
+
+/** One antenna: `k` 0 is curled tight against the head (small spread, tip drooped), 1 is the normal antenna of the spread pose. */
+function AntennaSide({ cx, top, spread, k, side }: { cx: number; top: number; spread: number; k: number; side: -1 | 1 }) {
+  const sp = mix(5, spread, k);
+  const droop = mix(10, 0, k);
+  const tip = top + droop;
+  const mid = r1(top + 4 + droop);
+  const bend = r1(top + 10 + droop * 0.4);
+  const d = `M${cx + side * 3} ${top + 22} C${cx + side * 8} ${bend} ${r1(cx + side * sp * 0.6)} ${mid} ${r1(cx + side * sp)} ${r1(tip)}`;
+  return (
+    <g fill="none" strokeLinecap="round">
+      <path d={d} stroke={LAV} strokeWidth="6" strokeDasharray="1 2.2" opacity=".55" />
+      <path d={d} stroke={PALE} strokeWidth="1.6" />
+    </g>
+  );
+}
+
+/**
+ * The spread moth as it comes out of the chrysalis, in the 160 x 120 spread box, as a <g> for use inside an <svg>.
+ * `wings` 0 is folded and crumpled (each wing scaled about its root to 15% wide and 80% tall, tilted toward the body),
+ * 1 is exactly the spread drawing; the opening runs outward from the body. `antennaeL` and `antennaeR` (0 curled, 1 normal)
+ * are drawn separately. `wingStars` is the fraction of the eight wing stars lit, in order from the body outward.
+ */
+export function MothEmerging({ wings = 1, antennaeL = 1, antennaeR = 1, wingStars = 1 }: { wings?: number; antennaeL?: number; antennaeR?: number; wingStars?: number }) {
+  const w = clamp01(wings);
+  const lit = clamp01(wingStars) * 8;
+  const open = w >= 1 ? undefined : `translate(${WING_ROOT[0]} ${WING_ROOT[1]}) rotate(${r1(mix(-10, 0, w))}) scale(${r1(mix(0.15, 1, w) * 1000) / 1000} ${r1(mix(0.8, 1, w) * 1000) / 1000}) translate(${-WING_ROOT[0]} ${-WING_ROOT[1]})`;
+  return (
+    <g>
+      {[false, true].map((m) => (
+        <g key={String(m)} transform={m ? `translate(${SPREAD_W} 0) scale(-1 1)` : undefined}>
+          <g transform={open}>
+            <path d={HIND} fill={NIGHT} stroke={LAV} strokeWidth="1.4" strokeOpacity=".7" />
+            <circle cx="54" cy="98" r="6.5" fill={GOLD} opacity=".9" />
+            <circle cx="54" cy="98" r="2.6" fill={DEEP} />
+            <path d={FORE} fill={NIGHT} stroke={LAV} strokeWidth="1.4" strokeOpacity=".7" />
+            {(() => {
+              // star i of this wing has rank STAR_ORDER.indexOf(i) * 2 (+1 on the right wing) among the eight
+              const lightOf = (i: number) => clamp01(lit - (STAR_ORDER.indexOf(i) * 2 + (m ? 1 : 0)));
+              return (
+                <>
+                  {WING_STARS.slice(1).map(([x2, y2], i) => {
+                    const [x1, y1] = WING_STARS[i];
+                    const o = Math.min(lightOf(i), lightOf(i + 1)) * 0.55;
+                    return o > 0 ? <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={LAV} strokeWidth=".8" opacity={r1(o * 100) / 100} /> : null;
+                  })}
+                  {WING_STARS.map(([sx, sy], i) => {
+                    const a = lightOf(i);
+                    return a > 0 ? (
+                      <g key={sx}>
+                        <circle cx={sx} cy={sy} r="4.5" fill={SPEC[(i + (m ? 2 : 0)) % 5]} opacity={r1(a * 22) / 100} />
+                        <circle cx={sx} cy={sy} r="1.9" fill={SPEC[(i + (m ? 2 : 0)) % 5]} opacity={r1(a * 100) / 100} />
+                      </g>
+                    ) : null;
+                  })}
+                </>
+              );
+            })()}
+          </g>
+        </g>
+      ))}
+      <ellipse cx="80" cy="86" rx="6.5" ry="14" fill="#d9d2ee" stroke={OUT} strokeWidth="1.2" />
+      {[80, 86, 92].map((yy) => (
+        <path key={yy} d={`M74.5 ${yy} Q80 ${yy + 2.4} 85.5 ${yy}`} fill="none" stroke="#b3a9d6" strokeWidth="1" />
+      ))}
+      <ellipse cx="80" cy="64" rx="9.5" ry="12" fill="#e9e4f5" stroke={OUT} strokeWidth="1.2" />
+      <ellipse cx="80" cy="55" rx="12.5" ry="5.5" fill={PALE} />
+      <AntennaSide cx={80} top={14} spread={22} k={clamp01(antennaeL)} side={-1} />
+      <AntennaSide cx={80} top={14} spread={22} k={clamp01(antennaeR)} side={1} />
+      <circle cx="80" cy="44" r="10" fill={PALE} stroke={OUT} strokeWidth="1.2" />
+      <Eyes cx={80} cy={45} gap={9} />
+    </g>
+  );
+}
+
 /* ---------------- seated: wings folded into a cloak ---------------- */
 const SIT_STARS: [number, number][] = [
   [36, 98],
