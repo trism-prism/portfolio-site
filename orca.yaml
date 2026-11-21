@@ -1,0 +1,4 @@
+# Orca: runs once per new worktree
+scripts:
+  setup: |
+    npm ci
