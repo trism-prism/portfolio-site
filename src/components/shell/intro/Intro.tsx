@@ -16,7 +16,7 @@ import { ARRIVE_AT, INTRO_SECONDS, LANDING_AT, introState } from './timeline';
 
 const FW = 420; // the storyboard's frame space
 const FH = 236;
-const SKIP_MS = 300; // skipping reaches the end state well inside 0.35 s
+const SKIP_MS = 250; // skipping reaches the end state inside 0.35 s, with a margin for the frame that removes the overlay
 const r1 = (v: number) => Math.round(v * 10) / 10;
 const r2 = (v: number) => Math.round(v * 100) / 100;
 const mix = (a: number, b: number, k: number) => a + (b - a) * k;
@@ -26,23 +26,21 @@ const RING_C = [210, 116] as const;
 const LOGO_SPAN_PX = 31;
 const MOTH_SPAN_UNITS = 142;
 
-type Geo = { iw: number; ih: number; k: number; left: number; top: number; target: { x: number; y: number; s: number } | null };
+type Geo = { iw: number; ih: number; k: number; left: number; top: number };
 
-/** Stage geometry: the SVG is centred at min(92vw, 760px) wide; the nav logo's rectangle is turned into stage units. */
-function measure(): Geo {
+/** Stage geometry: the SVG is centred at min(92vw, 760px) wide. Reads only the window size, so it never forces a layout. */
+function stageGeo(): Geo {
   const iw = window.innerWidth;
   const ih = window.innerHeight;
-  const w = Math.min(iw * 0.92, 760);
-  const k = w / FW;
-  const left = (iw - w) / 2;
-  const top = (ih - FH * k) / 2;
+  const k = Math.min(iw * 0.92, 760) / FW;
+  return { iw, ih, k, left: (iw - FW * k) / 2, top: (ih - FH * k) / 2 };
+}
+
+/** The nav logo's centre in viewport px. Reading it forces a layout, so it runs well after hydration, not at mount. */
+function logoCentre(): { cx: number; cy: number } | null {
   const el = document.querySelector('[data-intro-target]');
-  let target: Geo['target'] = null;
-  if (el) {
-    const b = el.getBoundingClientRect();
-    if (b.width > 0) target = { x: r1((b.left + b.width / 2 - left) / k), y: r1((b.top + b.height / 2 - top) / k), s: r2(LOGO_SPAN_PX / MOTH_SPAN_UNITS / k * 1000) / 1000 };
-  }
-  return { iw, ih, k, left, top, target };
+  const b = el?.getBoundingClientRect();
+  return b && b.width > 0 ? { cx: b.left + b.width / 2, cy: b.top + b.height / 2 } : null;
 }
 
 // the night sky's own sparse stars, seeded so every visit is the same
@@ -79,6 +77,7 @@ export function Intro() {
   const [t, setT] = useState(0);
   const [fade, setFade] = useState(1);
   const [geo, setGeo] = useState<Geo | null>(null);
+  const [logo, setLogo] = useState<{ cx: number; cy: number } | null>(null);
   const [frozen, setFrozen] = useState(false);
   const skipRef = useRef<() => void>(null);
 
@@ -111,8 +110,12 @@ export function Intro() {
       if (yes) html.dataset.introArrive = '';
       else delete html.dataset.introArrive;
     };
-    const resize = () => setGeo(measure());
-    resize();
+    const place = () => setLogo(logoCentre());
+    const resize = () => {
+      setGeo(stageGeo());
+      place();
+    };
+    setGeo(stageGeo());
     window.addEventListener('resize', resize);
     setOn(true);
 
@@ -121,9 +124,11 @@ export function Intro() {
       const at = Math.max(0, freeze);
       setFrozen(true);
       setT(at);
+      const tl = window.setTimeout(place, 250);
       phase(at >= LANDING_AT ? 'landing' : 'on');
       arrive(at >= ARRIVE_AT);
       return () => {
+        clearTimeout(tl);
         window.removeEventListener('resize', resize);
         phase(null);
         arrive(false);
@@ -134,6 +139,7 @@ export function Intro() {
       sessionStorage.setItem('tm-intro', '1');
     } catch {}
     phase('on');
+    const tl = window.setTimeout(place, 1800); // measured once the page has settled, long before beat 9
 
     let t0 = 0;
     let raf = 0;
@@ -145,6 +151,7 @@ export function Intro() {
     const finish = () => {
       if (done) return;
       done = true;
+      clearTimeout(tl);
       cancelAnimationFrame(raf);
       evs.forEach((e) => window.removeEventListener(e, skip));
       window.removeEventListener('resize', resize);
@@ -156,7 +163,6 @@ export function Intro() {
       if (landed) return;
       landed = true;
       phase('landing');
-      setGeo(measure());
     };
     const skip = () => {
       if (skipAt || done) return;
@@ -191,6 +197,7 @@ export function Intro() {
     raf = requestAnimationFrame(frame);
     return () => {
       done = true;
+      clearTimeout(tl);
       cancelAnimationFrame(raf);
       evs.forEach((e) => window.removeEventListener(e, skip));
       window.removeEventListener('resize', resize);
@@ -205,9 +212,9 @@ export function Intro() {
   // the moth: it sits where the timeline puts it, then flies to the logo along a gentle curve while shrinking to its size
   const S = s.mothScale;
   const home: [number, number] = [210, s.mothY + 16 * S];
-  const target = geo.target ? ([geo.target.x, geo.target.y] as [number, number]) : ([36, 20] as [number, number]);
+  const target: [number, number] = logo ? [(logo.cx - geo.left) / geo.k, (logo.cy - geo.top) / geo.k] : [36, 20];
   const pos = s.flight > 0 ? flightPath(home, target, s.flight) : home;
-  const size = s.flight > 0 ? mix(S, geo.target?.s ?? 0.2, s.flight) : S;
+  const size = s.flight > 0 ? mix(S, LOGO_SPAN_PX / MOTH_SPAN_UNITS / geo.k, s.flight) : S;
   const mothT = `translate(${r1(pos[0] - 80 * size)} ${r1(pos[1] - 60 * size)}) scale(${r2(size * 1000) / 1000})`;
   const clipBottom = r1(72 + 100 * s.head + 64 * s.fall);
 
@@ -244,7 +251,7 @@ export function Intro() {
         </g>
 
         {/* the moth, behind the chrysalis until it pulls free */}
-        <g opacity={r2(s.mothOpacity)} clipPath={s.fall < 1 && s.flight === 0 ? 'url(#intro-reveal)' : undefined}>
+        <g data-intro-moth="" opacity={r2(s.mothOpacity)} clipPath={s.fall < 1 && s.flight === 0 ? 'url(#intro-reveal)' : undefined}>
           {s.head > 0 && (
             <g transform={mothT}>
               <MothEmerging wings={s.wings} antennaeL={s.antL} antennaeR={s.antR} wingStars={s.wingStars} />
