@@ -129,7 +129,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-1. **Sections not mocked yet**: About, Achievements, Focus areas, Stats.
+1. **About, Achievements, Focus areas, Stats.** **Proposed:** `/lab/sections` (`docs/design/mockups/sections-*`, dark and twilight). About: greeting, intro, four rounded fact cards, interests as one constellation, a facts list. Achievements: honours, certifications (level as one to three stars) and competitions in three columns, badges as chips. Focus areas: the lead area full width, six cards below, each with a small figure of the work that backs it and "Backed by" chips. Stats: four highlight cards with a hairline chart each, Shipping and Scale as two lists.
 2. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
 
 ## 7. Handoff rules

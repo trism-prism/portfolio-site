@@ -19,7 +19,7 @@ import type { Tokens } from './themeTokens';
 const mono = 'var(--font-jetbrains), monospace';
 const kindName: Record<ProjectKind, string> = { software: 'Software', ai: 'AI', data: 'Data', systems: 'Systems' };
 
-function Sky({ t, seed, w = 1440, h = 900, haze = false }: { t: Tokens; seed: number; w?: number; h?: number; haze?: boolean }) {
+export function Sky({ t, seed, w = 1440, h = 900, haze = false }: { t: Tokens; seed: number; w?: number; h?: number; haze?: boolean }) {
   const r = mulberry32(seed);
   const stars = Array.from({ length: Math.round((w * h) / (t.name === 'dark' ? 6000 : 9000)) }, () => ({
     x: Math.round(r() * w),
@@ -58,7 +58,7 @@ function Sky({ t, seed, w = 1440, h = 900, haze = false }: { t: Tokens; seed: nu
   );
 }
 
-function Star({ color, size = 10 }: { color: string; size?: number }) {
+export function Star({ color, size = 10 }: { color: string; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 12 12" aria-hidden>
       <circle cx="6" cy="6" r="5.5" fill={color} opacity=".18" />
@@ -67,7 +67,7 @@ function Star({ color, size = 10 }: { color: string; size?: number }) {
   );
 }
 
-function Card({ t, children, className = '', tone }: { t: Tokens; children: React.ReactNode; className?: string; tone?: string }) {
+export function Card({ t, children, className = '', tone }: { t: Tokens; children: React.ReactNode; className?: string; tone?: string }) {
   return (
     <div className={`relative overflow-hidden rounded-2xl border ${className}`} style={{ background: t.card, borderColor: t.cardBorder, backdropFilter: 'blur(8px)', boxShadow: t.name === 'twilight' ? '0 18px 40px -26px rgba(19,26,46,.45)' : undefined }}>
       {tone && <span aria-hidden className="absolute left-5 top-0 h-[2px] w-10 rounded-b-full" style={{ background: tone }} />}
