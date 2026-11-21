@@ -131,6 +131,8 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
 1. **Cover recolouring**: whether the existing covers need any colour change at all once the palette lands.
+2. **Intro splash.** `Chrome.tsx` plays a light-splitting prism intro; with the moth as the logo it needs a new idea or removal.
+3. **Tech tiles in twilight** are faint on the pale sky (seen in the handoff 1 review); fix as part of restyling them to the motif (section 4, chart marker).
 
 ## 7. Handoff rules
 
@@ -139,4 +141,6 @@ it follows; acceptance checks (`npm run check`, `npm test`, `npm run build:dev`,
 375px, Reduced motion). One implementer at a time in this worktree: `globals.css`, tokens and `Stage.tsx`
 are shared by almost everything. The advisor reviews each result in the browser before the next one starts.
 
-**Handoffs written:** 1. [Approved tokens, twilight theme, Sacramento](design/handoffs/01-tokens-theme-sacramento.md) (ready; not started).
+**Handoffs written:**
+1. [Approved tokens, twilight theme, Sacramento](design/handoffs/01-tokens-theme-sacramento.md): done (`6fb3d5d..16671e7`), reviewed by the advisor.
+2. [The moth replaces the prism](design/handoffs/02-moth-character.md): ready; not started. Leaves the old footer scenes for handoff 3.
