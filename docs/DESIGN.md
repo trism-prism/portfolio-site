@@ -31,7 +31,7 @@ sections of this file; anything not covered here is a design question, not an im
 | Hero and Projects (2026-11-21) | **Approved as build targets** as mocked in `docs/design/mockups/theme-01/02` (dark) and `theme-05/06` (twilight): charted-sky hero with the Moth constellation (no project labels, see below) and chart-marker tech tiles (which also fixes the faint tiles seen in twilight); Projects as a sky map whose legend is the filter, a spotlight card and the existing covers. The moth replaces the seated prism. |
 | Moth constellation (2026-11-21) | **The Moth, variant A (wings spread)** from `docs/design/mockups/mothsky-01-*`, used in the hero and the footer in place of "the Prism". **Not built from projects and never labelled with them**: stars in a soft spectrum with no meaning attached, the head the brightest; only the name "the Moth" in Instrument Serif italic. |
 | Where projects appear (2026-11-21) | **Projects are mentioned and built around only in the Projects section** (and project detail pages). The hero's constellation, route and tech tiles carry no project names or project meaning. One exception kept by Tristan: the footer's Name the constellation game, which must be **data-driven** so new projects need no rework (see the footer row). |
-| Intro (2026-11-21) | **The moth emerges**, storyboard `docs/design/mockups/mothsky-02-*`: a constellation charts a chrysalis, it turns prismatic, the moth emerges, unfolds its wings over the Moth constellation, and a ring of light lights up the site as it flies into the nav logo. Approved with changes: **longer (about 4 s), more detail, and a smooth, continuous emergence** (crack, head and antennae out, pulls free, wings expand gradually) on one eased timeline rather than discrete steps. Skippable at any moment; first visit of a session only; none in Reduced motion. |
+| Intro (2026-11-21) | **The moth emerges**, storyboard `docs/design/mockups/mothsky-02-*`: a constellation charts a chrysalis, it turns prismatic, the moth emerges, unfolds its wings over the Moth constellation, and a ring of light lights up the site as it flies into the nav logo. Approved with changes: **longer (about 4 s), more detail, and a smooth, continuous emergence** (crack, head and antennae out, pulls free, wings expand gradually) on one eased timeline rather than discrete steps. Skippable at any moment; first visit of a session only; none in Reduced motion. **Revised nine-frame storyboard (about 4.2 s) approved 2026-11-21.** |
 | Project covers (2026-11-21) | **Left exactly as they are**, no recolouring. |
 | Light mode | **Twilight sky**: a pale dusk-blue sky with soft stars still visible, not a paper atlas. **Values approved** as shown in `docs/design/mockups/theme-*` (token table in section 3). |
 | Cards | **Keep rounded cards**, restyled to the new palette. No square plates or corner registration ticks. |
@@ -135,7 +135,7 @@ decision in section 1. The footer ground stays dark (`#1b2240`) in both themes.
 
 Recorded answers move to section 1. Recommendations are the advisor's, not decisions.
 
-None open. Next design work: the revised intro storyboard (longer, smoother emergence) is shown for a final look before its handoff.
+None open. Remaining work is implementation: shared section styling, the approved sections, the hero with the Moth constellation, the intro, and the data-driven footer quiz.
 
 ## 7. Handoff rules
 
