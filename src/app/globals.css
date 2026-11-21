@@ -310,8 +310,11 @@ body {
 .hero-moth { position: absolute; top: 96px; right: 8px; opacity: .55; }
 .hero-moth svg { width: 276px; height: auto; }
 @media (min-width: 1024px) {
-  .hero-moth { top: calc(50% - 50px); right: 36px; opacity: 1; transform: translateY(-50%); }
+  .hero-moth { top: calc(50% - 50px); right: 64px; opacity: 1; transform: translateY(-50%); }
   .hero-moth svg { width: clamp(320px, 32vw, 460px); }
+}
+@media (min-width: 1280px) {
+  .hero-moth { right: 36px; }
 }
 .hero-route-line { stroke-dasharray: 1; stroke-dashoffset: 0; animation: route-draw .8s ease-out var(--rd, 1.8s) both; }
 .hero-route-here { animation: moth-fade .5s ease-out var(--rd, 1.8s) both; }
