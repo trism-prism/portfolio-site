@@ -10,7 +10,10 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { boxWalls, polyPath, raySeg, visibility, type Pt, type Seg } from '@/lib/visibility';
 import { clamp, easeInOut, easeOut, lerp, mulberry32, seg } from '@/lib/kit';
-import { FW, FH, GROUND, GOLD, OUT, STONE, LAB, Sky, Hills, Note, Flying, Seated, Spark, makeStars, r1 } from './Night';
+import { emit } from '@/lib/nav';
+import { projects } from '@/data/projects';
+import { figures } from './figures';
+import { FW, FH, GROUND, GOLD, LAV, OUT, STONE, LAB, Sky, Hills, Note, Flying, Seated, Spark, makeStars, r1 } from './Night';
 
 export { FW, FH };
 export type FooterSceneProps = { t: number; reduced: boolean; hold: number; idle: boolean };
@@ -301,6 +304,198 @@ export function StarTrails({ t, reduced, idle }: FooterSceneProps) {
   );
 }
 
+/* ---------------- 3. Name the constellation ----------------
+   Stars join into a figure drawn from one project; the visitor picks which project it charts. A wrong guess
+   dims the chip, shows a hint and the moth crouches; the right one lights the figure, the moth flies to its
+   brightest star and a shooting star falls toward the email button, which then pulses. */
+const SEAT = { x: 652, base: 203, size: 44 };
+const CHIPS_Y = 208;
+
+/** Seeded shuffle so the answer order is the same on server and client. */
+function shuffled<T>(items: readonly T[], seed: number): T[] {
+  const r = mulberry32(seed);
+  const a = [...items];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(r() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const dayNumber = () => Math.floor(Date.now() / 86400000);
+
+export function NameTheConstellation({ t, reduced, idle }: FooterSceneProps) {
+  const id = useId().replace(/:/g, '');
+  const [idx, setIdx] = useState(() => dayNumber() % figures.length);
+  const [figAt, setFigAt] = useState(0);
+  const [wrongSlugs, setWrongSlugs] = useState<string[]>([]);
+  const [solved, setSolved] = useState(false);
+  const [solvedAt, setSolvedAt] = useState(0);
+  const [bump, setBump] = useState<'crouch' | 'hop' | null>(null);
+  const timer = useRef(0);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const fig = figures[idx];
+  const answer = projects.find((p) => p.slug === fig.slug)!;
+  // The right title plus two shorter others, so the row of chips always fits the frame.
+  const others = shuffled(projects.filter((p) => p.slug !== fig.slug && p.title.length <= 26), dayNumber() * 7 + idx).slice(0, 2);
+  const choices = shuffled([answer, ...others], dayNumber() * 13 + idx);
+
+  const choose = (slug: string) => {
+    if (solved) return;
+    window.clearTimeout(timer.current);
+    if (slug === fig.slug) {
+      setSolved(true);
+      setSolvedAt(t);
+      if (reduced) {
+        setBump('hop');
+        timer.current = window.setTimeout(() => setBump(null), 420);
+      } else setBump(null);
+    } else {
+      setWrongSlugs((w) => (w.includes(slug) ? w : [...w, slug]));
+      setBump('crouch');
+      timer.current = window.setTimeout(() => setBump(null), 400);
+    }
+  };
+  const another = () => {
+    window.clearTimeout(timer.current);
+    setIdx((i) => (i + 1) % figures.length);
+    setFigAt(t);
+    setWrongSlugs([]);
+    setSolved(false);
+    setBump(null);
+  };
+
+  const since = solved ? t - solvedAt : 0;
+  // The email button pulses once the shooting star has landed (at once in Reduced motion).
+  const landed = solved && (reduced || since >= 2.4);
+  useEffect(() => {
+    if (landed) emit({ type: 'email-pulse' });
+  }, [landed, idx]);
+
+  const pts = fig.points;
+  const bright = pts[fig.brightest];
+  const drawn = reduced ? 1 : seg(t - figAt, 0, 1.6);
+  const lineOpacity = solved ? 1 : 0.34;
+
+  // The moth: seated by the chips; after the right answer it jumps to the brightest star and cheers there.
+  const target = { x: bright[0] + 40, y: bright[1] + 16 };
+  const home = { x: SEAT.x, y: SEAT.base - 20 };
+  const flying = !reduced && solved;
+  const f = flying ? easeInOut(seg(since, 0, 1.7)) : 0;
+  const flightX = lerp(home.x, target.x, f);
+  const flightY = lerp(home.y, target.y, f) - Math.sin(f * Math.PI) * 38;
+  const arrived = flying && since >= 1.7;
+
+  // The shooting star leaves the brightest star toward the lower right while the moth settles.
+  const shoot = flying ? seg(since, 1.3, 2.4) : 0;
+  const sx0 = bright[0] + 8, sy0 = bright[1] + 6;
+  const dx = 150, dy = 135;
+  const hx = sx0 + dx * shoot, hy = sy0 + dy * shoot;
+  const tail = Math.min(shoot, 0.45);
+  const tx = hx - dx * tail, ty = hy - dy * tail;
+
+  const wiggle = bump === 'crouch' ? Math.sin(t * 60) * 3 : 0;
+  const mid = pts.reduce((m, q) => m + q[0], 0) / pts.length;
+  const chip = { height: 24, padding: '0 11px', borderRadius: 999, fontSize: 11, lineHeight: '22px', whiteSpace: 'nowrap', fontFamily: 'var(--font-inter), sans-serif' } as const;
+  const ring = 'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#cfc9f5]';
+
+  return (
+    <g>
+      <defs>
+        <linearGradient id={`qs-${id}`} gradientUnits="userSpaceOnUse" x1={r1(tx)} y1={r1(ty)} x2={r1(hx)} y2={r1(hy)}>
+          <stop offset="0" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor="#fff" stopOpacity=".95" />
+        </linearGradient>
+      </defs>
+      <Sky seed={8} />
+      {/* the figure */}
+      <g strokeLinecap="round" fill="none">
+        {fig.lines.map((l, i) => {
+          const o = clamp(drawn * fig.lines.length - i, 0, 1) * lineOpacity;
+          const A = pts[l.a], B = pts[l.b];
+          return <line key={`${idx}-${i}`} x1={A[0]} y1={A[1]} x2={B[0]} y2={B[1]} stroke={LAV} strokeWidth={l.dashed ? 1 : 1.6} strokeDasharray={l.dashed ? '3 5' : undefined} opacity={r1(o)} />;
+        })}
+      </g>
+      {pts.map((q, i) => {
+        const o = r1(clamp(drawn * 3 - (i / pts.length) * 1.5, 0, 1));
+        return i === fig.brightest ? (
+          <g key={`${idx}-${i}`} opacity={o}>
+            <circle cx={q[0]} cy={q[1]} r="13" fill={GOLD} opacity=".22" />
+            <Spark x={q[0]} y={q[1]} s={7} c={GOLD} />
+          </g>
+        ) : (
+          <g key={`${idx}-${i}`} opacity={o}>
+            <circle cx={q[0]} cy={q[1]} r="5" fill={LAV} opacity=".18" />
+            <circle cx={q[0]} cy={q[1]} r="2" fill="#fff" />
+          </g>
+        );
+      })}
+      {solved && (
+        <text x={r1(mid)} y="168" textAnchor="middle" fontFamily="var(--font-instrument), serif" fontStyle="italic" fontSize="20" fill={LAV} opacity={reduced ? 1 : r1(seg(since, 0.2, 0.9))}>
+          {fig.name}
+        </text>
+      )}
+      {shoot > 0 && shoot < 1 && (
+        <g opacity={r1(1 - shoot * shoot * 0.9)}>
+          <line x1={r1(tx)} y1={r1(ty)} x2={r1(hx)} y2={r1(hy)} stroke={`url(#qs-${id})`} strokeWidth="1.6" strokeLinecap="round" />
+          <Spark x={hx} y={hy} s={4} c="#fff" />
+        </g>
+      )}
+      <Hills />
+      {/* the moth */}
+      {flying ? (
+        arrived ? (
+          <Flying cx={r1(target.x)} cy={r1(target.y + Math.sin(t * 2.2) * 2)} w={56} pose="cheer" />
+        ) : (
+          <Flying cx={r1(flightX)} cy={r1(flightY)} w={56} pose="jump" rot={r1(-18 * Math.sin(f * Math.PI))} />
+        )
+      ) : (
+        <g transform={wiggle ? `rotate(${r1(wiggle)} ${SEAT.x} ${SEAT.base})` : undefined}>
+          <Seated cx={SEAT.x} base={SEAT.base} size={SEAT.size} pose={bump ? 'crouch' : idle ? 'sleep' : 'sit'} />
+        </g>
+      )}
+      {wrongSlugs.length > 0 && !solved && (
+        <text x="18" y="199" fontSize="11" fontFamily="var(--font-inter), sans-serif" fill="#a9a6bd">
+          Not quite: {fig.hint.charAt(0).toLowerCase() + fig.hint.slice(1)}
+        </text>
+      )}
+      <foreignObject x="18" y={CHIPS_Y} width="684" height="26">
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', height: 26 }}>
+          {choices.map((p) => {
+            const wrong = wrongSlugs.includes(p.slug);
+            const right = solved && p.slug === fig.slug;
+            return (
+              <button
+                key={p.slug}
+                type="button"
+                onClick={() => choose(p.slug)}
+                disabled={wrong || solved}
+                className={ring}
+                style={{
+                  ...chip,
+                  color: '#eceaf3',
+                  background: right ? 'rgba(94,234,212,.14)' : 'rgba(17,18,32,.8)',
+                  border: `1px solid ${right ? '#5eead4' : 'rgba(255,255,255,.14)'}`,
+                  opacity: wrong ? 0.45 : 1,
+                  textDecoration: wrong ? 'line-through' : undefined,
+                  cursor: wrong || solved ? 'default' : 'pointer',
+                }}
+              >
+                {p.title}
+              </button>
+            );
+          })}
+          <button type="button" onClick={another} className={ring} style={{ ...chip, marginLeft: 'auto', color: '#a9a6bd', background: 'transparent', border: '1px solid rgba(255,255,255,.14)', cursor: 'pointer' }}>
+            Another
+          </button>
+        </div>
+      </foreignObject>
+      <Note>WHICH PROJECT DO THESE STARS CHART?</Note>
+    </g>
+  );
+}
+
 export const footerScenes = [
   {
     id: 'lantern',
@@ -313,5 +508,11 @@ export const footerScenes = [
     name: 'Star trails',
     Scene: StarTrails,
     label: 'Scrolling the page is a long exposure: scroll speed turns the sky around the pole star and the stars draw trails. Scrolling back rewinds them.',
+  },
+  {
+    id: 'quiz',
+    name: 'Name the constellation',
+    Scene: NameTheConstellation,
+    label: 'Stars join into a figure drawn from one project; pick which project it charts. A right answer lights the figure and a shooting star falls toward the email button.',
   },
 ] as const;
